@@ -117,8 +117,11 @@ export async function GET(request: Request) {
 
 // MCP Protocol: Handle tool invocations via POST
 export async function POST(request: Request) {
+  let requestId: any = null;
+  
   try {
     const body = await request.json();
+    requestId = body.id; // Capture id for error responses
     
     // MCP JSON-RPC 2.0 format
     if (body.jsonrpc === '2.0' && body.method === 'tools/call') {
@@ -131,7 +134,7 @@ export async function POST(request: Request) {
       if (!server || !server.enabled) {
         return Response.json({
           jsonrpc: '2.0',
-          id: body.id,
+          id: requestId,
           error: { code: -32602, message: 'Server not found or disabled' }
         });
       }
@@ -140,7 +143,7 @@ export async function POST(request: Request) {
       if (!tool) {
         return Response.json({
           jsonrpc: '2.0',
-          id: body.id,
+          id: requestId,
           error: { code: -32602, message: 'Tool not found' }
         });
       }
@@ -151,19 +154,21 @@ export async function POST(request: Request) {
       
       return Response.json({
         jsonrpc: '2.0',
-        id: body.id,
+        id: requestId,
         result: { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] }
       });
     }
     
     return Response.json({
       jsonrpc: '2.0',
-      id: body.id,
+      id: requestId,
       error: { code: -32601, message: 'Method not found' }
     });
   } catch (error: any) {
+    // JSON-RPC 2.0: Always include id in error response when available
     return Response.json({
       jsonrpc: '2.0',
+      id: requestId,
       error: { code: -32603, message: error.message }
     }, { status: 500 });
   }
