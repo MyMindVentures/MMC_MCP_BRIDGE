@@ -1,26 +1,35 @@
 {
+  "cursor.general.enableShadowWorkspace": true,
+  "cursor.cpp.disabledLanguages": [],
+  "cursor.chat.defaultModel": "claude-3.5-sonnet",
+  "cursor.aiReview.enabled": true,
+  
   "files.exclude": {
-    "**/.git": false,
     "**/node_modules": true,
-    "**/.next": true
+    "**/.next": true,
+    "**/dist": true,
+    "**/build": true
   },
-  "files.watcherExclude": {
-    "**/node_modules/**": true,
-    "**/.next/**": true
-  },
+  
   "search.exclude": {
     "**/node_modules": true,
     "**/.next": true,
     "**/package-lock.json": true
   },
+  
+  "files.watcherExclude": {
+    "**/node_modules/**": true,
+    "**/.next/**": true
+  },
+  
   "editor.formatOnSave": true,
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "explicit"
+  },
+  
   "typescript.tsdk": "node_modules/typescript/lib",
   "typescript.enablePromptUseWorkspaceTsdk": true,
-  "files.associations": {
-    "*.tsx": "typescriptreact",
-    "*.ts": "typescript"
-  },
+  
   "explorer.fileNesting.enabled": true,
   "explorer.fileNesting.patterns": {
     "package.json": "package-lock.json, .env.example",
