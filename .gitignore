@@ -27,4 +27,4 @@ Thumbs.db
 
 # IDE - Ignore VS Code (we use Cursor!)
 .vscode/
-.devcontainer/
+# Keep .devcontainer/ for Docker dev environment

@@ -1,0 +1,49 @@
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🔒 MMC MCP BRIDGE - STRICT 6-FILES RULE ENFORCEMENT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⚠️  CRITICAL: ONLY 6 FILES ALLOWED IN THIS REPOSITORY
+
+✅ ALLOWED FILES:
+   1. railway.json          - Railway deployment config
+   2. package.json          - NPM dependencies
+   3. package-lock.json     - NPM lockfile
+   4. README.md             - Documentation
+   5. .env.example          - Environment variables template
+   6. app/page.tsx          - Single Next.js page (ALL functionality)
+
+🚫 FORBIDDEN - NEVER CREATE:
+   ❌ NO tsconfig.json
+   ❌ NO next.config.js
+   ❌ NO .eslintrc.* or .prettierrc.*
+   ❌ NO additional app/ directories (no app/api/, app/components/, etc.)
+   ❌ NO src/, components/, lib/, utils/ folders
+   ❌ NO test files
+   ❌ NO Dockerfile
+   ❌ NO .github/ folder
+   ❌ NO CI/CD configs
+   ❌ NO additional markdown files
+
+📋 DEVELOPMENT RULES:
+   • ALL functionality MUST fit in app/page.tsx
+   • Frontend UI + API routes in ONE file
+   • Use Next.js 15 App Router patterns
+   • Inline styles or Tailwind classes only
+   • Railway handles deployment via railway.json
+
+🎯 PHILOSOPHY: RADICAL MINIMALISM
+   This project proves complex full-stack apps can run with just 6 files.
+   Every additional file is considered BLOAT.
+
+⚡ QUICK START:
+   npm install
+   npm run dev
+
+🚀 DEPLOYMENT:
+   git push  # Railway auto-deploys
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+IF IN DOUBT: DON'T CREATE IT!
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
