@@ -4,8 +4,7 @@
     "dockerfile": "Dockerfile",
     "context": ".."
   },
-  "workspaceFolder": "/workspace",
-  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
   
   "features": {
     "ghcr.io/devcontainers/features/node:1": {
@@ -80,6 +79,8 @@
   
   "runArgs": [
     "--network=host"
-  ]
+  ],
+  
+  "initializeCommand": "echo Building devcontainer..."
 }
 

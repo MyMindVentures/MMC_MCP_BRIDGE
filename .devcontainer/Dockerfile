@@ -12,7 +12,7 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get clean -y && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
-WORKDIR /workspace
+WORKDIR /workspaces
 
 # Copy MOTD
 COPY motd.txt /etc/motd
@@ -24,30 +24,33 @@ RUN echo '#!/bin/bash' > /usr/local/bin/env-add && \
     echo '  echo "Example: env-add RAILWAY_API_KEY sk-xxx"' >> /usr/local/bin/env-add && \
     echo '  exit 1' >> /usr/local/bin/env-add && \
     echo 'fi' >> /usr/local/bin/env-add && \
-    echo 'echo "$1=$2" >> /workspace/.env' >> /usr/local/bin/env-add && \
+    echo 'echo "$1=$2" >> ${WORKSPACE_DIR:-.}/.env' >> /usr/local/bin/env-add && \
     echo 'echo "✅ Added $1 to .env"' >> /usr/local/bin/env-add && \
     chmod +x /usr/local/bin/env-add && \
     echo '#!/bin/bash' > /usr/local/bin/env-list && \
-    echo 'if [ -f /workspace/.env ]; then' >> /usr/local/bin/env-list && \
+    echo 'WORKSPACE_DIR="${WORKSPACE_DIR:-.}"' >> /usr/local/bin/env-list && \
+    echo 'if [ -f ${WORKSPACE_DIR}/.env ]; then' >> /usr/local/bin/env-list && \
     echo '  echo "📋 Current environment variables in .env:"' >> /usr/local/bin/env-list && \
     echo '  echo ""' >> /usr/local/bin/env-list && \
-    echo '  cat /workspace/.env | grep -v "^#" | grep -v "^$"' >> /usr/local/bin/env-list && \
+    echo '  cat ${WORKSPACE_DIR}/.env | grep -v "^#" | grep -v "^$"' >> /usr/local/bin/env-list && \
     echo 'else' >> /usr/local/bin/env-list && \
-    echo '  echo "⚠️  No .env file found. Create one with: touch /workspace/.env"' >> /usr/local/bin/env-list && \
+    echo '  echo "⚠️  No .env file found. Create one with: touch ${WORKSPACE_DIR}/.env"' >> /usr/local/bin/env-list && \
     echo 'fi' >> /usr/local/bin/env-list && \
     chmod +x /usr/local/bin/env-list && \
     echo '#!/bin/bash' > /usr/local/bin/env-edit && \
-    echo 'if [ ! -f /workspace/.env ]; then' >> /usr/local/bin/env-edit && \
-    echo '  touch /workspace/.env' >> /usr/local/bin/env-edit && \
-    echo '  echo "# Environment Variables - Add your credentials here" > /workspace/.env' >> /usr/local/bin/env-edit && \
-    echo '  echo "# Format: KEY=value (no spaces around =)" >> /workspace/.env' >> /usr/local/bin/env-edit && \
-    echo '  echo "" >> /workspace/.env' >> /usr/local/bin/env-edit && \
+    echo 'WORKSPACE_DIR="${WORKSPACE_DIR:-.}"' >> /usr/local/bin/env-edit && \
+    echo 'if [ ! -f ${WORKSPACE_DIR}/.env ]; then' >> /usr/local/bin/env-edit && \
+    echo '  touch ${WORKSPACE_DIR}/.env' >> /usr/local/bin/env-edit && \
+    echo '  echo "# Environment Variables - Add your credentials here" > ${WORKSPACE_DIR}/.env' >> /usr/local/bin/env-edit && \
+    echo '  echo "# Format: KEY=value (no spaces around =)" >> ${WORKSPACE_DIR}/.env' >> /usr/local/bin/env-edit && \
+    echo '  echo "" >> ${WORKSPACE_DIR}/.env' >> /usr/local/bin/env-edit && \
     echo 'fi' >> /usr/local/bin/env-edit && \
-    echo 'nano /workspace/.env' >> /usr/local/bin/env-edit && \
+    echo 'nano ${WORKSPACE_DIR}/.env' >> /usr/local/bin/env-edit && \
     chmod +x /usr/local/bin/env-edit && \
     echo '#!/bin/bash' > /usr/local/bin/env-load && \
-    echo 'if [ -f /workspace/.env ]; then' >> /usr/local/bin/env-load && \
-    echo '  export $(cat /workspace/.env | grep -v "^#" | xargs)' >> /usr/local/bin/env-load && \
+    echo 'WORKSPACE_DIR="${WORKSPACE_DIR:-.}"' >> /usr/local/bin/env-load && \
+    echo 'if [ -f ${WORKSPACE_DIR}/.env ]; then' >> /usr/local/bin/env-load && \
+    echo '  export $(cat ${WORKSPACE_DIR}/.env | grep -v "^#" | xargs)' >> /usr/local/bin/env-load && \
     echo '  echo "✅ Environment variables loaded from .env"' >> /usr/local/bin/env-load && \
     echo 'else' >> /usr/local/bin/env-load && \
     echo '  echo "⚠️  No .env file found"' >> /usr/local/bin/env-load && \
@@ -56,8 +59,9 @@ RUN echo '#!/bin/bash' > /usr/local/bin/env-add && \
 
 # Auto-load .env on shell start
 RUN echo '# Auto-load .env if it exists' >> /home/node/.bashrc && \
-    echo 'if [ -f /workspace/.env ]; then' >> /home/node/.bashrc && \
-    echo '  export $(cat /workspace/.env | grep -v "^#" | grep -v "^$" | xargs) 2>/dev/null' >> /home/node/.bashrc && \
+    echo 'export WORKSPACE_DIR=$(pwd)' >> /home/node/.bashrc && \
+    echo 'if [ -f ${WORKSPACE_DIR}/.env ]; then' >> /home/node/.bashrc && \
+    echo '  export $(cat ${WORKSPACE_DIR}/.env | grep -v "^#" | grep -v "^$" | xargs) 2>/dev/null' >> /home/node/.bashrc && \
     echo 'fi' >> /home/node/.bashrc
 
 # Show MOTD and helper info on login
