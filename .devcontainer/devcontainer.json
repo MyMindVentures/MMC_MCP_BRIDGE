@@ -1,11 +1,8 @@
 {
   "name": "MMC MCP Bridge - Next.js",
-  "image": "mcr.microsoft.com/devcontainers/typescript-node:1-20-bullseye",
-  
-  "features": {
-    "ghcr.io/devcontainers/features/git:1": {
-      "version": "latest"
-    }
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".."
   },
 
   "customizations": {
