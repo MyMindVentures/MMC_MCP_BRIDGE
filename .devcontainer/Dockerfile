@@ -17,68 +17,57 @@ WORKDIR /workspace
 # Copy MOTD
 COPY motd.txt /etc/motd
 
-# Create helper script for environment setup
-RUN echo '#!/bin/bash' > /usr/local/bin/setup-env && \
-    echo 'echo "🔧 Setting up environment variables..."' >> /usr/local/bin/setup-env && \
-    echo 'echo ""' >> /usr/local/bin/setup-env && \
-    echo 'echo "Creating .env file in /workspace..."' >> /usr/local/bin/setup-env && \
-    echo 'cat > /workspace/.env << "ENVEOF"' >> /usr/local/bin/setup-env && \
-    echo '# Railway' >> /usr/local/bin/setup-env && \
-    echo 'RAILWAY_API_KEY=' >> /usr/local/bin/setup-env && \
-    echo '' >> /usr/local/bin/setup-env && \
-    echo '# Redis (Required for Agent Tasks)' >> /usr/local/bin/setup-env && \
-    echo 'REDIS_URL=redis://localhost:6379' >> /usr/local/bin/setup-env && \
-    echo '' >> /usr/local/bin/setup-env && \
-    echo '# AI Models' >> /usr/local/bin/setup-env && \
-    echo 'ANTHROPIC_API_KEY=' >> /usr/local/bin/setup-env && \
-    echo 'OPENAI_API_KEY=' >> /usr/local/bin/setup-env && \
-    echo 'OLLAMA_BASE_URL=' >> /usr/local/bin/setup-env && \
-    echo '' >> /usr/local/bin/setup-env && \
-    echo '# Automation' >> /usr/local/bin/setup-env && \
-    echo 'N8N_API_KEY=' >> /usr/local/bin/setup-env && \
-    echo 'N8N_BASE_URL=' >> /usr/local/bin/setup-env && \
-    echo 'PUPPETEER_EXECUTABLE_PATH=' >> /usr/local/bin/setup-env && \
-    echo '' >> /usr/local/bin/setup-env && \
-    echo '# Databases' >> /usr/local/bin/setup-env && \
-    echo 'MONGODB_CONNECTION_STRING=' >> /usr/local/bin/setup-env && \
-    echo 'POSTGRES_CONNECTION_STRING=' >> /usr/local/bin/setup-env && \
-    echo 'SQLITE_DB_PATH=' >> /usr/local/bin/setup-env && \
-    echo '' >> /usr/local/bin/setup-env && \
-    echo '# Productivity' >> /usr/local/bin/setup-env && \
-    echo 'AIRTABLE_API_KEY=' >> /usr/local/bin/setup-env && \
-    echo 'LINEAR_API_KEY=' >> /usr/local/bin/setup-env && \
-    echo 'NOTION_API_KEY=' >> /usr/local/bin/setup-env && \
-    echo 'RAINDROP_API_KEY=' >> /usr/local/bin/setup-env && \
-    echo 'POSTMAN_API_KEY=' >> /usr/local/bin/setup-env && \
-    echo '' >> /usr/local/bin/setup-env && \
-    echo '# Communication' >> /usr/local/bin/setup-env && \
-    echo 'SLACK_BOT_TOKEN=' >> /usr/local/bin/setup-env && \
-    echo '' >> /usr/local/bin/setup-env && \
-    echo '# Storage' >> /usr/local/bin/setup-env && \
-    echo 'GOOGLE_DRIVE_CREDENTIALS=' >> /usr/local/bin/setup-env && \
-    echo '' >> /usr/local/bin/setup-env && \
-    echo '# Development' >> /usr/local/bin/setup-env && \
-    echo 'GITHUB_TOKEN=' >> /usr/local/bin/setup-env && \
-    echo '' >> /usr/local/bin/setup-env && \
-    echo '# Search' >> /usr/local/bin/setup-env && \
-    echo 'BRAVE_SEARCH_API_KEY=' >> /usr/local/bin/setup-env && \
-    echo '' >> /usr/local/bin/setup-env && \
-    echo '# Security' >> /usr/local/bin/setup-env && \
-    echo 'DOPPLER_API_KEY=' >> /usr/local/bin/setup-env && \
-    echo '' >> /usr/local/bin/setup-env && \
-    echo '# Monitoring' >> /usr/local/bin/setup-env && \
-    echo 'SENTRY_DSN=' >> /usr/local/bin/setup-env && \
-    echo 'ENVEOF' >> /usr/local/bin/setup-env && \
-    echo 'echo ""' >> /usr/local/bin/setup-env && \
-    echo 'echo "✅ .env file created at /workspace/.env"' >> /usr/local/bin/setup-env && \
-    echo 'echo "📝 Edit it with: nano .env or vim .env"' >> /usr/local/bin/setup-env && \
-    echo 'echo ""' >> /usr/local/bin/setup-env && \
-    chmod +x /usr/local/bin/setup-env
+# Create dynamic environment helper scripts
+RUN echo '#!/bin/bash' > /usr/local/bin/env-add && \
+    echo 'if [ -z "$1" ] || [ -z "$2" ]; then' >> /usr/local/bin/env-add && \
+    echo '  echo "Usage: env-add KEY VALUE"' >> /usr/local/bin/env-add && \
+    echo '  echo "Example: env-add RAILWAY_API_KEY sk-xxx"' >> /usr/local/bin/env-add && \
+    echo '  exit 1' >> /usr/local/bin/env-add && \
+    echo 'fi' >> /usr/local/bin/env-add && \
+    echo 'echo "$1=$2" >> /workspace/.env' >> /usr/local/bin/env-add && \
+    echo 'echo "✅ Added $1 to .env"' >> /usr/local/bin/env-add && \
+    chmod +x /usr/local/bin/env-add && \
+    echo '#!/bin/bash' > /usr/local/bin/env-list && \
+    echo 'if [ -f /workspace/.env ]; then' >> /usr/local/bin/env-list && \
+    echo '  echo "📋 Current environment variables in .env:"' >> /usr/local/bin/env-list && \
+    echo '  echo ""' >> /usr/local/bin/env-list && \
+    echo '  cat /workspace/.env | grep -v "^#" | grep -v "^$"' >> /usr/local/bin/env-list && \
+    echo 'else' >> /usr/local/bin/env-list && \
+    echo '  echo "⚠️  No .env file found. Create one with: touch /workspace/.env"' >> /usr/local/bin/env-list && \
+    echo 'fi' >> /usr/local/bin/env-list && \
+    chmod +x /usr/local/bin/env-list && \
+    echo '#!/bin/bash' > /usr/local/bin/env-edit && \
+    echo 'if [ ! -f /workspace/.env ]; then' >> /usr/local/bin/env-edit && \
+    echo '  touch /workspace/.env' >> /usr/local/bin/env-edit && \
+    echo '  echo "# Environment Variables - Add your credentials here" > /workspace/.env' >> /usr/local/bin/env-edit && \
+    echo '  echo "# Format: KEY=value (no spaces around =)" >> /workspace/.env' >> /usr/local/bin/env-edit && \
+    echo '  echo "" >> /workspace/.env' >> /usr/local/bin/env-edit && \
+    echo 'fi' >> /usr/local/bin/env-edit && \
+    echo 'nano /workspace/.env' >> /usr/local/bin/env-edit && \
+    chmod +x /usr/local/bin/env-edit && \
+    echo '#!/bin/bash' > /usr/local/bin/env-load && \
+    echo 'if [ -f /workspace/.env ]; then' >> /usr/local/bin/env-load && \
+    echo '  export $(cat /workspace/.env | grep -v "^#" | xargs)' >> /usr/local/bin/env-load && \
+    echo '  echo "✅ Environment variables loaded from .env"' >> /usr/local/bin/env-load && \
+    echo 'else' >> /usr/local/bin/env-load && \
+    echo '  echo "⚠️  No .env file found"' >> /usr/local/bin/env-load && \
+    echo 'fi' >> /usr/local/bin/env-load && \
+    chmod +x /usr/local/bin/env-load
+
+# Auto-load .env on shell start
+RUN echo '# Auto-load .env if it exists' >> /home/node/.bashrc && \
+    echo 'if [ -f /workspace/.env ]; then' >> /home/node/.bashrc && \
+    echo '  export $(cat /workspace/.env | grep -v "^#" | grep -v "^$" | xargs) 2>/dev/null' >> /home/node/.bashrc && \
+    echo 'fi' >> /home/node/.bashrc
 
 # Show MOTD and helper info on login
 RUN echo 'cat /etc/motd' >> /home/node/.bashrc && \
     echo 'echo ""' >> /home/node/.bashrc && \
-    echo 'echo "💡 TIP: Run setup-env to create .env file with all variables"' >> /home/node/.bashrc && \
+    echo 'echo "🔧 Environment Tools:"' >> /home/node/.bashrc && \
+    echo 'echo "  env-edit  - Edit .env file (creates if not exists)"' >> /home/node/.bashrc && \
+    echo 'echo "  env-add   - Add variable: env-add KEY VALUE"' >> /home/node/.bashrc && \
+    echo 'echo "  env-list  - List all variables in .env"' >> /home/node/.bashrc && \
+    echo 'echo "  env-load  - Manually reload .env variables"' >> /home/node/.bashrc && \
     echo 'echo ""' >> /home/node/.bashrc
 
 # Set user
