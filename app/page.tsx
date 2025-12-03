@@ -95,7 +95,18 @@ export default function Home() {
         <header style={{ textAlign: 'center', marginBottom: '3rem' }}>
           <h1 style={{ fontSize: '3rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>🚀 MMC MCP Bridge</h1>
           <p style={{ fontSize: '1.25rem', opacity: 0.9 }}>Enterprise MCP Orchestration Platform</p>
-          <p style={{ fontSize: '0.875rem', opacity: 0.7, marginTop: '0.5rem' }}>Full MCP Protocol: Tools • Resources • Prompts • Sampling • GraphQL</p>
+          <p style={{ fontSize: '0.875rem', opacity: 0.7, marginTop: '0.5rem' }}>Full MCP Protocol: Tools • Resources • Prompts • Sampling • GraphQL • SSE</p>
+          <div style={{ marginTop: '1rem', padding: '1rem', background: 'rgba(0,0,0,0.2)', borderRadius: '0.5rem', fontSize: '0.75rem', fontFamily: 'monospace', textAlign: 'left', maxWidth: '600px', margin: '1rem auto' }}>
+            <div style={{ marginBottom: '0.5rem', fontWeight: 'bold' }}>Cursor IDE Config:</div>
+            <pre style={{ margin: 0, whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>{`{
+  "mcpServers": {
+    "MMC-MCP-Bridge": {
+      "type": "sse",
+      "url": "${typeof window !== 'undefined' ? window.location.origin : 'https://your-bridge.railway.app'}/api/sse"
+    }
+  }
+}`}</pre>
+          </div>
         </header>
 
         {health && (
