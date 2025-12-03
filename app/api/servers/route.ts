@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { MCP_SERVERS } from '../../../lib/mcp-servers';
+import { MCP_SERVERS } from '../mcp-config';
 
 export async function GET() {
   const enabledServers = Object.values(MCP_SERVERS).filter(s => s.enabled);
