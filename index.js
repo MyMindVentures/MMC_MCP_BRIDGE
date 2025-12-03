@@ -14,13 +14,22 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// REDIS & QUEUE SETUP
+// REDIS & QUEUE SETUP (Non-blocking)
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 const redis = new Redis(process.env.REDIS_URL, {
   maxRetriesPerRequest: null,
-  enableReadyCheck: false
+  enableReadyCheck: false,
+  lazyConnect: true // Don't block startup on Redis connection
 });
+
+// Connect to Redis asynchronously
+redis.connect().catch(err => {
+  console.error('⚠️  Redis connection failed, agent features disabled:', err.message);
+});
+
+redis.on('connect', () => console.log('✅ Redis connected'));
+redis.on('error', (err) => console.error('❌ Redis error:', err.message));
 
 const taskQueue = new Queue('agentic-tasks', { connection: redis });
 
@@ -307,71 +316,80 @@ function generateGraphQLSchema() {
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// AGENTIC WORKER
+// AGENTIC WORKER (Starts when Redis is ready)
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-const worker = new Worker('agentic-tasks', async (job) => {
-  console.log(`🤖 Processing: ${job.data.instruction}`);
-  
-  try {
-    // Build tool list for Claude
-    const tools = enabledServers.flatMap(server => 
-      server.tools.map(tool => ({
-        name: `${server.name}_${tool}`,
-        description: `Execute ${tool} on ${server.name} MCP server`,
-        input_schema: {
-          type: 'object',
-          properties: {
-            params: { type: 'object', description: 'Tool parameters' }
+let worker;
+
+// Initialize worker only when Redis is connected
+redis.on('ready', () => {
+  worker = new Worker('agentic-tasks', async (job) => {
+    console.log(`🤖 Processing: ${job.data.instruction}`);
+    
+    try {
+      // Build tool list for Claude
+      const tools = enabledServers.flatMap(server => 
+        server.tools.map(tool => ({
+          name: `${server.name}_${tool}`,
+          description: `Execute ${tool} on ${server.name} MCP server`,
+          input_schema: {
+            type: 'object',
+            properties: {
+              params: { type: 'object', description: 'Tool parameters' }
+            }
+          }
+        }))
+      );
+
+      // Agent reasoning with Claude
+      const message = await anthropic.messages.create({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 4096,
+        tools,
+        messages: [{
+          role: 'user',
+          content: job.data.instruction
+        }]
+      });
+
+      const steps = [];
+      let result = null;
+
+      // Execute tool calls
+      for (const content of message.content) {
+        if (content.type === 'tool_use') {
+          const [serverName, toolName] = content.name.split('_');
+          const server = MCP_SERVERS[serverName];
+          
+          if (server && server.execute) {
+            result = await server.execute(toolName, content.input.params);
+            steps.push(`Executed ${content.name}`);
           }
         }
-      }))
-    );
-
-    // Agent reasoning with Claude
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 4096,
-      tools,
-      messages: [{
-        role: 'user',
-        content: job.data.instruction
-      }]
-    });
-
-    const steps = [];
-    let result = null;
-
-    // Execute tool calls
-    for (const content of message.content) {
-      if (content.type === 'tool_use') {
-        const [serverName, toolName] = content.name.split('_');
-        const server = MCP_SERVERS[serverName];
-        
-        if (server && server.execute) {
-          result = await server.execute(toolName, content.input.params);
-          steps.push(`Executed ${content.name}`);
-        }
       }
+
+      return { success: true, result, steps };
+    } catch (error) {
+      console.error('Agent error:', error);
+      return { success: false, error: error.message, steps: [] };
     }
+  }, { connection: redis, concurrency: 10 });
 
-    return { success: true, result, steps };
-  } catch (error) {
-    console.error('Agent error:', error);
-    return { success: false, error: error.message, steps: [] };
-  }
-}, { connection: redis, concurrency: 10 });
-
-worker.on('completed', job => console.log(`✅ Job ${job.id} completed`));
-worker.on('failed', (job, err) => console.error(`❌ Job ${job?.id} failed:`, err.message));
+  worker.on('completed', job => console.log(`✅ Job ${job.id} completed`));
+  worker.on('failed', (job, err) => console.error(`❌ Job ${job?.id} failed:`, err.message));
+  
+  console.log('🤖 Agentic Worker initialized');
+});
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // EXPRESS MIDDLEWARE
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 app.use(helmet());
+
+// CORS - Allow Railway health checks from healthcheck.railway.app
 app.use(cors());
 app.use(compression());
 app.use(express.json({ limit: '50mb' }));
@@ -389,7 +407,9 @@ app.use('/graphql', yoga);
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 app.get('/health', (req, res) => {
-  res.json({
+  // Railway health checks come from healthcheck.railway.app
+  // Return explicit 200 status code as required by Railway
+  res.status(200).json({
     status: 'healthy',
     timestamp: new Date().toISOString(),
     service: 'mmc-mcp-bridge',
@@ -463,10 +483,10 @@ app.get('/api/sse', (req, res) => {
 });
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// START SERVER
+// START SERVER IMMEDIATELY FOR RAILWAY HEALTH CHECKS
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🚀 MMC MCP BRIDGE - ENTERPRISE SERVICE
@@ -475,7 +495,29 @@ Port:       ${PORT}
 GraphQL:    http://localhost:${PORT}/graphql
 Health:     http://localhost:${PORT}/health
 SSE:        http://localhost:${PORT}/api/sse
-Servers:    ${enabledServers.length}/${Object.keys(MCP_SERVERS).length}
+Status:     Starting... (Initializing MCP servers)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   `);
+  
+  // Initialize heavy operations AFTER server is listening
+  console.log('⏳ Initializing MCP servers...');
+  console.log(`✅ Loaded ${enabledServers.length}/${Object.keys(MCP_SERVERS).length} MCP servers`);
+});
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// GRACEFUL SHUTDOWN
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+process.on('SIGTERM', async () => {
+  console.log('🛑 SIGTERM received, shutting down gracefully...');
+  
+  server.close(async () => {
+    // Close worker if it was initialized
+    if (worker) {
+      await worker.close();
+    }
+    await redis.quit();
+    console.log('✅ Server shut down complete');
+    process.exit(0);
+  });
 });
