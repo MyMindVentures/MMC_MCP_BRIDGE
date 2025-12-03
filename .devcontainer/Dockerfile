@@ -21,3 +21,4 @@ RUN echo 'cat /etc/motd' >> /home/node/.bashrc
 # Set user
 USER node
 
+

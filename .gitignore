@@ -26,5 +26,4 @@ yarn-error.log*
 Thumbs.db
 
 # IDE - Ignore VS Code (we use Cursor!)
-.vscode/
 # Keep .devcontainer/ for Docker dev environment
