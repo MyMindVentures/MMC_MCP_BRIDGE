@@ -72,6 +72,14 @@
 
   "remoteUser": "node",
   
-  "onCreateCommand": "cat /etc/motd"
+  "onCreateCommand": "cat /etc/motd",
+  
+  "containerEnv": {
+    "NODE_ENV": "development"
+  },
+  
+  "runArgs": [
+    "--network=host"
+  ]
 }
 
