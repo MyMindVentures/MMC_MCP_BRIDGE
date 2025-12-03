@@ -1,8 +1,20 @@
 {
+  "// 🔒 STRICT 6-FILES RULE ENFORCEMENT": "ONLY these files allowed in repo",
+  "// ALLOWED FILES": [
+    "railway.json",
+    "package.json", 
+    "package-lock.json",
+    "README.md",
+    ".env.example",
+    "app/page.tsx"
+  ],
+  "// FORBIDDEN": "NO tsconfig, next.config, eslintrc, prettierrc, additional app/ dirs, src/, components/, lib/, utils/, tests, Dockerfile, .github/, CI/CD configs, extra markdown files",
+  
   "cursor.general.enableShadowWorkspace": true,
   "cursor.cpp.disabledLanguages": [],
   "cursor.chat.defaultModel": "claude-3.5-sonnet",
   "cursor.aiReview.enabled": true,
+  "cursor.chat.alwaysUseRules": true,
   
   "files.exclude": {
     "**/node_modules": true,
@@ -34,6 +46,11 @@
   "explorer.fileNesting.patterns": {
     "package.json": "package-lock.json, .env.example",
     "README.md": "railway.json"
+  },
+  
+  "files.associations": {
+    "*.tsx": "typescriptreact",
+    "*.ts": "typescript"
   }
 }
 
