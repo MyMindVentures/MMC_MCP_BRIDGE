@@ -2,8 +2,10 @@
   "name": "MMC MCP Bridge - Next.js (STRICT 6 FILES ONLY)",
   "build": {
     "dockerfile": "Dockerfile",
-    "context": "."
+    "context": ".."
   },
+  "workspaceFolder": "/workspace",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
   
   "features": {
     "ghcr.io/devcontainers/features/node:1": {
