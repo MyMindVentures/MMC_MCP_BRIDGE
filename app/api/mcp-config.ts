@@ -2651,44 +2651,88 @@ export const MCP_SERVERS: Record<string, MCPServer> = {
   },
 
   // 16. DOPPLER - REST API
+  // 16. DOPPLER - Secrets Manager (FULLY UPGRADED: 1→38 tools!)
   doppler: {
     name: "doppler",
     category: "security",
     enabled: true,
     tools: [
-      {
-        name: "getSecrets",
-        description: "Get secrets",
-        inputSchema: {
-          type: "object",
-          properties: { project: { type: "string" } },
-          required: ["project"],
-        },
-      },
+      // Projects (5 tools)
+      { name: "listProjects", description: "List all projects", inputSchema: { type: "object", properties: {} } },
+      { name: "getProject", description: "Get project details", inputSchema: { type: "object", properties: { project: { type: "string" } }, required: ["project"] } },
+      { name: "createProject", description: "Create new project", inputSchema: { type: "object", properties: { name: { type: "string" }, description: { type: "string" } }, required: ["name"] } },
+      { name: "updateProject", description: "Update project", inputSchema: { type: "object", properties: { project: { type: "string" }, name: { type: "string" }, description: { type: "string" } }, required: ["project"] } },
+      { name: "deleteProject", description: "Delete project", inputSchema: { type: "object", properties: { project: { type: "string" } }, required: ["project"] } },
+      
+      // Configs/Environments (8 tools)
+      { name: "listConfigs", description: "List configs in project", inputSchema: { type: "object", properties: { project: { type: "string" } }, required: ["project"] } },
+      { name: "getConfig", description: "Get config details", inputSchema: { type: "object", properties: { project: { type: "string" }, config: { type: "string" } }, required: ["project", "config"] } },
+      { name: "createConfig", description: "Create new config", inputSchema: { type: "object", properties: { project: { type: "string" }, name: { type: "string" }, environment: { type: "string" } }, required: ["project", "name", "environment"] } },
+      { name: "updateConfig", description: "Update config", inputSchema: { type: "object", properties: { project: { type: "string" }, config: { type: "string" }, name: { type: "string" } }, required: ["project", "config", "name"] } },
+      { name: "deleteConfig", description: "Delete config", inputSchema: { type: "object", properties: { project: { type: "string" }, config: { type: "string" } }, required: ["project", "config"] } },
+      { name: "cloneConfig", description: "Clone config", inputSchema: { type: "object", properties: { project: { type: "string" }, config: { type: "string" }, newName: { type: "string" } }, required: ["project", "config", "newName"] } },
+      { name: "lockConfig", description: "Lock config (prevent changes)", inputSchema: { type: "object", properties: { project: { type: "string" }, config: { type: "string" } }, required: ["project", "config"] } },
+      { name: "unlockConfig", description: "Unlock config", inputSchema: { type: "object", properties: { project: { type: "string" }, config: { type: "string" } }, required: ["project", "config"] } },
+      
+      // Secrets (8 tools)
+      { name: "listSecrets", description: "List all secrets in config", inputSchema: { type: "object", properties: { project: { type: "string" }, config: { type: "string" } }, required: ["project", "config"] } },
+      { name: "getSecret", description: "Get secret value", inputSchema: { type: "object", properties: { project: { type: "string" }, config: { type: "string" }, name: { type: "string" } }, required: ["project", "config", "name"] } },
+      { name: "setSecret", description: "Set secret value", inputSchema: { type: "object", properties: { project: { type: "string" }, config: { type: "string" }, name: { type: "string" }, value: { type: "string" } }, required: ["project", "config", "name", "value"] } },
+      { name: "updateSecret", description: "Update secret", inputSchema: { type: "object", properties: { project: { type: "string" }, config: { type: "string" }, name: { type: "string" }, value: { type: "string" } }, required: ["project", "config", "name", "value"] } },
+      { name: "deleteSecret", description: "Delete secret", inputSchema: { type: "object", properties: { project: { type: "string" }, config: { type: "string" }, name: { type: "string" } }, required: ["project", "config", "name"] } },
+      { name: "bulkSetSecrets", description: "Set multiple secrets at once", inputSchema: { type: "object", properties: { project: { type: "string" }, config: { type: "string" }, secrets: { type: "object" } }, required: ["project", "config", "secrets"] } },
+      { name: "downloadSecrets", description: "Download secrets (json, env, yaml)", inputSchema: { type: "object", properties: { project: { type: "string" }, config: { type: "string" }, format: { type: "string", enum: ["json", "env", "yaml"] } }, required: ["project", "config"] } },
+      
+      // Environments (4 tools)
+      { name: "listEnvironments", description: "List environments", inputSchema: { type: "object", properties: { project: { type: "string" } }, required: ["project"] } },
+      { name: "createEnvironment", description: "Create environment", inputSchema: { type: "object", properties: { project: { type: "string" }, name: { type: "string" }, slug: { type: "string" } }, required: ["project", "name", "slug"] } },
+      { name: "renameEnvironment", description: "Rename environment", inputSchema: { type: "object", properties: { project: { type: "string" }, slug: { type: "string" }, name: { type: "string" } }, required: ["project", "slug", "name"] } },
+      { name: "deleteEnvironment", description: "Delete environment", inputSchema: { type: "object", properties: { project: { type: "string" }, slug: { type: "string" } }, required: ["project", "slug"] } },
+      
+      // Service Tokens (3 tools)
+      { name: "listServiceTokens", description: "List service tokens", inputSchema: { type: "object", properties: { project: { type: "string" }, config: { type: "string" } }, required: ["project", "config"] } },
+      { name: "createServiceToken", description: "Create service token", inputSchema: { type: "object", properties: { project: { type: "string" }, config: { type: "string" }, name: { type: "string" }, access: { type: "string", enum: ["read", "read/write"] } }, required: ["project", "config", "name"] } },
+      { name: "deleteServiceToken", description: "Delete service token", inputSchema: { type: "object", properties: { slug: { type: "string" } }, required: ["slug"] } },
+      
+      // Integrations (3 tools)
+      { name: "listIntegrations", description: "List integrations", inputSchema: { type: "object", properties: { project: { type: "string" } }, required: ["project"] } },
+      { name: "createIntegration", description: "Create integration (AWS, Vercel, etc)", inputSchema: { type: "object", properties: { project: { type: "string" }, type: { type: "string" }, data: { type: "object" } }, required: ["project", "type", "data"] } },
+      { name: "deleteIntegration", description: "Delete integration", inputSchema: { type: "object", properties: { integration: { type: "string" } }, required: ["integration"] } },
+      
+      // Audit & Workplace (3 tools)
+      { name: "getAuditLogs", description: "Get audit logs", inputSchema: { type: "object", properties: { page: { type: "number" }, perPage: { type: "number" } } } },
+      { name: "getWorkplace", description: "Get workplace details", inputSchema: { type: "object", properties: {} } },
+      { name: "listWorkplaceUsers", description: "List workplace users", inputSchema: { type: "object", properties: {} } },
     ],
     resources: [
+      { uri: "doppler://projects", name: "Projects", description: "All Doppler projects" },
+      { uri: "doppler://secrets", name: "Secrets", description: "All secrets across projects" },
+      { uri: "doppler://environments", name: "Environments", description: "All environments" },
+      { uri: "doppler://integrations", name: "Integrations", description: "All integrations" },
+      { uri: "doppler://audit", name: "Audit Logs", description: "Security audit logs" },
+    ],
+    prompts: [
       {
-        uri: "doppler://projects",
-        name: "Projects",
-        description: "All projects",
+        name: "manage_secrets",
+        description: "Manage secrets for a project",
+        arguments: [
+          { name: "project", description: "Project name", required: true },
+          { name: "config", description: "Config name (e.g. dev, prod)", required: true },
+        ],
+      },
+      {
+        name: "sync_secrets",
+        description: "Sync secrets between environments",
+        arguments: [
+          { name: "sourceProject", description: "Source project", required: true },
+          { name: "sourceConfig", description: "Source config", required: true },
+          { name: "targetConfig", description: "Target config", required: true },
+        ],
       },
     ],
-    prompts: [],
     execute: async (tool, params) => {
-      if (!process.env.DOPPLER_TOKEN)
-        throw new Error("DOPPLER_TOKEN not configured");
-
-      if (tool === "getSecrets") {
-        const { data } = await axios.get(
-          `https://api.doppler.com/v3/configs/config/secrets`,
-          {
-            headers: { Authorization: `Bearer ${process.env.DOPPLER_TOKEN}` },
-            params: { project: params.project },
-          }
-        );
-        return data;
-      }
-      throw new Error(`Unknown doppler tool: ${tool}`);
+      const { executeDopplerTool } = await import("./doppler-tools");
+      return await executeDopplerTool(tool, params);
     },
   },
 
