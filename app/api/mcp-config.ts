@@ -1040,7 +1040,7 @@ export const MCP_SERVERS: Record<string, MCPServer> = {
     },
   },
 
-  // 6. LINEAR - GraphQL + @linear/sdk
+  // 6. LINEAR - @linear/sdk (FULLY UPGRADED: 30+ tools!)
   linear: {
     name: "linear",
     category: "productivity",
@@ -1050,15 +1050,22 @@ export const MCP_SERVERS: Record<string, MCPServer> = {
       headers: { Authorization: process.env.LINEAR_API_KEY || "" },
     },
     tools: [
+      // Issue Operations
       {
         name: "listIssues",
         description: "List Linear issues",
         inputSchema: {
           type: "object",
-          properties: {
-            teamId: { type: "string" },
-            filter: { type: "object" },
-          },
+          properties: { filter: { type: "object" } },
+        },
+      },
+      {
+        name: "getIssue",
+        description: "Get issue by ID",
+        inputSchema: {
+          type: "object",
+          properties: { issueId: { type: "string" } },
+          required: ["issueId"],
         },
       },
       {
@@ -1070,6 +1077,12 @@ export const MCP_SERVERS: Record<string, MCPServer> = {
             teamId: { type: "string" },
             title: { type: "string" },
             description: { type: "string" },
+            priority: { type: "number" },
+            assigneeId: { type: "string" },
+            labelIds: { type: "array" },
+            projectId: { type: "string" },
+            cycleId: { type: "string" },
+            estimate: { type: "number" },
           },
           required: ["teamId", "title"],
         },
@@ -1084,12 +1097,280 @@ export const MCP_SERVERS: Record<string, MCPServer> = {
         },
       },
       {
+        name: "deleteIssue",
+        description: "Delete issue",
+        inputSchema: {
+          type: "object",
+          properties: { issueId: { type: "string" } },
+          required: ["issueId"],
+        },
+      },
+      {
         name: "searchIssues",
         description: "Search Linear issues",
         inputSchema: {
           type: "object",
           properties: { query: { type: "string" } },
           required: ["query"],
+        },
+      },
+
+      // Comment Operations
+      {
+        name: "createComment",
+        description: "Create comment on issue",
+        inputSchema: {
+          type: "object",
+          properties: { issueId: { type: "string" }, body: { type: "string" } },
+          required: ["issueId", "body"],
+        },
+      },
+      {
+        name: "listComments",
+        description: "List issue comments",
+        inputSchema: {
+          type: "object",
+          properties: { issueId: { type: "string" } },
+          required: ["issueId"],
+        },
+      },
+      {
+        name: "updateComment",
+        description: "Update comment",
+        inputSchema: {
+          type: "object",
+          properties: { commentId: { type: "string" }, body: { type: "string" } },
+          required: ["commentId", "body"],
+        },
+      },
+      {
+        name: "deleteComment",
+        description: "Delete comment",
+        inputSchema: {
+          type: "object",
+          properties: { commentId: { type: "string" } },
+          required: ["commentId"],
+        },
+      },
+
+      // Project Operations
+      {
+        name: "listProjects",
+        description: "List projects",
+        inputSchema: {
+          type: "object",
+          properties: { teamId: { type: "string" } },
+        },
+      },
+      {
+        name: "getProject",
+        description: "Get project by ID",
+        inputSchema: {
+          type: "object",
+          properties: { projectId: { type: "string" } },
+          required: ["projectId"],
+        },
+      },
+      {
+        name: "createProject",
+        description: "Create project",
+        inputSchema: {
+          type: "object",
+          properties: {
+            name: { type: "string" },
+            description: { type: "string" },
+            teamIds: { type: "array" },
+            leadId: { type: "string" },
+            targetDate: { type: "string" },
+          },
+          required: ["name", "teamIds"],
+        },
+      },
+      {
+        name: "updateProject",
+        description: "Update project",
+        inputSchema: {
+          type: "object",
+          properties: { projectId: { type: "string" }, data: { type: "object" } },
+          required: ["projectId", "data"],
+        },
+      },
+      {
+        name: "deleteProject",
+        description: "Delete project",
+        inputSchema: {
+          type: "object",
+          properties: { projectId: { type: "string" } },
+          required: ["projectId"],
+        },
+      },
+
+      // Cycle Operations
+      {
+        name: "listCycles",
+        description: "List cycles",
+        inputSchema: {
+          type: "object",
+          properties: { teamId: { type: "string" } },
+          required: ["teamId"],
+        },
+      },
+      {
+        name: "getCycle",
+        description: "Get cycle by ID",
+        inputSchema: {
+          type: "object",
+          properties: { cycleId: { type: "string" } },
+          required: ["cycleId"],
+        },
+      },
+      {
+        name: "createCycle",
+        description: "Create cycle",
+        inputSchema: {
+          type: "object",
+          properties: {
+            teamId: { type: "string" },
+            name: { type: "string" },
+            startsAt: { type: "string" },
+            endsAt: { type: "string" },
+          },
+          required: ["teamId", "name", "startsAt", "endsAt"],
+        },
+      },
+      {
+        name: "updateCycle",
+        description: "Update cycle",
+        inputSchema: {
+          type: "object",
+          properties: { cycleId: { type: "string" }, data: { type: "object" } },
+          required: ["cycleId", "data"],
+        },
+      },
+
+      // Label Operations
+      {
+        name: "listLabels",
+        description: "List labels",
+        inputSchema: {
+          type: "object",
+          properties: { teamId: { type: "string" } },
+        },
+      },
+      {
+        name: "createLabel",
+        description: "Create label",
+        inputSchema: {
+          type: "object",
+          properties: {
+            name: { type: "string" },
+            color: { type: "string" },
+            description: { type: "string" },
+            teamId: { type: "string" },
+          },
+          required: ["name"],
+        },
+      },
+      {
+        name: "updateLabel",
+        description: "Update label",
+        inputSchema: {
+          type: "object",
+          properties: { labelId: { type: "string" }, data: { type: "object" } },
+          required: ["labelId", "data"],
+        },
+      },
+      {
+        name: "deleteLabel",
+        description: "Delete label",
+        inputSchema: {
+          type: "object",
+          properties: { labelId: { type: "string" } },
+          required: ["labelId"],
+        },
+      },
+
+      // Team Operations
+      {
+        name: "listTeams",
+        description: "List all teams",
+        inputSchema: { type: "object", properties: {} },
+      },
+      {
+        name: "getTeam",
+        description: "Get team by ID",
+        inputSchema: {
+          type: "object",
+          properties: { teamId: { type: "string" } },
+          required: ["teamId"],
+        },
+      },
+
+      // User Operations
+      {
+        name: "listUsers",
+        description: "List all users",
+        inputSchema: { type: "object", properties: {} },
+      },
+      {
+        name: "getUser",
+        description: "Get user by ID",
+        inputSchema: {
+          type: "object",
+          properties: { userId: { type: "string" } },
+          required: ["userId"],
+        },
+      },
+      {
+        name: "getViewer",
+        description: "Get current authenticated user",
+        inputSchema: { type: "object", properties: {} },
+      },
+
+      // Attachment Operations
+      {
+        name: "createAttachment",
+        description: "Create attachment",
+        inputSchema: {
+          type: "object",
+          properties: {
+            issueId: { type: "string" },
+            title: { type: "string" },
+            url: { type: "string" },
+          },
+          required: ["issueId", "title", "url"],
+        },
+      },
+      {
+        name: "listAttachments",
+        description: "List issue attachments",
+        inputSchema: {
+          type: "object",
+          properties: { issueId: { type: "string" } },
+          required: ["issueId"],
+        },
+      },
+      {
+        name: "deleteAttachment",
+        description: "Delete attachment",
+        inputSchema: {
+          type: "object",
+          properties: { attachmentId: { type: "string" } },
+          required: ["attachmentId"],
+        },
+      },
+
+      // Bulk Operations
+      {
+        name: "bulkUpdateIssues",
+        description: "Bulk update multiple issues",
+        inputSchema: {
+          type: "object",
+          properties: {
+            issueIds: { type: "array" },
+            data: { type: "object" },
+          },
+          required: ["issueIds", "data"],
         },
       },
     ],
@@ -1116,30 +1397,9 @@ export const MCP_SERVERS: Record<string, MCPServer> = {
     ],
     supportsSampling: false,
     execute: async (tool, params) => {
-      if (!process.env.LINEAR_API_KEY)
-        throw new Error("LINEAR_API_KEY not configured");
-      const client = new LinearClient({ apiKey: process.env.LINEAR_API_KEY });
-
-      switch (tool) {
-        case "listIssues":
-          const issues = await client.issues(params.filter);
-          return await issues.nodes;
-        case "createIssue":
-          const issue = await client.createIssue({
-            teamId: params.teamId,
-            title: params.title,
-            description: params.description,
-          });
-          return issue;
-        case "updateIssue":
-          const updated = await client.updateIssue(params.issueId, params.data);
-          return updated;
-        case "searchIssues":
-          const results = await client.searchIssues(params.query);
-          return results;
-        default:
-          throw new Error(`Unknown linear tool: ${tool}`);
-      }
+      // Import the full linear tools implementation
+      const { executeLinearTool } = await import("./linear-tools");
+      return await executeLinearTool(tool, params);
     },
   },
 
