@@ -1,0 +1,54 @@
+✅ feat-01-agent-orchestration: Agentic Orchestration volledig afronden: /api/agent route, queue integratie, status polling, multi-MCP stappenplan
+✅ feat-02-sse-bridge-audit: SSE MCP bridge (/api/sse) volledig auditen: server/info, tools/list, resources/list, prompts/list, tools/call JSON-RPC compliance
+✅ feat-02-sse-bridge-testing: SSE MCP bridge terminal tests: curl tests voor alle MCP protocol methods tegen Railway endpoint
+✅ feat-03-http-bridge-git: HTTP MCP bridge Git server: alle 17 tools testen (clone, commit, push, pull, branch, stash, tag, merge, rebase, etc.)
+✅ feat-03-http-bridge-filesystem: HTTP MCP bridge Filesystem server: alle 6 tools testen (readFile, writeFile, listDir, deleteFile, createDir, fileInfo)
+✅ feat-03-http-bridge-postgres: HTTP MCP bridge Postgres server: alle 25+ tools testen (query, listTables, createTable, insert, update, delete, schema operations)
+✅ feat-03-http-bridge-sqlite: HTTP MCP bridge SQLite server: alle 22+ tools testen (query, listTables, createTable, DDL operations)
+✅ feat-03-http-bridge-mongodb: HTTP MCP bridge MongoDB server: alle 18+ tools testen (find, insert, update, delete, aggregate, indexes)
+⏳ feat-03-http-bridge-openai: HTTP MCP bridge OpenAI server: alle 36 tools testen (chat, completion, embedding, image, vision, function calling)
+⏳ feat-03-http-bridge-anthropic: HTTP MCP bridge Anthropic server: alle 14 tools testen (chat, completion, vision, structured data extraction)
+⏳ feat-04-railway-projects: Railway MCP: listProjects, getProject, listServices tools testen en valideren
+⏳ feat-04-railway-deployments: Railway MCP: deployService, getLogs, service management tools testen
+⏳ feat-05-n8n-workflows: n8n MCP: listWorkflows, getWorkflow, createWorkflow, updateWorkflow tools testen
+⏳ feat-05-n8n-executions: n8n MCP: executeWorkflow, getExecution, listExecutions tools testen
+⏳ feat-05-n8n-ai-builder: n8n MCP: buildWorkflowFromDescription AI workflow builder testen met echte n8n instance
+⏳ feat-06-databases-postgres-full: Postgres MCP: alle 25+ tools volledig testen (schema discovery, DDL, DML, transactions, migrations)
+⏳ feat-06-databases-sqlite-full: SQLite MCP: alle 22+ tools volledig testen (schema, indexes, foreign keys, DDL operations)
+⏳ feat-06-databases-mongodb-full: MongoDB MCP: alle 18+ tools volledig testen (collections, documents, aggregations, indexes)
+⏳ feat-07-linear-issues: Linear MCP: listIssues, createIssue, updateIssue, searchIssues tools testen
+⏳ feat-07-github-repos: GitHub MCP: listRepos, createIssue, createPR, searchCode tools testen
+⏳ feat-07-github-workflow: GitHub + Linear MCP: volledige dev workflow testen (issue creation, PR workflow, code search)
+⏳ feat-08-notion-pages: Notion MCP: alle 25+ tools testen (createPage, updatePage, queryDatabase, search)
+⏳ feat-08-slack-messages: Slack MCP: alle 30+ tools testen (postMessage, listChannels, getHistory, file uploads)
+⏳ feat-08-collab-workflow: Notion + Slack MCP: volledige collaboration workflow testen (documentatie + notificaties)
+⏳ feat-09-airtable-records: Airtable MCP: alle 18+ tools testen (listRecords, createRecord, updateRecord, bulk operations)
+⏳ feat-09-doppler-secrets: Doppler MCP: alle 38 tools testen (projects, configs, secrets, environments, service tokens, integrations)
+⏳ feat-10-brave-search: Brave Search MCP: alle 7 tools testen (webSearch, imageSearch, videoSearch, newsSearch, localSearch, suggest, spellcheck)
+⏳ feat-10-ollama-chat: Ollama MCP: chat tool testen met lokale LLM models
+⏳ feat-10-playwright-automation: Playwright MCP: alle 24+ tools testen (navigate, screenshot, scrape, click, interact, form filling)
+⏳ feat-10-puppeteer-automation: Puppeteer MCP: navigate tool testen en uitbreiden naar volledige browser automation
+⏳ feat-11-stripe-payments: Stripe MCP: listCustomers, createCustomer, createPayment tools testen en uitbreiden naar volledige payment flow
+⏳ feat-11-strapi-cms: Strapi MCP: getEntries, createEntry, updateEntry tools testen en uitbreiden
+⏳ feat-11-raindrop-bookmarks: Raindrop MCP: listBookmarks tool testen en uitbreiden naar volledige bookmark management
+⏳ feat-11-postman-collections: Postman MCP: listCollections tool testen en uitbreiden naar volledige API collection management
+⏳ feat-11-google-drive-files: Google Drive MCP: listFiles tool testen en uitbreiden naar volledige file management
+⏳ feat-12-admin-auth-middleware: Admin/auth middleware: verifyAuth, rate limiting, API key stats volledig testen via terminal
+⏳ feat-12-admin-stats-endpoint: Admin stats endpoint: /api/admin/stats volledig testen met verschillende API keys
+⏳ feat-13-frontend-dashboard-servers: Frontend dashboard: MCP servers tab uitbreiden met realtime status, tool counts, health indicators
+⏳ feat-13-frontend-dashboard-resources: Frontend dashboard: Resources tab uitbreiden met live resource data, filtering, search
+⏳ feat-13-frontend-dashboard-prompts: Frontend dashboard: Prompts tab uitbreiden met prompt execution, argument input forms
+⏳ feat-13-frontend-dashboard-agent: Frontend dashboard: Agent execution tab uitbreiden met realtime job status, progress bars, result visualization
+⏳ feat-14-sentry-error-capture: Sentry MCP: captureError tool testen en integreren in alle error handlers
+✅ feat-14-health-observability: Health endpoint: uitbreiden met connection status, MCP server health, Redis/Postgres/Mongo health checks
+⏳ feat-15-cleanup-tsconfig: Cleanup: tsconfig.json en next-env.d.ts status valideren volgens aangepaste regels
+⏳ feat-16-branch-discipline: Branch discipline: documenteren van feature branch workflow + Railway preview testing voor elke feature
+⏳ feat-17-powershell-mcp: PowerShell MCP server: nieuwe server toevoegen voor PowerShell script execution via MCP
+⏳ feat-18-comprehensive-testing: Comprehensive testing: alle MCP servers end-to-end testen met echte data tegen Railway production
+✅ feat-persistent-settings: Devcontainer persistent settings: Doppler, GitHub, git config, npm config, VS Code/Cursor settings behouden na rebuild
+✅ feat-todo-sync: Todo sync: Tasklist.prd automatisch syncen in devcontainer
+✅ feat-auto-git-workflow: Automatische Git workflow: branch aanmaak per feature, auto staging/commit/push, feature tracking
+🔄 feat-agent-briefings: Agent briefings: voor elke MCP server een usage guide toevoegen (WIP - alleen Git MCP gedaan)
+⏳ feat-prd-notion-sync: PRD.md automatische sync met Notion Portfolio via MCP: PRD.md generator + Notion MCP integration
+⏳ feat-doppler-mcp-full: Doppler MCP volledig integreren: alle 38 tools implementeren en testen volgens doppler-mcp repo
+
