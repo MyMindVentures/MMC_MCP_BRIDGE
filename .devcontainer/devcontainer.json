@@ -76,7 +76,7 @@
   },
 
   "postCreateCommand": "bash -c 'npm ci && /usr/local/bin/install-extensions.sh'",
-  "postStartCommand": "/usr/local/bin/install-extensions.sh",
+  "postStartCommand": "bash -c '/usr/local/bin/install-extensions.sh && /usr/local/bin/start-dev.sh'",
 
   "forwardPorts": [3000],
 

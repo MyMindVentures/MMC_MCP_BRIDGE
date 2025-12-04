@@ -25,6 +25,10 @@ RUN curl -sSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor 
 COPY .devcontainer/install-extensions.sh /usr/local/bin/install-extensions.sh
 RUN chmod +x /usr/local/bin/install-extensions.sh
 
+# Copy dev server startup script
+COPY .devcontainer/start-dev.sh /usr/local/bin/start-dev.sh
+RUN chmod +x /usr/local/bin/start-dev.sh
+
 # Set working directory
 WORKDIR /workspaces
 
