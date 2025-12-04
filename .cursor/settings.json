@@ -62,5 +62,17 @@
   // Git Configuration
   "git.enableSmartCommit": true,
   "git.confirmSync": false,
-  "git.autofetch": true
+  "git.autofetch": true,
+
+  // Tasklist.prd Auto-Tracking Configuration
+  "cursor.ai.tasklistPath": "/workspaces/MMC_MCP_BRIDGE/Tasklist.prd",
+  "cursor.ai.autoUpdateTasklist": true,
+  "cursor.ai.tasklistFormat": "single-line",
+  
+  // Workspace Files to Always Reference
+  "cursor.ai.workspaceFiles": [
+    "Tasklist.prd",
+    "README.md",
+    "package.json"
+  ]
 }

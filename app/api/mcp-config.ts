@@ -3155,6 +3155,26 @@ AVOID: Use other MCPs for non-secrets operations. Use Doppler MCP for all secret
       },
     ],
     prompts: [],
+    agentBriefing: `RAINDROP MCP - Use for bookmark management and organization.
+
+KEY TOOLS:
+- listBookmarks: Retrieve all saved bookmarks from Raindrop collections
+
+WHEN TO USE:
+- User wants to access or organize their bookmarks
+- Need to retrieve saved web pages or resources
+- Building bookmark management workflows
+- Integrating bookmark data into other systems
+
+THINGS TO AVOID:
+- Don't use for web scraping (use Playwright/Puppeteer instead)
+- Don't use for file storage (use Filesystem or Google Drive)
+- Requires RAINDROP_TOKEN environment variable
+
+INTEGRATION NOTES:
+- Works with Raindrop.io API
+- Supports collections for organizing bookmarks
+- Can be combined with browser automation tools for bookmark creation workflows`,
     execute: async (tool, params) => {
       if (!process.env.RAINDROP_TOKEN)
         throw new Error("RAINDROP_TOKEN not configured");
@@ -3192,6 +3212,27 @@ AVOID: Use other MCPs for non-secrets operations. Use Doppler MCP for all secret
       },
     ],
     prompts: [],
+    agentBriefing: `POSTMAN MCP - Use for API collection management and testing.
+
+KEY TOOLS:
+- listCollections: Retrieve all Postman API collections
+
+WHEN TO USE:
+- User wants to access or manage their Postman API collections
+- Need to retrieve API endpoints and test configurations
+- Building API testing workflows
+- Integrating Postman collections into development workflows
+
+THINGS TO AVOID:
+- Don't use for actual API calls (use direct HTTP requests or specific service MCPs)
+- Don't use for API documentation (use GitHub or Notion for docs)
+- Requires POSTMAN_API_KEY environment variable
+
+INTEGRATION NOTES:
+- Works with Postman API
+- Collections contain API requests, tests, and environments
+- Can be combined with GitHub for API documentation workflows
+- Useful for API testing automation and CI/CD integration`,
     execute: async (tool, params) => {
       if (!process.env.POSTMAN_API_KEY)
         throw new Error("POSTMAN_API_KEY not configured");
@@ -3228,6 +3269,27 @@ AVOID: Use other MCPs for non-secrets operations. Use Doppler MCP for all secret
       { uri: "gdrive://files", name: "Files", description: "All files" },
     ],
     prompts: [],
+    agentBriefing: `GOOGLE DRIVE MCP - Use for Google Drive file and folder management.
+
+KEY TOOLS:
+- listFiles: List files and folders in Google Drive (optionally filtered by folderId)
+
+WHEN TO USE:
+- User wants to access or manage files in Google Drive
+- Need to retrieve documents, spreadsheets, or other Drive files
+- Building file management workflows
+- Integrating Google Drive with other services (Notion, Slack, etc.)
+
+THINGS TO AVOID:
+- Don't use for local file operations (use Filesystem MCP)
+- Don't use for code repositories (use Git MCP)
+- Requires GOOGLE_DRIVE_CREDENTIALS environment variable (JSON service account)
+
+INTEGRATION NOTES:
+- Works with Google Drive API v3
+- Supports folder hierarchy navigation via folderId
+- Can be combined with Notion for document sync workflows
+- Useful for automated document management and backup operations`,
     execute: async (tool, params) => {
       if (!process.env.GOOGLE_DRIVE_CREDENTIALS)
         throw new Error("GOOGLE_DRIVE_CREDENTIALS not configured");
@@ -3276,6 +3338,29 @@ AVOID: Use other MCPs for non-secrets operations. Use Doppler MCP for all secret
       },
     ],
     prompts: [],
+    agentBriefing: `OLLAMA MCP - Use for local LLM inference with privacy and cost control.
+
+KEY TOOLS:
+- chat: Chat with locally running Ollama models (llama2, mistral, codellama, etc.)
+
+WHEN TO USE:
+- User wants to use local/private LLM inference (no API costs, data privacy)
+- Need to run models offline or on-premises
+- Cost-sensitive applications where API costs are prohibitive
+- Privacy-critical use cases where data cannot leave the infrastructure
+
+THINGS TO AVOID:
+- Don't use if you need latest models (use OpenAI/Anthropic for cutting-edge)
+- Don't use if you need high throughput (local models are slower)
+- Requires OLLAMA_BASE_URL (defaults to http://localhost:11434)
+- Ensure Ollama is installed and models are downloaded locally
+
+INTEGRATION NOTES:
+- Supports sampling for streaming responses
+- Works with any Ollama-compatible model (llama2, mistral, codellama, phi, etc.)
+- Can be combined with OpenAI/Anthropic for hybrid approaches
+- Useful for development/testing without API costs
+- Models must be pre-downloaded: ollama pull <model-name>`,
     execute: async (tool, params) => {
       const baseURL = process.env.OLLAMA_BASE_URL || "http://localhost:11434";
 
@@ -3297,6 +3382,36 @@ AVOID: Use other MCPs for non-secrets operations. Use Doppler MCP for all secret
     name: "brave-search",
     category: "search",
     enabled: true,
+    agentBriefing: `BRAVE SEARCH MCP - Use for privacy-focused web search with independent index.
+
+KEY TOOLS:
+- webSearch: General web search with filters (freshness, safesearch, country, language)
+- imageSearch: Search for images with privacy protection
+- videoSearch: Find videos across the web
+- newsSearch: Search recent news articles
+- localSearch: Find local businesses and places
+- suggest: Get autocomplete search suggestions
+- spellcheck: Check spelling and get corrections
+
+WHEN TO USE:
+- User wants to search the web with privacy protection (no tracking)
+- Need independent search results (not Google/Bing dependent)
+- Building search-powered applications or workflows
+- Need image, video, news, or local search capabilities
+- Want search suggestions or spellcheck functionality
+
+THINGS TO AVOID:
+- Don't use for code search (use GitHub MCP searchCode)
+- Don't use for database queries (use Postgres/SQLite/MongoDB MCPs)
+- Requires BRAVE_SEARCH_API_KEY environment variable
+- Free tier has rate limits (check Brave Search API docs)
+
+INTEGRATION NOTES:
+- Privacy-focused alternative to Google Search
+- Independent search index (not dependent on other engines)
+- Supports advanced filters: freshness (pd/pw/pm/py), safesearch, country codes
+- Can be combined with Playwright for web scraping workflows
+- Useful for research, content discovery, and information gathering tasks`,
     tools: [
       // Web Search (enhanced)
       { 
@@ -3474,6 +3589,29 @@ AVOID: Use other MCPs for non-secrets operations. Use Doppler MCP for all secret
       },
     ],
     prompts: [],
+    agentBriefing: `PUPPETEER MCP - Use for browser automation and web scraping (Chrome/Chromium).
+
+KEY TOOLS:
+- navigate: Navigate to a URL and retrieve page content
+
+WHEN TO USE:
+- User wants to automate browser interactions or scrape web pages
+- Need to interact with JavaScript-heavy websites
+- Building web automation workflows
+- Testing web applications or extracting dynamic content
+
+THINGS TO AVOID:
+- Don't use if you need more advanced features (use Playwright MCP - 24+ tools)
+- Don't use for simple HTTP requests (use axios or fetch directly)
+- Puppeteer launches headless Chrome (resource-intensive)
+- Current implementation only has navigate tool (consider Playwright for full features)
+
+INTEGRATION NOTES:
+- Works with Chromium/Chrome browser
+- Headless mode by default (no GUI)
+- Can be extended with more Puppeteer features (screenshots, clicks, forms, etc.)
+- Consider using Playwright MCP for comprehensive browser automation (24+ tools)
+- Useful for web scraping, testing, and automation tasks`,
     execute: async (tool, params) => {
       if (tool === "navigate") {
         const browser = await puppeteer.launch({ headless: true });
@@ -3507,6 +3645,29 @@ AVOID: Use other MCPs for non-secrets operations. Use Doppler MCP for all secret
       { uri: "sentry://issues", name: "Issues", description: "All issues" },
     ],
     prompts: [],
+    agentBriefing: `SENTRY MCP - Use for error tracking and application monitoring.
+
+KEY TOOLS:
+- captureError: Capture and report errors to Sentry for monitoring and debugging
+
+WHEN TO USE:
+- User wants to track errors and exceptions in their application
+- Need centralized error monitoring and alerting
+- Building error reporting workflows
+- Integrating error tracking into development workflows
+
+THINGS TO AVOID:
+- Don't use for logging general information (use console.log or proper logging)
+- Don't use for user-facing error messages (this is for monitoring, not UX)
+- Requires SENTRY_DSN environment variable
+- Initialize Sentry once, not on every error capture
+
+INTEGRATION NOTES:
+- Works with Sentry error tracking platform
+- Captures errors with stack traces and context
+- Returns eventId for tracking error reports
+- Can be integrated into all error handlers for comprehensive monitoring
+- Useful for production error tracking and debugging workflows`,
     execute: async (tool, params) => {
       if (!process.env.SENTRY_DSN) throw new Error("SENTRY_DSN not configured");
       Sentry.init({ dsn: process.env.SENTRY_DSN });
@@ -3543,6 +3704,29 @@ AVOID: Use other MCPs for non-secrets operations. Use Doppler MCP for all secret
       },
     ],
     prompts: [],
+    agentBriefing: `STRAPI MCP - Use for Strapi headless CMS content management.
+
+KEY TOOLS:
+- getEntries: Retrieve content entries from Strapi by content type
+
+WHEN TO USE:
+- User wants to access or manage content from Strapi CMS
+- Need to retrieve blog posts, pages, or custom content types
+- Building content-driven applications or workflows
+- Integrating Strapi content with other services
+
+THINGS TO AVOID:
+- Don't use for file storage (use Filesystem or Google Drive)
+- Don't use for database queries (use Postgres/MongoDB for raw data)
+- Requires STRAPI_URL and STRAPI_API_KEY environment variables
+- Content type names must match Strapi schema exactly
+
+INTEGRATION NOTES:
+- Works with Strapi headless CMS REST API
+- Supports all Strapi content types (blog posts, pages, custom types, etc.)
+- Can be combined with Notion for content sync workflows
+- Useful for content management, blog automation, and CMS integrations
+- Extend with createEntry, updateEntry, deleteEntry for full CRUD operations`,
     execute: async (tool, params) => {
       if (!process.env.STRAPI_URL || !process.env.STRAPI_API_KEY)
         throw new Error("STRAPI_URL and STRAPI_API_KEY not configured");
@@ -3583,6 +3767,30 @@ AVOID: Use other MCPs for non-secrets operations. Use Doppler MCP for all secret
       },
     ],
     prompts: [],
+    agentBriefing: `STRIPE MCP - Use for payment processing and customer management.
+
+KEY TOOLS:
+- listCustomers: Retrieve customer records from Stripe
+
+WHEN TO USE:
+- User wants to manage payments, subscriptions, or customers
+- Need to process payments or handle billing
+- Building e-commerce or SaaS payment workflows
+- Integrating payment processing into applications
+
+THINGS TO AVOID:
+- Don't use for general financial data (use databases for accounting)
+- Don't use for non-payment operations (Stripe is payment-focused)
+- Requires STRIPE_SECRET_KEY environment variable (use test keys for development)
+- Be extremely careful with production keys (never expose in code)
+
+INTEGRATION NOTES:
+- Works with Stripe payment platform
+- Supports customers, payments, subscriptions, invoices, etc.
+- Can be extended with createCustomer, createPayment, createSubscription, etc.
+- Useful for payment processing, subscription management, and billing automation
+- Always use test mode keys during development
+- Consider webhook integration for real-time payment events`,
     execute: async (tool, params) => {
       if (!process.env.STRIPE_SECRET_KEY)
         throw new Error("STRIPE_SECRET_KEY not configured");

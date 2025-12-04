@@ -50,7 +50,7 @@
 ✅ feat-auto-git-workflow: Automatische Git workflow: branch aanmaak per feature, auto staging/commit/push, feature tracking
 ✅ feat-railway-cicd-fix: Railway CI/CD fix: auto-deploy na elke commit, PR preview deployments, predeploy checks voor merges (railway.json + README updated)
 ✅ feat-devcontainer-fix: Devcontainer configuratie fixes: extension installatie warnings verminderen, persist directory errors oplossen, mkdir errors voorkomen
-🔄 feat-agent-briefings: Agent briefings: voor elke MCP server een usage guide toevoegen (16/25 servers gedaan: Git, Filesystem, Playwright, n8n, MongoDB, Linear, Railway, GitHub, OpenAI, Anthropic, Postgres, SQLite, Notion, Slack, Airtable, Doppler)
+✅ feat-agent-briefings: Agent briefings: voor elke MCP server een usage guide toevoegen (25/25 servers compleet: Git, Filesystem, Playwright, n8n, MongoDB, Linear, Railway, GitHub, OpenAI, Anthropic, Postgres, SQLite, Notion, Slack, Airtable, Doppler, Raindrop, Postman, Google Drive, Ollama, Brave Search, Puppeteer, Sentry, Strapi, Stripe)
 ⏳ feat-prd-notion-sync: PRD.md automatische sync met Notion Portfolio via MCP: PRD.md generator + Notion MCP integration
 ⏳ feat-doppler-mcp-full: Doppler MCP volledig integreren: alle 38 tools implementeren en testen volgens doppler-mcp repo
 
