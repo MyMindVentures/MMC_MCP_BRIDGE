@@ -135,23 +135,13 @@ export async function executeAnthropicTool(tool: string, params: any): Promise<a
 
     // ==================== TOKEN COUNTING ====================
     case 'countTokens': {
-      // Note: Anthropic SDK doesn't have count_tokens method directly
-      // We'll estimate tokens based on message length (rough approximation)
-      const allText = [
-        params.system || '',
-        ...(params.messages || []).map((m: any) => 
-          typeof m.content === 'string' ? m.content : JSON.stringify(m.content)
-        ).join(' '),
-        params.tools ? JSON.stringify(params.tools) : ''
-      ].join(' ');
-      
-      // Rough estimate: ~4 characters per token
-      const estimatedTokens = Math.ceil(allText.length / 4);
-      
-      return {
-        estimated_tokens: estimatedTokens,
-        note: 'Token count is estimated. Anthropic SDK does not provide direct count_tokens method.'
-      };
+      const message = await client.messages.count_tokens({
+        model: params.model || 'claude-3-5-sonnet-20241022',
+        messages: params.messages as MessageParam[],
+        system: params.system,
+        tools: params.tools,
+      });
+      return message;
     }
 
     // ==================== MODELS ====================
@@ -309,5 +299,4 @@ export async function executeAnthropicTool(tool: string, params: any): Promise<a
       throw new Error(`Unknown Anthropic tool: ${tool}`);
   }
 }
-
 
