@@ -24,7 +24,8 @@
 ⏳ feat-08-collab-workflow: Notion + Slack MCP: volledige collaboration workflow testen (documentatie + notificaties)
 ⏳ feat-09-airtable-records: Airtable MCP: alle 18+ tools testen (listRecords, createRecord, updateRecord, bulk operations)
 ✅ feat-09-doppler-secrets: Doppler MCP: alle 38 tools volledig geïmplementeerd (projects, configs, secrets, environments, service tokens, integrations) - ready voor testing
-⏳ feat-docker-mcp: Docker MCP: 25+ tools volledig geïmplementeerd (containers, images, networks, volumes, system) - ready voor testing
+✅ feat-docker-mcp: Docker MCP: 25+ tools volledig geïmplementeerd (containers, images, networks, volumes, system) - ready voor testing
+✅ feat-local-docker-dev: Local Docker development: docker-compose.dev.yml + hot reload + MCP client naar localhost - optimaal voor coding agent debugging
 ⏳ feat-10-brave-search: Brave Search MCP: alle 7 tools testen (webSearch, imageSearch, videoSearch, newsSearch, localSearch, suggest, spellcheck)
 ⏳ feat-10-ollama-chat: Ollama MCP: chat tool testen met lokale LLM models
 ⏳ feat-10-playwright-automation: Playwright MCP: alle 24+ tools testen (navigate, screenshot, scrape, click, interact, form filling)
