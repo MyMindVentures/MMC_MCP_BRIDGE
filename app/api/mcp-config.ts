@@ -296,7 +296,7 @@ export const MCP_SERVERS: Record<string, MCPServer> = {
       // Cookies (3 tools)
       { name: "getCookies", description: "Get cookies", inputSchema: { type: "object", properties: { url: { type: "string" }, urls: { type: "array" } } } },
       { name: "setCookies", description: "Set cookies", inputSchema: { type: "object", properties: { cookies: { type: "array" } }, required: ["cookies"] } },
-      { name: "clearCookies", description: "Clear cookies", inputSchema: { type: "object", properties: {} } } },
+      { name: "clearCookies", description: "Clear cookies", inputSchema: { type: "object", properties: {} } },
       
       // Storage (2 tools)
       { name: "getLocalStorage", description: "Get localStorage", inputSchema: { type: "object", properties: { url: { type: "string" } } } },
