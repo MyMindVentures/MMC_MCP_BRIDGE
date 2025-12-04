@@ -4,6 +4,9 @@ node_modules/
 # Next.js
 .next/
 out/
+next-env.d.ts
+tsconfig.json
+tsconfig.tsbuildinfo
 
 # Production
 build/
