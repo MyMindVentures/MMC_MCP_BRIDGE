@@ -361,8 +361,8 @@ export async function executeAirtableTool(tool: string, params: any): Promise<an
         if (error.statusCode === 404) {
           const created = await table.create(params.fields);
           return {
-            id: created.id,
-            fields: created.fields,
+            id: (created as any).id,
+            fields: (created as any).fields,
             action: 'created',
           };
         }
