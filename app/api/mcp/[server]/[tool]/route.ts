@@ -4,11 +4,18 @@
 import { NextResponse } from 'next/server';
 import { MCP_SERVERS } from '../../../mcp-config';
 import { executeMCPTool } from '../../../mcp-executor';
+import { verifyAuth, authErrorResponse } from '../../../middleware/auth';
 
 export async function POST(
   request: Request,
   context: { params: Promise<{ server: string; tool: string }> }
 ) {
+  // 🔐 Authentication check
+  const authResult = await verifyAuth(request);
+  if (!authResult.allowed) {
+    return authErrorResponse(authResult.reason || 'Unauthorized', 401);
+  }
+  
   try {
     const { server: serverName, tool: toolName } = await context.params;
     const server = MCP_SERVERS[serverName];
