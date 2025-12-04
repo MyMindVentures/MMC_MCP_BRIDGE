@@ -1,43 +1,64 @@
-import { NextResponse } from 'next/server';
-import { submitAgentTask } from './queue';
+// app/api/agent/route.ts
+import { NextRequest, NextResponse } from 'next/server';
+import { submitAgentTask } from '@/app/api/agent-worker';
 
-// High-level Agent endpoint used by the UI (/api/agent)
-// This wraps the lower-level /api/agent/submit + BullMQ queue
-export async function POST(request: Request) {
+// Define valid agent task types
+const VALID_AGENT_TYPES = ['tool_execution', 'workflow', 'analysis'] as const;
+type AgentTaskType = typeof VALID_AGENT_TYPES[number];
+
+// Type guard function
+function isValidAgentType(type: unknown): type is AgentTaskType {
+  return typeof type === 'string' && 
+         VALID_AGENT_TYPES.includes(type as AgentTaskType);
+}
+
+export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
+    const { type, instruction, steps, context } = body;
 
-    const instruction = body.instruction as string | undefined;
-    const steps = body.steps ?? [];
-    const context = body.context ?? {};
-    const type = (body.type as string | undefined) ?? 'workflow';
-
-    if (!instruction || !instruction.trim()) {
+    // Validate type parameter
+    if (!isValidAgentType(type)) {
       return NextResponse.json(
-        { error: 'instruction is required' },
+        { 
+          error: 'Invalid task type',
+          message: `Type must be one of: ${VALID_AGENT_TYPES.join(', ')}`,
+          received: type
+        },
         { status: 400 }
       );
     }
 
+    // Validate required fields
+    if (!instruction) {
+      return NextResponse.json(
+        { error: 'Missing required field: instruction' },
+        { status: 400 }
+      );
+    }
+
+    // Now type is properly typed as AgentTaskType
     const jobId = await submitAgentTask({
       type,
       description: instruction,
-      steps,
-      context
+      steps: steps || [],
+      context: context || {}
     });
 
-    return NextResponse.json({
+    return NextResponse.json({ 
       success: true,
       jobId,
-      message: 'Agent task submitted',
-      pollUrl: `/api/agent/status/${jobId}`
+      message: 'Agent task submitted successfully'
     });
-  } catch (error: any) {
+
+  } catch (error) {
+    console.error('Agent task error:', error);
     return NextResponse.json(
-      { error: error.message ?? 'Unknown error' },
+      { 
+        error: 'Failed to submit agent task',
+        message: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
     );
   }
 }
-
-
