@@ -5,7 +5,6 @@ import simpleGit from 'simple-git';
 import { promises as fs } from 'fs';
 import { chromium } from 'playwright';
 import { MongoClient } from 'mongodb';
-import { LinearClient } from '@linear/sdk';
 import { Octokit } from '@octokit/rest';
 import OpenAI from 'openai';
 import Anthropic from '@anthropic-ai/sdk';
