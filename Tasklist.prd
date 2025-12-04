@@ -6,7 +6,7 @@
 ✅ feat-03-http-bridge-postgres: HTTP MCP bridge Postgres server: alle 25+ tools testen (query, listTables, createTable, insert, update, delete, schema operations)
 ✅ feat-03-http-bridge-sqlite: HTTP MCP bridge SQLite server: alle 22+ tools testen (query, listTables, createTable, DDL operations)
 ✅ feat-03-http-bridge-mongodb: HTTP MCP bridge MongoDB server: alle 18+ tools testen (find, insert, update, delete, aggregate, indexes)
-⏳ feat-03-http-bridge-openai: HTTP MCP bridge OpenAI server: alle 36 tools testen (chat, completion, embedding, image, vision, function calling)
+🔄 feat-03-http-bridge-openai: HTTP MCP bridge OpenAI server: alle 36 tools testen (chat, completion, embedding, image, vision, function calling) - mcp-executor.ts geüpdatet om executeOpenAITool te gebruiken voor alle 36 tools
 ⏳ feat-03-http-bridge-anthropic: HTTP MCP bridge Anthropic server: alle 14 tools testen (chat, completion, vision, structured data extraction)
 ⏳ feat-04-railway-projects: Railway MCP: listProjects, getProject, listServices tools testen en valideren
 ⏳ feat-04-railway-deployments: Railway MCP: deployService, getLogs, service management tools testen

@@ -25,6 +25,17 @@ import { executeSQLiteTool } from './sqlite-tools';
 import { executeMongoDBTool } from './mongodb-tools';
 import { executeNotionTool } from './notion-tools';
 import { executeSlackTool } from './slack-tools';
+import { Redis } from 'ioredis';
+
+// Redis connection helper
+function getRedis(): Redis | null {
+  if (!process.env.REDIS_URL) return null;
+  try {
+    return new Redis(process.env.REDIS_URL, { maxRetriesPerRequest: null });
+  } catch {
+    return null;
+  }
+}
 
 // Connection pools (singleton pattern)
 let mongoClient: MongoClient | null = null;
@@ -68,14 +79,16 @@ export async function executeMCPTool(serverName: string, toolName: string, param
     switch (serverName) {
     case 'n8n': {
       // Use @leonardsellem/n8n-mcp-server (BEST IN THE WORLD! 🌍)
-      const result = await executeN8NCommunityTool(toolName, params);
-      return result.content || result;
+      result = await executeN8NCommunityTool(toolName, params);
+      result = result.content || result;
+      break;
     }
 
     case 'git': {
       // Use comprehensive Git tools (17+ tools!)
       const { executeGitTool } = await import('./git-tools');
-      return await executeGitTool(toolName, params);
+      result = await executeGitTool(toolName, params);
+      break;
     }
 
     case 'filesystem': {
@@ -188,61 +201,17 @@ export async function executeMCPTool(serverName: string, toolName: string, param
     }
 
     case 'openai': {
-      if (!process.env.OPENAI_API_KEY) throw new Error('OPENAI_API_KEY not configured');
-      const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-      
-      switch (toolName) {
-        case 'chat':
-          const chatCompletion = await openai.chat.completions.create({
-            model: params.model || 'gpt-4',
-            messages: params.messages,
-            temperature: params.temperature
-          });
-          return chatCompletion.choices[0].message;
-        case 'completion':
-          const completion = await openai.completions.create({
-            model: params.model || 'gpt-3.5-turbo-instruct',
-            prompt: params.prompt,
-            max_tokens: params.max_tokens
-          });
-          return completion.choices[0].text;
-        case 'embedding':
-          const embedding = await openai.embeddings.create({
-            model: params.model || 'text-embedding-3-small',
-            input: params.input
-          });
-          return embedding.data[0].embedding;
-        case 'image':
-          const image = await openai.images.generate({
-            prompt: params.prompt,
-            size: params.size || '1024x1024'
-          });
-          return image.data[0];
-        default: throw new Error(`Unknown openai tool: ${toolName}`);
-      }
+      // Use comprehensive OpenAI tools (36+ tools!)
+      const { executeOpenAITool } = await import('./openai-tools');
+      result = await executeOpenAITool(toolName, params);
+      break;
     }
 
     case 'anthropic': {
-      if (!process.env.ANTHROPIC_API_KEY) throw new Error('ANTHROPIC_API_KEY not configured');
-      const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-      
-      switch (toolName) {
-        case 'chat':
-          const message = await anthropic.messages.create({
-            model: params.model || 'claude-3-5-sonnet-20241022',
-            max_tokens: params.max_tokens || 1024,
-            messages: params.messages
-          });
-          return message.content[0];
-        case 'completion':
-          const completion = await anthropic.messages.create({
-            model: params.model || 'claude-3-5-sonnet-20241022',
-            max_tokens: 1024,
-            messages: [{ role: 'user', content: params.prompt }]
-          });
-          return completion.content[0];
-        default: throw new Error(`Unknown anthropic tool: ${toolName}`);
-      }
+      // Use comprehensive Anthropic tools (14+ tools!)
+      const { executeAnthropicTool } = await import('./anthropic-tools');
+      result = await executeAnthropicTool(toolName, params);
+      break;
     }
 
     case 'postgres': {
@@ -420,6 +389,15 @@ export async function executeMCPTool(serverName: string, toolName: string, param
 
     default:
       throw new Error(`Unknown server: ${serverName}`);
+    }
+    
+    const duration = Date.now() - startTime;
+    await logToolExecution(serverName, toolName, params, result, undefined);
+    return result;
+  } catch (error: any) {
+    const duration = Date.now() - startTime;
+    await logToolExecution(serverName, toolName, params, null, error);
+    throw error;
   }
 }
 
