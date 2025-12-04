@@ -10,6 +10,7 @@ Every file, every line, every dependency must be justified.
 ## 1. Git Workflow - MANDATORY
 
 ### ✅ DO:
+
 - Create feature branch for EVERY change: `git checkout -b feature/description`
 - Test build locally: `npm run build` MUST succeed
 - Push feature branch: `git push origin feature/description`
@@ -19,6 +20,7 @@ Every file, every line, every dependency must be justified.
 - Delete feature branch after merge
 
 ### ❌ NEVER:
+
 - Commit directly to main (except critical hotfixes)
 - Push broken builds
 - Merge untested code
@@ -29,6 +31,7 @@ Every file, every line, every dependency must be justified.
 ## 2. File System - STRICT RULES
 
 ### ✅ ALLOWED Files:
+
 1. `package.json` - Dependencies & scripts
 2. `railway.json` - Deployment config
 3. `README.md` - Documentation (if requested)
@@ -37,6 +40,7 @@ Every file, every line, every dependency must be justified.
 6. ONE lockfile: `package-lock.json` OR `pnpm-lock.yaml` OR `yarn.lock`
 
 ### ❌ FORBIDDEN Files:
+
 - Config files: `tsconfig.json`, `next.config.js`, `.eslintrc.*`, etc.
 - CI/CD: `.github/`, `Dockerfile`, GitHub Actions
 - Environment: `.env`, `.env.local`
@@ -45,6 +49,7 @@ Every file, every line, every dependency must be justified.
 - Directories: `src/`, `lib/`, `components/` (unless requested)
 
 ### 🗑️ AUTO-GENERATED (Delete if appear):
+
 - `tsconfig.json` - Next.js auto-generates
 - `next-env.d.ts` - Next.js auto-generates
 - Add to `.gitignore`
@@ -54,6 +59,7 @@ Every file, every line, every dependency must be justified.
 ## 3. Before Creating ANY File
 
 **STOP and ask:**
+
 1. Is this in the allowed list?
 2. Did user explicitly request this?
 3. Can I achieve this without a new file?
@@ -61,6 +67,7 @@ Every file, every line, every dependency must be justified.
 **If NO to any → ASK USER FIRST**
 
 Example:
+
 > "This requires `scripts/deploy.sh`. Rules forbid this. Should I:
 > A) Add logic to package.json instead?
 > B) Create exception for this file?
@@ -71,11 +78,13 @@ Example:
 ## 4. Dependencies
 
 ### Before adding ANY dependency:
+
 1. Is it absolutely necessary?
 2. Does it require config files? (If yes → forbidden)
 3. Is there a simpler alternative?
 
 ### Keep package.json minimal:
+
 ```json
 {
   "scripts": {
@@ -93,11 +102,13 @@ Example:
 ## 5. Testing - MANDATORY
 
 ### Before EVERY commit:
+
 ```bash
 npm run build  # Must succeed
 ```
 
 ### Before merging to main:
+
 1. Local build succeeds ✅
 2. Railway preview deployed ✅
 3. Preview is healthy ✅
@@ -108,6 +119,7 @@ npm run build  # Must succeed
 ## 6. Railway Deployment
 
 ### `railway.json` is the ONLY config:
+
 ```json
 {
   "build": {
@@ -125,6 +137,7 @@ npm run build  # Must succeed
 **NO Dockerfile, NO GitHub Actions, NO custom CI/CD**
 
 Railway provides:
+
 - Auto-build on push
 - PR preview deployments
 - Environment variables
@@ -135,18 +148,23 @@ Railway provides:
 ## 7. Common Mistakes - AVOID
 
 ### ❌ Mistake 1: Committing to main
+
 Use feature branches for EVERYTHING
 
 ### ❌ Mistake 2: Creating "helpful" files
+
 ASK FIRST before creating scripts/docs/configs
 
 ### ❌ Mistake 3: Pushing broken builds
+
 ALWAYS test `npm run build` first
 
 ### ❌ Mistake 4: Over-engineering
+
 Keep it simple, don't add complexity
 
 ### ❌ Mistake 5: Ignoring auto-generated files
+
 Delete `tsconfig.json` if it appears
 
 ---
@@ -173,6 +191,7 @@ project-root/
 ## 9. Quick Checklist
 
 ### Before committing:
+
 - [ ] On feature branch (not main)
 - [ ] `npm run build` succeeds
 - [ ] No auto-generated files
@@ -180,6 +199,7 @@ project-root/
 - [ ] Clear commit message
 
 ### Before merging to main:
+
 - [ ] Railway preview healthy
 - [ ] Feature complete & tested
 - [ ] No debug code
@@ -205,4 +225,3 @@ project-root/
 **STOP → ASK USER → DON'T ASSUME**
 
 Better to ask than to create unwanted files or break the build.
-
