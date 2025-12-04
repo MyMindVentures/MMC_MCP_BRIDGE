@@ -13,21 +13,41 @@ npm run docker:dev:build
 ## Available Commands
 
 ```bash
-# Start container (reuses existing if available)
+# Start container (REUSES existing container/image - no rebuild)
 npm run docker:dev
 
-# Build and start (fresh build)
+# Build image (only if Dockerfile changed) and start
 npm run docker:dev:build
 
 # View logs (with follow)
 npm run docker:dev:logs
 
-# Stop container
+# Stop container (keeps container and image)
 npm run docker:dev:stop
+
+# Remove container (keeps image)
+npm run docker:dev:down
 
 # Restart container
 npm run docker:dev:restart
+
+# Clean up unused Docker resources (keeps dev container)
+npm run docker:dev:cleanup
+
+# Full cleanup (removes everything including dev container)
+npm run docker:dev:clean
 ```
+
+## Container Reuse Strategy
+
+**The setup is optimized to REUSE the same container and image:**
+
+1. **First run**: Builds image and creates container
+2. **Subsequent runs**: Reuses existing container (no rebuild)
+3. **Code changes**: Hot reload via volume mounts (no restart needed)
+4. **Dockerfile changes**: Only rebuilds if Dockerfile changes
+
+This prevents Docker bloat and speeds up development!
 
 ## MCP Client Configuration
 

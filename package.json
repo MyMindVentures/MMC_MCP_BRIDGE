@@ -12,11 +12,14 @@
     "type-check": "tsc --noEmit",
     "prebuild": "npm run type-check",
     "precommit": "npm run type-check && npm run build",
-    "docker:dev": "docker-compose -f docker-compose.dev.yml up -d",
-    "docker:dev:build": "docker-compose -f docker-compose.dev.yml up -d --build",
+    "docker:dev": "docker-compose -f docker-compose.dev.yml up -d --no-build",
+    "docker:dev:build": "docker-compose -f docker-compose.dev.yml build && docker-compose -f docker-compose.dev.yml up -d",
     "docker:dev:logs": "docker-compose -f docker-compose.dev.yml logs -f",
-    "docker:dev:stop": "docker-compose -f docker-compose.dev.yml down",
-    "docker:dev:restart": "docker-compose -f docker-compose.dev.yml restart"
+    "docker:dev:stop": "docker-compose -f docker-compose.dev.yml stop",
+    "docker:dev:down": "docker-compose -f docker-compose.dev.yml down",
+    "docker:dev:restart": "docker-compose -f docker-compose.dev.yml restart",
+    "docker:dev:clean": "docker-compose -f docker-compose.dev.yml down -v && docker rmi mmc-mcp-bridge-dev:latest 2>/dev/null || true && docker system prune -f",
+    "docker:dev:cleanup": "docker system prune -f && docker volume prune -f"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.27.0",

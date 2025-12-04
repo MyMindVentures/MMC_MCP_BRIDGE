@@ -1,5 +1,6 @@
 #!/bin/bash
 # Start local Docker container for MCP Bridge development with hot reload
+# REUSES existing container and image to prevent Docker bloat
 
 set -e
 
@@ -10,21 +11,28 @@ cd "$PROJECT_ROOT"
 
 echo "🐳 Starting MCP Bridge local development container..."
 
-# Check if container exists
+# Check if container exists and is running
+if docker ps --format '{{.Names}}' | grep -q "^mmc-mcp-bridge-dev$"; then
+    echo "✅ Container is already running - REUSING existing container"
+    echo "💡 Code changes will hot reload automatically"
+    exit 0
+fi
+
+# Check if container exists but is stopped
 if docker ps -a --format '{{.Names}}' | grep -q "^mmc-mcp-bridge-dev$"; then
-    echo "📦 Container exists, checking status..."
-    
-    if docker ps --format '{{.Names}}' | grep -q "^mmc-mcp-bridge-dev$"; then
-        echo "✅ Container is already running"
-        echo "🔄 Restarting to apply changes..."
-        docker-compose -f docker-compose.dev.yml restart
+    echo "📦 Container exists but stopped - REUSING existing container"
+    docker-compose -f docker-compose.dev.yml start
+else
+    # Check if image exists
+    if docker images --format '{{.Repository}}:{{.Tag}}' | grep -q "^mmc-mcp-bridge-dev:latest$"; then
+        echo "🖼️  Image exists - REUSING existing image"
+        echo "🏗️  Starting new container from existing image..."
+        docker-compose -f docker-compose.dev.yml up -d --no-build
     else
-        echo "▶️  Starting existing container..."
+        echo "🏗️  Building image (first time only)..."
+        docker-compose -f docker-compose.dev.yml build
         docker-compose -f docker-compose.dev.yml up -d
     fi
-else
-    echo "🏗️  Building and starting new container..."
-    docker-compose -f docker-compose.dev.yml up -d --build
 fi
 
 echo ""
