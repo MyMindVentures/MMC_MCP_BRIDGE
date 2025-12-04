@@ -3237,7 +3237,95 @@ USE CASES:
 AVOID: Use other MCPs for non-secrets operations. Use Doppler MCP for all secrets management.`,
   },
 
-  // 17. RAINDROP - REST API
+  // 17. DOCKER - Docker API (FULLY IMPLEMENTED: 25+ tools!)
+  docker: {
+    name: "docker",
+    category: "infrastructure",
+    enabled: true,
+    tools: [
+      // Containers (9 tools)
+      { name: "listContainers", description: "List all containers", inputSchema: { type: "object", properties: { all: { type: "boolean", default: false } } } },
+      { name: "getContainer", description: "Get container details", inputSchema: { type: "object", properties: { id: { type: "string" } }, required: ["id"] } },
+      { name: "createContainer", description: "Create new container", inputSchema: { type: "object", properties: { config: { type: "object" } }, required: ["config"] } },
+      { name: "startContainer", description: "Start container", inputSchema: { type: "object", properties: { id: { type: "string" } }, required: ["id"] } },
+      { name: "stopContainer", description: "Stop container", inputSchema: { type: "object", properties: { id: { type: "string" }, timeout: { type: "number" } }, required: ["id"] } },
+      { name: "restartContainer", description: "Restart container", inputSchema: { type: "object", properties: { id: { type: "string" }, timeout: { type: "number" } }, required: ["id"] } },
+      { name: "removeContainer", description: "Remove container", inputSchema: { type: "object", properties: { id: { type: "string" }, force: { type: "boolean" } }, required: ["id"] } },
+      { name: "getContainerLogs", description: "Get container logs", inputSchema: { type: "object", properties: { id: { type: "string" }, tail: { type: "number", default: 100 } }, required: ["id"] } },
+      { name: "execContainer", description: "Execute command in container", inputSchema: { type: "object", properties: { id: { type: "string" }, command: { type: "array", items: { type: "string" } } }, required: ["id", "command"] } },
+      
+      // Images (5 tools)
+      { name: "listImages", description: "List all images", inputSchema: { type: "object", properties: { all: { type: "boolean", default: false } } } },
+      { name: "getImage", description: "Get image details", inputSchema: { type: "object", properties: { name: { type: "string" } }, required: ["name"] } },
+      { name: "pullImage", description: "Pull image from registry", inputSchema: { type: "object", properties: { name: { type: "string" } }, required: ["name"] } },
+      { name: "buildImage", description: "Build image from context", inputSchema: { type: "object", properties: { tarContext: { type: "string" }, tag: { type: "string" } }, required: ["tarContext", "tag"] } },
+      { name: "removeImage", description: "Remove image", inputSchema: { type: "object", properties: { name: { type: "string" }, force: { type: "boolean" } }, required: ["name"] } },
+      
+      // Networks (4 tools)
+      { name: "listNetworks", description: "List all networks", inputSchema: { type: "object", properties: {} } },
+      { name: "getNetwork", description: "Get network details", inputSchema: { type: "object", properties: { id: { type: "string" } }, required: ["id"] } },
+      { name: "createNetwork", description: "Create network", inputSchema: { type: "object", properties: { config: { type: "object" } }, required: ["config"] } },
+      { name: "removeNetwork", description: "Remove network", inputSchema: { type: "object", properties: { id: { type: "string" } }, required: ["id"] } },
+      
+      // Volumes (4 tools)
+      { name: "listVolumes", description: "List all volumes", inputSchema: { type: "object", properties: {} } },
+      { name: "getVolume", description: "Get volume details", inputSchema: { type: "object", properties: { name: { type: "string" } }, required: ["name"] } },
+      { name: "createVolume", description: "Create volume", inputSchema: { type: "object", properties: { config: { type: "object" } }, required: ["config"] } },
+      { name: "removeVolume", description: "Remove volume", inputSchema: { type: "object", properties: { name: { type: "string" } }, required: ["name"] } },
+      
+      // System (2 tools)
+      { name: "getSystemInfo", description: "Get Docker system information", inputSchema: { type: "object", properties: {} } },
+      { name: "getSystemVersion", description: "Get Docker version", inputSchema: { type: "object", properties: {} } },
+    ],
+    resources: [
+      { uri: "docker://containers", name: "Containers", description: "All Docker containers" },
+      { uri: "docker://images", name: "Images", description: "All Docker images" },
+      { uri: "docker://networks", name: "Networks", description: "All Docker networks" },
+      { uri: "docker://volumes", name: "Volumes", description: "All Docker volumes" },
+    ],
+    prompts: [
+      {
+        name: "manage_containers",
+        description: "Manage Docker containers",
+        arguments: [
+          { name: "action", description: "Action: list, start, stop, restart, remove", required: true },
+        ],
+      },
+    ],
+    execute: async (tool, params) => {
+      const { executeDockerTool } = await import("./docker-tools");
+      return await executeDockerTool(tool, params);
+    },
+    agentBriefing: `DOCKER MCP - Use for ALL Docker container and infrastructure management.
+
+WHEN TO USE:
+- Managing Docker containers (start, stop, restart, remove)
+- Image management (pull, build, remove)
+- Network and volume management
+- Container orchestration and deployment
+- Docker system information and monitoring
+
+KEY TOOLS:
+- listContainers/getContainer/createContainer: Container management
+- startContainer/stopContainer/restartContainer: Container lifecycle
+- getContainerLogs/execContainer: Container operations
+- listImages/pullImage/buildImage: Image management
+- listNetworks/createNetwork: Network management
+- listVolumes/createVolume: Volume management
+- getSystemInfo/getSystemVersion: System information
+
+USE CASES:
+- "List all running containers"
+- "Start the database container"
+- "Pull the latest nginx image"
+- "Get logs from the web container"
+- "Create a new network for microservices"
+- "Build image from Dockerfile"
+
+AVOID: Use Railway MCP for cloud deployments. Use Docker MCP for local/self-hosted container management.`,
+  },
+
+  // 18. RAINDROP - REST API
   raindrop: {
     name: "raindrop",
     category: "productivity",

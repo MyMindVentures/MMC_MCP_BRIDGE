@@ -241,6 +241,13 @@ export async function executeMCPTool(serverName: string, toolName: string, param
       return await executeDopplerTool(toolName, params);
     }
 
+    case 'docker': {
+      // Use comprehensive Docker tools (25+ tools!)
+      const { executeDockerTool } = await import('./docker-tools');
+      result = await executeDockerTool(toolName, params);
+      break;
+    }
+
     case 'raindrop': {
       if (!process.env.RAINDROP_TOKEN) throw new Error('RAINDROP_TOKEN not configured');
       
