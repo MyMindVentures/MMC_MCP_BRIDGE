@@ -75,10 +75,9 @@
     }
   },
 
-  "postCreateCommand": "bash -c 'npm ci && /usr/local/bin/install-extensions.sh && /usr/local/bin/persist-settings.sh restore && /usr/local/bin/auto-git-workflow.sh ensure-branch'",
+  "postCreateCommand": "bash -c 'mkdir -p /workspaces/.devcontainer-persist && npm ci && /usr/local/bin/install-extensions.sh && /usr/local/bin/persist-settings.sh restore && /usr/local/bin/auto-git-workflow.sh ensure-branch'",
   "postStartCommand": "bash -c '/usr/local/bin/persist-settings.sh restore && /usr/local/bin/install-extensions.sh && /usr/local/bin/feature-tracker.sh update && /usr/local/bin/start-dev.sh && /usr/local/bin/sync-todos.sh & /usr/local/bin/git-watcher.sh &'",
   "postAttachCommand": "bash -c '/usr/local/bin/persist-settings.sh restore && /usr/local/bin/auto-git-workflow.sh ensure-branch'",
-  "initializeCommand": "bash -c 'mkdir -p /workspaces/.devcontainer-persist'",
 
   "forwardPorts": [3000],
 
