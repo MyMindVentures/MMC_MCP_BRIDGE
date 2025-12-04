@@ -148,7 +148,28 @@ export async function verifyAuth(request: Request): Promise<{
   
   const token = authHeader.substring(7).trim();
   
-  // Validate token
+  // Check if it's an OAuth2 token (starts with mmc_oauth2_)
+  if (token.startsWith('mmc_oauth2_')) {
+    const { getAccessToken } = await import('../oauth/model');
+    const oauthToken = await getAccessToken(token);
+    
+    if (!oauthToken) {
+      await logRequest(null, request, false);
+      return { allowed: false, reason: 'Invalid or expired OAuth2 token' };
+    }
+    
+    // Check token expiration
+    if (oauthToken.accessTokenExpiresAt < new Date()) {
+      await logRequest(null, request, false);
+      return { allowed: false, reason: 'OAuth2 token has expired' };
+    }
+    
+    // OAuth2 tokens don't have rate limiting (handled by client)
+    await logRequest(null, request, true);
+    return { allowed: true };
+  }
+  
+  // Validate API key
   const keyConfig = validateApiKey(token);
   if (!keyConfig) {
     await logRequest(null, request, false);
