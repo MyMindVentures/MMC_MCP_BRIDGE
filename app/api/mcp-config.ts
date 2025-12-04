@@ -2893,46 +2893,161 @@ export const MCP_SERVERS: Record<string, MCPServer> = {
   },
 
   // 21. BRAVE SEARCH - REST API
+  // 22. BRAVE SEARCH - Privacy-focused search (FULLY UPGRADED: 1→7 tools!)
   "brave-search": {
     name: "brave-search",
     category: "search",
     enabled: true,
     tools: [
-      {
-        name: "webSearch",
-        description: "Search web",
-        inputSchema: {
-          type: "object",
-          properties: { query: { type: "string" } },
-          required: ["query"],
-        },
+      // Web Search (enhanced)
+      { 
+        name: "webSearch", 
+        description: "Search web with Brave (privacy-focused, independent index)", 
+        inputSchema: { 
+          type: "object", 
+          properties: { 
+            query: { type: "string" },
+            country: { type: "string", description: "Country code (US, GB, etc)" },
+            searchLang: { type: "string", description: "Search language (en, es, etc)" },
+            count: { type: "number", description: "Number of results (max 20)" },
+            offset: { type: "number", description: "Pagination offset" },
+            safesearch: { type: "string", enum: ["off", "moderate", "strict"] },
+            freshness: { type: "string", enum: ["pd", "pw", "pm", "py"], description: "pd=day, pw=week, pm=month, py=year" },
+            resultFilter: { type: "string", description: "Filter: web, news, videos, images" },
+            gogglesId: { type: "string", description: "Custom search goggles ID" },
+          }, 
+          required: ["query"] 
+        } 
+      },
+      
+      // Image Search
+      { 
+        name: "imageSearch", 
+        description: "Search images", 
+        inputSchema: { 
+          type: "object", 
+          properties: { 
+            query: { type: "string" },
+            country: { type: "string" },
+            count: { type: "number" },
+            offset: { type: "number" },
+            safesearch: { type: "string", enum: ["off", "moderate", "strict"] },
+          }, 
+          required: ["query"] 
+        } 
+      },
+      
+      // Video Search
+      { 
+        name: "videoSearch", 
+        description: "Search videos", 
+        inputSchema: { 
+          type: "object", 
+          properties: { 
+            query: { type: "string" },
+            country: { type: "string" },
+            count: { type: "number" },
+            offset: { type: "number" },
+            safesearch: { type: "string", enum: ["off", "moderate", "strict"] },
+            freshness: { type: "string", enum: ["pd", "pw", "pm", "py"] },
+          }, 
+          required: ["query"] 
+        } 
+      },
+      
+      // News Search
+      { 
+        name: "newsSearch", 
+        description: "Search news articles", 
+        inputSchema: { 
+          type: "object", 
+          properties: { 
+            query: { type: "string" },
+            country: { type: "string" },
+            count: { type: "number" },
+            offset: { type: "number" },
+            freshness: { type: "string", enum: ["pd", "pw", "pm", "py"] },
+          }, 
+          required: ["query"] 
+        } 
+      },
+      
+      // Local Search
+      { 
+        name: "localSearch", 
+        description: "Search local businesses/places", 
+        inputSchema: { 
+          type: "object", 
+          properties: { 
+            query: { type: "string" },
+            location: { type: "string", description: "Location name or address" },
+            lat: { type: "number", description: "Latitude" },
+            lon: { type: "number", description: "Longitude" },
+            country: { type: "string" },
+            count: { type: "number" },
+          }, 
+          required: ["query"] 
+        } 
+      },
+      
+      // Autocomplete Suggestions
+      { 
+        name: "suggest", 
+        description: "Get search suggestions (autocomplete)", 
+        inputSchema: { 
+          type: "object", 
+          properties: { 
+            query: { type: "string" },
+            country: { type: "string" },
+            lang: { type: "string" },
+            count: { type: "number" },
+          }, 
+          required: ["query"] 
+        } 
+      },
+      
+      // Spellcheck
+      { 
+        name: "spellcheck", 
+        description: "Check spelling and get corrections", 
+        inputSchema: { 
+          type: "object", 
+          properties: { 
+            query: { type: "string" },
+            country: { type: "string" },
+            searchLang: { type: "string" },
+          }, 
+          required: ["query"] 
+        } 
       },
     ],
     resources: [
-      {
-        uri: "brave://results",
-        name: "Results",
-        description: "Search results",
+      { uri: "brave://web", name: "Web Results", description: "Web search results" },
+      { uri: "brave://images", name: "Images", description: "Image search results" },
+      { uri: "brave://videos", name: "Videos", description: "Video search results" },
+      { uri: "brave://news", name: "News", description: "News articles" },
+      { uri: "brave://local", name: "Local", description: "Local businesses" },
+    ],
+    prompts: [
+      { 
+        name: "search_web", 
+        description: "Search the web with Brave", 
+        arguments: [
+          { name: "query", description: "Search query", required: true },
+          { name: "filters", description: "Filters (freshness, safesearch, etc)", required: false },
+        ] 
+      },
+      { 
+        name: "find_images", 
+        description: "Find images", 
+        arguments: [
+          { name: "query", description: "Image search query", required: true },
+        ] 
       },
     ],
-    prompts: [],
     execute: async (tool, params) => {
-      if (!process.env.BRAVE_SEARCH_API_KEY)
-        throw new Error("BRAVE_SEARCH_API_KEY not configured");
-
-      if (tool === "webSearch") {
-        const { data } = await axios.get(
-          "https://api.search.brave.com/res/v1/web/search",
-          {
-            headers: {
-              "X-Subscription-Token": process.env.BRAVE_SEARCH_API_KEY,
-            },
-            params: { q: params.query },
-          }
-        );
-        return data;
-      }
-      throw new Error(`Unknown brave-search tool: ${tool}`);
+      const { executeBraveSearchTool } = await import("./brave-search-tools");
+      return await executeBraveSearchTool(tool, params);
     },
   },
 
