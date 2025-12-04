@@ -4,16 +4,20 @@
 import axios from 'axios';
 
 function getClient() {
-  if (!process.env.N8N_API_KEY) {
-    throw new Error('N8N_API_KEY not configured');
+  // Support both N8N_INSTANCE_APIKEY (new) and N8N_API_KEY (legacy)
+  const apiKey = process.env.N8N_INSTANCE_APIKEY || process.env.N8N_API_KEY;
+  
+  if (!apiKey) {
+    throw new Error('N8N_INSTANCE_APIKEY or N8N_API_KEY not configured');
   }
   
-  const baseURL = process.env.N8N_BASE_URL || 'https://n8n.example.com';
+  // Use N8N_BASE_URL or default to Railway instance
+  const baseURL = process.env.N8N_BASE_URL || 'https://mmc-n8n-instance.up.railway.app';
   
   return axios.create({
     baseURL: `${baseURL}/api/v1`,
     headers: {
-      'X-N8N-API-KEY': process.env.N8N_API_KEY,
+      'X-N8N-API-KEY': apiKey,
       'Content-Type': 'application/json',
     },
   });
