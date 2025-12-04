@@ -95,9 +95,9 @@ export async function executeAirtableTool(tool: string, params: any): Promise<an
         { typecast: params.typecast !== false }
       );
 
-      return records.map(record => ({
-        id: (record as any).id,
-        fields: (record as any).fields,
+      return (records as any).map((record: any) => ({
+        id: record.id,
+        fields: record.fields,
       }));
     }
 
@@ -111,9 +111,9 @@ export async function executeAirtableTool(tool: string, params: any): Promise<an
         { typecast: params.typecast !== false }
       );
 
-      return records.map(record => ({
-        id: (record as any).id,
-        fields: (record as any).fields,
+      return (records as any).map((record: any) => ({
+        id: record.id,
+        fields: record.fields,
       }));
     }
 
@@ -121,8 +121,8 @@ export async function executeAirtableTool(tool: string, params: any): Promise<an
       const table = base(params.table);
       const deleted = await table.destroy(params.recordIds);
 
-      return deleted.map(record => ({
-        id: (record as any).id,
+      return (deleted as any).map((record: any) => ({
+        id: record.id,
         deleted: true,
       }));
     }
@@ -138,9 +138,9 @@ export async function executeAirtableTool(tool: string, params: any): Promise<an
         })
         .all();
 
-      return records.map(record => ({
-        id: (record as any).id,
-        fields: (record as any).fields,
+      return (records as any).map((record: any) => ({
+        id: record.id,
+        fields: record.fields,
       }));
     }
 
@@ -153,9 +153,9 @@ export async function executeAirtableTool(tool: string, params: any): Promise<an
         })
         .all();
 
-      return records.map(record => ({
-        id: (record as any).id,
-        fields: (record as any).fields,
+      return (records as any).map((record: any) => ({
+        id: record.id,
+        fields: record.fields,
       }));
     }
 
@@ -181,9 +181,9 @@ export async function executeAirtableTool(tool: string, params: any): Promise<an
         })
         .all();
 
-      return records.map(record => ({
-        id: (record as any).id,
-        fields: (record as any).fields,
+      return (records as any).map((record: any) => ({
+        id: record.id,
+        fields: record.fields,
       }));
     }
 
@@ -198,9 +198,9 @@ export async function executeAirtableTool(tool: string, params: any): Promise<an
         return { fields: [] };
       }
 
-      const fields = Object.keys(records[0].fields).map(fieldName => ({
+      const fields = Object.keys((records[0] as any).fields).map((fieldName: string) => ({
         name: fieldName,
-        type: typeof records[0].fields[fieldName],
+        type: typeof (records[0] as any).fields[fieldName],
       }));
 
       return { fields };
@@ -212,9 +212,9 @@ export async function executeAirtableTool(tool: string, params: any): Promise<an
       const records = await table.select({ maxRecords: 10 }).firstPage();
 
       const fieldName = params.fieldName;
-      const values = records
-        .map(r => r.fields[fieldName])
-        .filter(v => v !== undefined && v !== null);
+      const values = (records as any)
+        .map((r: any) => r.fields[fieldName])
+        .filter((v: any) => v !== undefined && v !== null);
 
       return {
         fieldName,
@@ -239,7 +239,7 @@ export async function executeAirtableTool(tool: string, params: any): Promise<an
       return {
         view: params.view,
         recordCount: records.length,
-        records: records.map(r => ({
+        records: (records as any).map((r: any) => ({
           id: r.id,
           fields: r.fields,
         })),
@@ -258,7 +258,7 @@ export async function executeAirtableTool(tool: string, params: any): Promise<an
       return {
         view: params.view,
         recordCount: records.length,
-        records: records.map(r => ({
+        records: (records as any).map((r: any) => ({
           id: r.id,
           fields: r.fields,
         })),
