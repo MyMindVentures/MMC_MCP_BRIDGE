@@ -20,7 +20,7 @@ services:
       - DOTENV_CONFIG_PATH=.env.local
     env_file:
       - .env.local
-    command: npm run dev
+    command: npm run dev:host
     restart: unless-stopped
     networks:
       - mcp-dev-network
