@@ -4,8 +4,6 @@ node_modules/
 # Next.js
 .next/
 out/
-next-env.d.ts
-tsconfig.json
 tsconfig.tsbuildinfo
 
 # Production
@@ -33,3 +31,26 @@ Thumbs.db
 
 # Devcontainer persistent settings (local only, never commit)
 .devcontainer-persist/
+
+# Local development files (never commit)
+docker-compose.dev.yml
+*.local.md
+doc/
+*.log
+*.tmp
+.cache/
+.turbo/
+
+# Docker
+.dockerignore
+docker-compose.override.yml
+
+# IDE temp files
+*.swp
+*.swo
+*~
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
