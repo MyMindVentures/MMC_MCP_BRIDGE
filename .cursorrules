@@ -69,3 +69,5 @@
 - Use agent briefings in `app/api/mcp-config.ts` for optimal MCP usage
 - Test MCP tools via terminal curl commands against Railway endpoint
 
+
+
