@@ -1,0 +1,35 @@
+{
+  "recommendations": [
+    "Anthropic.claude-code",
+    "streetsidesoftware.code-spell-checker",
+    "ms-azuretools.vscode-containers",
+    "ms-azuretools.vscode-docker",
+    "docker.docker",
+    "doppler.doppler-vscode",
+    "EditorConfig.EditorConfig",
+    "dbaeumer.vscode-eslint",
+    "mhutchie.git-graph",
+    "github.vscode-github-actions",
+    "GitHub.vscode-pull-request-github",
+    "eamodio.gitlens",
+    "ms-vscode.vscode-typescript-next",
+    "Orta.vscode-jest",
+    "christian-kohler.npm-intellisense",
+    "christian-kohler.path-intellisense",
+    "ms-playwright.playwright",
+    "esbenp.prettier-vscode",
+    "cweijan.vscode-redis-client",
+    "humao.rest-client",
+    "bradlc.vscode-tailwindcss",
+    "anysphere.remote-containers",
+    "Postman.postman-for-vscode",
+    "usernamehw.errorlens",
+    "mongodb.mongodb-vscode",
+    "ms-vscode.powershell",
+    "GitHub.copilot",
+    "GitHub.copilot-chat",
+    "ms-vscode-remote.remote-containers",
+    "shaharkazaz.git-merger"
+  ]
+}
+
