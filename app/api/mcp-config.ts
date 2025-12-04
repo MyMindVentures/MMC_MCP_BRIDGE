@@ -176,20 +176,69 @@ export const MCP_SERVERS: Record<string, MCPServer> = {
     }
   },
 
-  // 4. N8N - REST API
+  // 4. N8N COMMUNITY - @leonardsellem/n8n-mcp-server (Community Best!)
+  'n8n-community': {
+    name: 'n8n-community', category: 'automation', enabled: true,
+    tools: [
+      { name: 'dynamic', description: 'Tools from @leonardsellem/n8n-mcp-server', inputSchema: { type: 'object', properties: {} } }
+    ],
+    resources: [
+      { uri: 'n8n-community://tools', name: 'Community n8n Tools', description: 'From @leonardsellem/n8n-mcp-server' }
+    ],
+    prompts: [
+      { name: 'n8n_help', description: 'Get help with n8n workflows', arguments: [] }
+    ]
+  },
+
+  // 5. N8N - FULL WORKFLOW AUTOMATION (525+ nodes, AI-powered building)
   n8n: {
     name: 'n8n', category: 'automation', enabled: true,
     tools: [
-      { name: 'listWorkflows', description: 'List n8n workflows', inputSchema: { type: 'object', properties: { active: { type: 'boolean' } } } },
+      // Workflow Management
+      { name: 'listWorkflows', description: 'List n8n workflows', inputSchema: { type: 'object', properties: { active: { type: 'boolean' }, tags: { type: 'array' } } } },
+      { name: 'getWorkflow', description: 'Get workflow details', inputSchema: { type: 'object', properties: { workflowId: { type: 'string' } }, required: ['workflowId'] } },
+      { name: 'createWorkflow', description: 'Create n8n workflow', inputSchema: { type: 'object', properties: { name: { type: 'string' }, nodes: { type: 'array' }, connections: { type: 'object' }, settings: { type: 'object' }, tags: { type: 'array' } }, required: ['name', 'nodes'] } },
+      { name: 'updateWorkflow', description: 'Update workflow', inputSchema: { type: 'object', properties: { workflowId: { type: 'string' }, name: { type: 'string' }, nodes: { type: 'array' }, connections: { type: 'object' }, active: { type: 'boolean' } }, required: ['workflowId'] } },
+      { name: 'deleteWorkflow', description: 'Delete workflow', inputSchema: { type: 'object', properties: { workflowId: { type: 'string' } }, required: ['workflowId'] } },
+      { name: 'activateWorkflow', description: 'Activate workflow', inputSchema: { type: 'object', properties: { workflowId: { type: 'string' } }, required: ['workflowId'] } },
+      { name: 'deactivateWorkflow', description: 'Deactivate workflow', inputSchema: { type: 'object', properties: { workflowId: { type: 'string' } }, required: ['workflowId'] } },
+      
+      // Workflow Execution
       { name: 'executeWorkflow', description: 'Execute n8n workflow', inputSchema: { type: 'object', properties: { workflowId: { type: 'string' }, data: { type: 'object' } }, required: ['workflowId'] } },
-      { name: 'createWorkflow', description: 'Create n8n workflow', inputSchema: { type: 'object', properties: { name: { type: 'string' }, nodes: { type: 'array' } }, required: ['name'] } },
-      { name: 'getWorkflow', description: 'Get workflow details', inputSchema: { type: 'object', properties: { workflowId: { type: 'string' } }, required: ['workflowId'] } }
+      { name: 'getExecution', description: 'Get execution details', inputSchema: { type: 'object', properties: { executionId: { type: 'string' } }, required: ['executionId'] } },
+      { name: 'listExecutions', description: 'List workflow executions', inputSchema: { type: 'object', properties: { workflowId: { type: 'string' }, status: { type: 'string' }, limit: { type: 'number' } } } },
+      { name: 'deleteExecution', description: 'Delete execution', inputSchema: { type: 'object', properties: { executionId: { type: 'string' } }, required: ['executionId'] } },
+      
+      // Node Discovery (525+ nodes!)
+      { name: 'listNodes', description: 'List all available n8n nodes (525+)', inputSchema: { type: 'object', properties: {} } },
+      { name: 'getNodeInfo', description: 'Get detailed node information', inputSchema: { type: 'object', properties: { nodeType: { type: 'string' } }, required: ['nodeType'] } },
+      
+      // Credentials Management
+      { name: 'listCredentials', description: 'List credentials', inputSchema: { type: 'object', properties: {} } },
+      { name: 'createCredential', description: 'Create credential', inputSchema: { type: 'object', properties: { name: { type: 'string' }, type: { type: 'string' }, data: { type: 'object' } }, required: ['name', 'type', 'data'] } },
+      
+      // Tags Management
+      { name: 'listTags', description: 'List workflow tags', inputSchema: { type: 'object', properties: {} } },
+      { name: 'createTag', description: 'Create tag', inputSchema: { type: 'object', properties: { name: { type: 'string' } }, required: ['name'] } },
+      
+      // Webhook Management
+      { name: 'testWebhook', description: 'Test webhook endpoint', inputSchema: { type: 'object', properties: { path: { type: 'string' }, data: { type: 'object' } }, required: ['path'] } },
+      
+      // 🚀 AI-POWERED WORKFLOW BUILDING
+      { name: 'buildWorkflowFromDescription', description: 'AI-powered: Build complete n8n workflow from natural language description', inputSchema: { type: 'object', properties: { description: { type: 'string' } }, required: ['description'] } }
     ],
     resources: [
       { uri: 'n8n://workflows', name: 'All Workflows', description: 'List of all n8n workflows' },
-      { uri: 'n8n://executions', name: 'Workflow Executions', description: 'Recent workflow executions' }
+      { uri: 'n8n://executions', name: 'Workflow Executions', description: 'Recent workflow executions' },
+      { uri: 'n8n://nodes', name: 'Available Nodes', description: '525+ n8n nodes with 99% property support' },
+      { uri: 'n8n://credentials', name: 'Credentials', description: 'Stored credentials' },
+      { uri: 'n8n://tags', name: 'Tags', description: 'Workflow tags' }
     ],
-    prompts: [{ name: 'create_automation', description: 'Help create n8n automation', arguments: [{ name: 'task', description: 'What to automate', required: true }] }],
+    prompts: [
+      { name: 'create_automation', description: 'Help create n8n automation with AI', arguments: [{ name: 'task', description: 'What to automate', required: true }] },
+      { name: 'optimize_workflow', description: 'Optimize existing workflow', arguments: [{ name: 'workflowId', description: 'Workflow to optimize', required: true }] },
+      { name: 'debug_workflow', description: 'Debug workflow execution', arguments: [{ name: 'executionId', description: 'Execution ID', required: true }] }
+    ],
     execute: async (tool, params) => {
       if (!process.env.N8N_API_KEY) throw new Error('N8N_API_KEY not configured');
       const baseURL = process.env.N8N_BASE_URL || 'https://n8n.example.com';

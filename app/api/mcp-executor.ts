@@ -19,6 +19,7 @@ import puppeteer from 'puppeteer';
 import * as Sentry from '@sentry/node';
 import Stripe from 'stripe';
 import axios from 'axios';
+import { executeN8NCommunityTool } from './n8n-community/proxy';
 
 // Connection pools (singleton pattern)
 let mongoClient: MongoClient | null = null;
@@ -33,6 +34,12 @@ async function gql(endpoint: string, query: string, vars: any, headers: Record<s
 
 export async function executeMCPTool(serverName: string, toolName: string, params: any): Promise<any> {
   switch (serverName) {
+    case 'n8n-community': {
+      // Use @leonardsellem/n8n-mcp-server community package
+      const result = await executeN8NCommunityTool(toolName, params);
+      return result.content || result;
+    }
+
     case 'git': {
       const git = simpleGit(params.path || process.cwd());
       switch (toolName) {
@@ -106,18 +113,158 @@ export async function executeMCPTool(serverName: string, toolName: string, param
       const headers = { 'X-N8N-API-KEY': process.env.N8N_API_KEY };
       
       switch (toolName) {
+        // Workflow Management
         case 'listWorkflows':
-          const { data: workflows } = await axios.get(`${baseURL}/api/v1/workflows`, { headers, params: { active: params.active } });
+          const { data: workflows } = await axios.get(`${baseURL}/api/v1/workflows`, { 
+            headers, 
+            params: { active: params.active, tags: params.tags } 
+          });
           return workflows;
-        case 'executeWorkflow':
-          const { data: execution } = await axios.post(`${baseURL}/api/v1/workflows/${params.workflowId}/execute`, params.data, { headers });
-          return execution;
-        case 'createWorkflow':
-          const { data: workflow } = await axios.post(`${baseURL}/api/v1/workflows`, { name: params.name, nodes: params.nodes }, { headers });
-          return workflow;
+        
         case 'getWorkflow':
           const { data: wf } = await axios.get(`${baseURL}/api/v1/workflows/${params.workflowId}`, { headers });
           return wf;
+        
+        case 'createWorkflow':
+          const { data: workflow } = await axios.post(`${baseURL}/api/v1/workflows`, {
+            name: params.name,
+            nodes: params.nodes,
+            connections: params.connections || {},
+            settings: params.settings || {},
+            staticData: params.staticData || {},
+            tags: params.tags || []
+          }, { headers });
+          return workflow;
+        
+        case 'updateWorkflow':
+          const { data: updated } = await axios.patch(`${baseURL}/api/v1/workflows/${params.workflowId}`, {
+            name: params.name,
+            nodes: params.nodes,
+            connections: params.connections,
+            settings: params.settings,
+            active: params.active
+          }, { headers });
+          return updated;
+        
+        case 'deleteWorkflow':
+          await axios.delete(`${baseURL}/api/v1/workflows/${params.workflowId}`, { headers });
+          return { success: true, workflowId: params.workflowId };
+        
+        case 'activateWorkflow':
+          const { data: activated } = await axios.patch(`${baseURL}/api/v1/workflows/${params.workflowId}`, {
+            active: true
+          }, { headers });
+          return activated;
+        
+        case 'deactivateWorkflow':
+          const { data: deactivated } = await axios.patch(`${baseURL}/api/v1/workflows/${params.workflowId}`, {
+            active: false
+          }, { headers });
+          return deactivated;
+        
+        // Workflow Execution
+        case 'executeWorkflow':
+          const { data: execution } = await axios.post(`${baseURL}/api/v1/workflows/${params.workflowId}/execute`, 
+            params.data || {}, 
+            { headers }
+          );
+          return execution;
+        
+        case 'getExecution':
+          const { data: exec } = await axios.get(`${baseURL}/api/v1/executions/${params.executionId}`, { headers });
+          return exec;
+        
+        case 'listExecutions':
+          const { data: executions } = await axios.get(`${baseURL}/api/v1/executions`, {
+            headers,
+            params: {
+              workflowId: params.workflowId,
+              status: params.status,
+              limit: params.limit || 20
+            }
+          });
+          return executions;
+        
+        case 'deleteExecution':
+          await axios.delete(`${baseURL}/api/v1/executions/${params.executionId}`, { headers });
+          return { success: true, executionId: params.executionId };
+        
+        // Node Discovery (525+ nodes!)
+        case 'listNodes':
+          const { data: nodes } = await axios.get(`${baseURL}/api/v1/node-types`, { headers });
+          return nodes;
+        
+        case 'getNodeInfo':
+          const { data: nodeInfo } = await axios.get(`${baseURL}/api/v1/node-types/${params.nodeType}`, { headers });
+          return nodeInfo;
+        
+        // Credentials Management
+        case 'listCredentials':
+          const { data: creds } = await axios.get(`${baseURL}/api/v1/credentials`, { headers });
+          return creds;
+        
+        case 'createCredential':
+          const { data: cred } = await axios.post(`${baseURL}/api/v1/credentials`, {
+            name: params.name,
+            type: params.type,
+            data: params.data
+          }, { headers });
+          return cred;
+        
+        // Tags Management
+        case 'listTags':
+          const { data: tags } = await axios.get(`${baseURL}/api/v1/tags`, { headers });
+          return tags;
+        
+        case 'createTag':
+          const { data: tag } = await axios.post(`${baseURL}/api/v1/tags`, {
+            name: params.name
+          }, { headers });
+          return tag;
+        
+        // Webhook Management
+        case 'testWebhook':
+          const { data: webhookTest } = await axios.post(`${baseURL}/webhook-test/${params.path}`, 
+            params.data || {}, 
+            { headers }
+          );
+          return webhookTest;
+        
+        // AI-Powered Workflow Building
+        case 'buildWorkflowFromDescription':
+          // Use AI to generate workflow from natural language
+          if (!process.env.OPENAI_API_KEY) throw new Error('OPENAI_API_KEY required for AI workflow building');
+          const OpenAI = (await import('openai')).default;
+          const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+          
+          const completion = await openai.chat.completions.create({
+            model: 'gpt-4',
+            messages: [
+              {
+                role: 'system',
+                content: `You are an n8n workflow expert. Generate a valid n8n workflow JSON with nodes and connections based on the user's description. 
+Available node types include: HTTP Request, Set, IF, Switch, Code, Webhook, Schedule Trigger, Email Send, Slack, Discord, GitHub, Linear, MongoDB, Postgres, etc.
+Return ONLY valid JSON with this structure:
+{
+  "name": "Workflow Name",
+  "nodes": [...],
+  "connections": {...}
+}`
+              },
+              {
+                role: 'user',
+                content: params.description
+              }
+            ],
+            temperature: 0.3
+          });
+          
+          const workflowJson = JSON.parse(completion.choices[0].message.content || '{}');
+          
+          // Create the workflow in n8n
+          const { data: aiWorkflow } = await axios.post(`${baseURL}/api/v1/workflows`, workflowJson, { headers });
+          return aiWorkflow;
+        
         default: throw new Error(`Unknown n8n tool: ${toolName}`);
       }
     }
