@@ -1873,6 +1873,32 @@ AVOID: Use OpenAI MCP for GPT models. Use Anthropic MCP for Claude models and An
       const { executePostgresTool } = await import("./postgres-tools");
       return await executePostgresTool(tool, params);
     },
+    agentBriefing: `POSTGRES MCP - Use for ALL PostgreSQL relational database operations.
+
+WHEN TO USE:
+- Relational database operations, SQL queries
+- Schema management (tables, indexes, constraints)
+- DDL operations (CREATE, ALTER, DROP)
+- DML operations (INSERT, UPDATE, DELETE, SELECT)
+- Transactions, migrations, data analysis
+
+KEY TOOLS:
+- listSchemas/listTables: Discover database structure
+- describeTable: Get table schema details
+- query: Execute raw SQL queries
+- select/insert/update/delete: CRUD operations
+- createTable/alterTable/dropTable: Schema management
+- createIndex/dropIndex: Performance optimization
+- transaction: Execute multiple operations atomically
+
+USE CASES:
+- "Query all users from the users table"
+- "Create a new table for products"
+- "Insert a new record into the orders table"
+- "Run a complex JOIN query"
+- "Create an index on the email column"
+
+AVOID: Use MongoDB/SQLite MCP for non-relational data. Use Postgres MCP for relational, ACID-compliant operations.`,
   },
 
   // 12. SQLITE - better-sqlite3 (FULLY UPGRADED: 22+ tools!)
@@ -2117,6 +2143,31 @@ AVOID: Use OpenAI MCP for GPT models. Use Anthropic MCP for Claude models and An
       const { executeSqliteTool } = await import("./sqlite-tools");
       return executeSqliteTool(tool, params);
     },
+    agentBriefing: `SQLITE MCP - Use for ALL SQLite database operations (lightweight, file-based).
+
+WHEN TO USE:
+- Lightweight relational database operations
+- Local file-based database storage
+- Embedded database applications
+- Development/testing databases
+- Simple data persistence without server setup
+
+KEY TOOLS:
+- listTables: Discover database structure
+- query: Execute raw SQL queries
+- createTable/alterTable/dropTable: Schema management
+- insert/update/delete: CRUD operations
+- createIndex/dropIndex: Performance optimization
+- transaction: Execute multiple operations atomically
+
+USE CASES:
+- "Query the local SQLite database"
+- "Create a table for user sessions"
+- "Insert test data into the database"
+- "Run a migration script"
+- "Backup the SQLite database"
+
+AVOID: Use Postgres MCP for production/server databases. Use SQLite MCP for local, file-based databases.`,
   },
 
   // 13. NOTION - @notionhq/client (FULLY UPGRADED: 25+ tools!)
@@ -2444,6 +2495,31 @@ AVOID: Use OpenAI MCP for GPT models. Use Anthropic MCP for Claude models and An
           throw new Error(`Unknown notion tool: ${tool}`);
       }
     },
+    agentBriefing: `NOTION MCP - Use for ALL Notion workspace and page operations.
+
+WHEN TO USE:
+- Creating, updating, querying Notion pages
+- Database operations (query, filter, sort)
+- Block management (text, headings, lists, etc.)
+- Search across workspace
+- User and workspace management
+
+KEY TOOLS:
+- createPage/updatePage: Page management
+- queryDatabase: Query Notion databases with filters
+- search: Search across workspace
+- getBlock/updateBlock: Block-level operations
+- listUsers/getMe: User management
+- appendBlock: Add content to pages
+
+USE CASES:
+- "Create a new Notion page for project documentation"
+- "Query the tasks database for incomplete items"
+- "Search for all pages mentioning 'API'"
+- "Update a page with new content"
+- "Add a heading block to the page"
+
+AVOID: Use other MCPs for non-Notion operations. Use Notion MCP for all Notion workspace interactions.`,
   },
 
   // 14. SLACK - @slack/web-api (FULLY UPGRADED: 30+ tools!)
@@ -2840,6 +2916,31 @@ AVOID: Use OpenAI MCP for GPT models. Use Anthropic MCP for Claude models and An
           throw new Error(`Unknown slack tool: ${tool}`);
       }
     },
+    agentBriefing: `SLACK MCP - Use for ALL Slack workspace communication and collaboration.
+
+WHEN TO USE:
+- Sending messages to Slack channels
+- Managing channels (list, create, archive)
+- Getting channel history, user info
+- File uploads, reactions, threads
+- Team communication and notifications
+
+KEY TOOLS:
+- postMessage: Send messages to channels
+- listChannels/getChannelHistory: Channel operations
+- uploadFile: Share files
+- addReaction/removeReaction: Message reactions
+- getUserInfo/getMe: User management
+- setUserPresence: Status management
+
+USE CASES:
+- "Send a notification to the #general channel"
+- "List all channels in the workspace"
+- "Get message history from #dev channel"
+- "Upload a file to Slack"
+- "Add a reaction to a message"
+
+AVOID: Use other MCPs for non-Slack operations. Use Slack MCP for all Slack workspace interactions.`,
   },
 
   // 15. AIRTABLE - airtable SDK (FULLY UPGRADED: 18+ tools!)
@@ -2895,6 +2996,31 @@ AVOID: Use OpenAI MCP for GPT models. Use Anthropic MCP for Claude models and An
       const { executeAirtableTool } = await import("./airtable-tools");
       return await executeAirtableTool(tool, params);
     },
+    agentBriefing: `AIRTABLE MCP - Use for ALL Airtable base and record operations.
+
+WHEN TO USE:
+- Managing Airtable bases, tables, records
+- Querying records with filters and formulas
+- Creating, updating, deleting records
+- Working with views, pagination
+- Bulk operations, upserts
+
+KEY TOOLS:
+- listRecords/getRecord: Query records
+- createRecord/updateRecord/deleteRecord: CRUD operations
+- replaceRecord/upsertRecord: Advanced record management
+- listTables/getTableInfo: Table structure
+- getView: View data with filters
+- getPage: Paginated record retrieval
+
+USE CASES:
+- "List all records from the Users table"
+- "Create a new record in the Products table"
+- "Query records where status is 'active'"
+- "Update a record with new data"
+- "Get paginated results from a large table"
+
+AVOID: Use other MCPs for non-Airtable operations. Use Airtable MCP for all Airtable base interactions.`,
   },
 
   // 16. DOPPLER - REST API
@@ -2981,6 +3107,32 @@ AVOID: Use OpenAI MCP for GPT models. Use Anthropic MCP for Claude models and An
       const { executeDopplerTool } = await import("./doppler-tools");
       return await executeDopplerTool(tool, params);
     },
+    agentBriefing: `DOPPLER MCP - Use for ALL secrets and environment variable management.
+
+WHEN TO USE:
+- Managing secrets and environment variables
+- Project and config management
+- Environment creation and management
+- Service token management
+- Secret synchronization across environments
+- Security and compliance operations
+
+KEY TOOLS:
+- listProjects/createProject: Project management
+- listConfigs/createConfig: Config/environment management
+- getSecret/setSecret/deleteSecret: Secret operations
+- bulkSetSecrets: Batch secret updates
+- downloadSecrets: Export secrets (json, env, yaml)
+- listServiceTokens/createServiceToken: Service token management
+
+USE CASES:
+- "Get the API key secret from production config"
+- "Set multiple secrets for the staging environment"
+- "Create a new project for the microservice"
+- "Download all secrets as .env file"
+- "Create a service token for CI/CD"
+
+AVOID: Use other MCPs for non-secrets operations. Use Doppler MCP for all secrets management.`,
   },
 
   // 17. RAINDROP - REST API
