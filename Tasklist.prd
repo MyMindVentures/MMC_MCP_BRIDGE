@@ -53,4 +53,11 @@
 ✅ feat-agent-briefings: Agent briefings: voor elke MCP server een usage guide toevoegen (25/25 servers compleet: Git, Filesystem, Playwright, n8n, MongoDB, Linear, Railway, GitHub, OpenAI, Anthropic, Postgres, SQLite, Notion, Slack, Airtable, Doppler, Raindrop, Postman, Google Drive, Ollama, Brave Search, Puppeteer, Sentry, Strapi, Stripe)
 ⏳ feat-prd-notion-sync: PRD.md automatische sync met Notion Portfolio via MCP: PRD.md generator + Notion MCP integration
 ⏳ feat-doppler-mcp-full: Doppler MCP volledig integreren: alle 38 tools implementeren en testen volgens doppler-mcp repo
+✅ feat-prd-creation: PRD.md uitgebreide documentatie: volledige project vision, n8n bidirectionele integratie, agentic AI architectuur, OpenWebUI integratie, roadmap
+⏳ feat-n8n-bidirectional-schema: n8n bidirectionele integratie: Backend → n8n JSON Schema generator (automatische workflow creatie van MCP servers)
+⏳ feat-n8n-bidirectional-code: n8n bidirectionele integratie: n8n → Backend code generator (automatische API route generatie van n8n workflows)
+⏳ feat-n8n-sync-engine: n8n sync engine: bidirectionele synchronisatie tussen backend services en n8n workflows met conflict resolution
+⏳ feat-n8n-agent-embedding: n8n agent embedding: Agentic agent nodes in n8n workflows voor multi-step MCP orchestration
+⏳ feat-openwebui-connector: OpenWebUI connector: visual workflow builder die bidirectioneel sync met backend en n8n
+⏳ feat-agentic-frontend: Agentic frontend generator: n8n workflow analysis → React component generatie voor volledige fullstack app
 

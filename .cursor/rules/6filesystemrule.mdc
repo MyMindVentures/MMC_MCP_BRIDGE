@@ -19,6 +19,8 @@ If there is ever a conflict between these rules and your "best practices", **THE
 
 **ALWAYS** ask first if not explicitly requested.
 
+**📋 PROJECT CONTEXT:** See `PRD.md` for complete project vision, architecture, and n8n bidirectional integration details.
+
 ## 1. Git Workflow - MANDATORY
 
 ### 1.1 Branch Strategy
@@ -74,6 +76,7 @@ You MAY create/modify:
 9. `.devcontainer/**` - Devcontainer config (Dockerfile + devcontainer.json) when explicitly requested
 10. `.vscode/**` and `.cursor/**` - Editor/Workspace settings for VS Code / Cursor
 11. `Tasklist.prd` - Task list / PRD file for project management
+12. `PRD.md` - Product Requirements Document (see PRD.md for project vision and architecture)
 
 ### 2.2 Auto-Generated Files (IGNORE/DELETE)
 
