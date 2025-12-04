@@ -47,9 +47,9 @@ save_settings() {
   
   # Save VS Code/Cursor settings
   if [ -d "$HOME/.vscode-server" ] || [ -d "$HOME/.cursor-server" ]; then
-    mkdir -p "$PERSIST_DIR/vscode-server"
-    [ -d "$HOME/.vscode-server" ] && cp -r "$HOME/.vscode-server" "$PERSIST_DIR/" 2>/dev/null || true
-    [ -d "$HOME/.cursor-server" ] && cp -r "$HOME/.cursor-server" "$PERSIST_DIR/" 2>/dev/null || true
+    mkdir -p "$PERSIST_DIR" 2>/dev/null || true
+    [ -d "$HOME/.vscode-server" ] && cp -r "$HOME/.vscode-server" "$PERSIST_DIR/.vscode-server" 2>/dev/null || true
+    [ -d "$HOME/.cursor-server" ] && cp -r "$HOME/.cursor-server" "$PERSIST_DIR/.cursor-server" 2>/dev/null || true
     echo "  ✅ VS Code/Cursor server settings saved"
   fi
   
@@ -94,9 +94,9 @@ restore_settings() {
   fi
   
   # Restore VS Code/Cursor server settings
-  if [ -d "$PERSIST_DIR/vscode-server" ]; then
-    [ -d "$PERSIST_DIR/vscode-server/.vscode-server" ] && cp -r "$PERSIST_DIR/vscode-server/.vscode-server" "$HOME/" 2>/dev/null || true
-    [ -d "$PERSIST_DIR/vscode-server/.cursor-server" ] && cp -r "$PERSIST_DIR/vscode-server/.cursor-server" "$HOME/" 2>/dev/null || true
+  if [ -d "$PERSIST_DIR/.vscode-server" ] || [ -d "$PERSIST_DIR/.cursor-server" ]; then
+    [ -d "$PERSIST_DIR/.vscode-server" ] && cp -r "$PERSIST_DIR/.vscode-server" "$HOME/" 2>/dev/null || true
+    [ -d "$PERSIST_DIR/.cursor-server" ] && cp -r "$PERSIST_DIR/.cursor-server" "$HOME/" 2>/dev/null || true
     echo "  ✅ VS Code/Cursor server settings restored"
   fi
   
