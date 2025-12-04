@@ -554,14 +554,51 @@ export const MCP_SERVERS: Record<string, MCPServer> = {
     }
   },
 
-  // 12. SQLITE - better-sqlite3
+  // 12. SQLITE - better-sqlite3 (FULLY UPGRADED: 22+ tools!)
   sqlite: {
     name: 'sqlite', category: 'database', enabled: true,
     tools: [
-      { name: 'query', description: 'SQL query', inputSchema: { type: 'object', properties: { sql: { type: 'string' } }, required: ['sql'] } }
+      // Schema Discovery
+      { name: 'listTables', description: 'List all tables', inputSchema: { type: 'object', properties: {} } },
+      { name: 'tableInfo', description: 'Get table schema', inputSchema: { type: 'object', properties: { table: { type: 'string' } }, required: ['table'] } },
+      { name: 'listIndexes', description: 'List indexes', inputSchema: { type: 'object', properties: { table: { type: 'string' } }, required: ['table'] } },
+      { name: 'getForeignKeys', description: 'Get foreign keys', inputSchema: { type: 'object', properties: { table: { type: 'string' } }, required: ['table'] } },
+      
+      // DDL Operations
+      { name: 'createTable', description: 'Create table', inputSchema: { type: 'object', properties: { table: { type: 'string' }, columns: { type: 'array' } }, required: ['table', 'columns'] } },
+      { name: 'dropTable', description: 'Drop table', inputSchema: { type: 'object', properties: { table: { type: 'string' } }, required: ['table'] } },
+      { name: 'alterTable', description: 'Alter table (add column only)', inputSchema: { type: 'object', properties: { table: { type: 'string' }, action: { type: 'string' } }, required: ['table', 'action'] } },
+      { name: 'createIndex', description: 'Create index', inputSchema: { type: 'object', properties: { table: { type: 'string' }, columns: { type: 'array' }, indexName: { type: 'string' }, unique: { type: 'boolean', default: false } }, required: ['table', 'columns'] } },
+      { name: 'dropIndex', description: 'Drop index', inputSchema: { type: 'object', properties: { indexName: { type: 'string' } }, required: ['indexName'] } },
+      
+      // DML Operations
+      { name: 'query', description: 'Execute SQL query', inputSchema: { type: 'object', properties: { sql: { type: 'string' }, params: { type: 'array' } }, required: ['sql'] } },
+      { name: 'select', description: 'SELECT query builder', inputSchema: { type: 'object', properties: { table: { type: 'string' }, columns: { type: 'array' }, where: { type: 'object' }, orderBy: { type: 'string' }, limit: { type: 'number' } }, required: ['table'] } },
+      { name: 'insert', description: 'INSERT data', inputSchema: { type: 'object', properties: { table: { type: 'string' }, data: { type: 'object' } }, required: ['table', 'data'] } },
+      { name: 'update', description: 'UPDATE data', inputSchema: { type: 'object', properties: { table: { type: 'string' }, data: { type: 'object' }, where: { type: 'object' } }, required: ['table', 'data'] } },
+      { name: 'delete', description: 'DELETE data', inputSchema: { type: 'object', properties: { table: { type: 'string' }, where: { type: 'object' } }, required: ['table'] } },
+      { name: 'bulkInsert', description: 'Bulk INSERT', inputSchema: { type: 'object', properties: { table: { type: 'string' }, data: { type: 'array' } }, required: ['table', 'data'] } },
+      
+      // Transactions
+      { name: 'begin', description: 'Begin transaction', inputSchema: { type: 'object', properties: {} } },
+      { name: 'commit', description: 'Commit transaction', inputSchema: { type: 'object', properties: {} } },
+      { name: 'rollback', description: 'Rollback transaction', inputSchema: { type: 'object', properties: {} } },
+      
+      // Maintenance
+      { name: 'vacuum', description: 'VACUUM database', inputSchema: { type: 'object', properties: {} } },
+      { name: 'analyze', description: 'ANALYZE tables', inputSchema: { type: 'object', properties: { table: { type: 'string' } } } },
+      { name: 'integrityCheck', description: 'Check database integrity', inputSchema: { type: 'object', properties: {} } },
+      { name: 'backup', description: 'Backup database', inputSchema: { type: 'object', properties: { destination: { type: 'string' } }, required: ['destination'] } }
     ],
-    resources: [{ uri: 'sqlite://tables', name: 'Tables', description: 'All tables' }],
-    prompts: [],
+    resources: [
+      { uri: 'sqlite://tables', name: 'Tables', description: 'All tables' },
+      { uri: 'sqlite://indexes', name: 'Indexes', description: 'All indexes' },
+      { uri: 'sqlite://schema', name: 'Schema', description: 'Database schema' }
+    ],
+    prompts: [
+      { name: 'sql_builder', description: 'AI-powered SQL query builder', arguments: [{ name: 'description', description: 'What you want to query', required: true }] },
+      { name: 'schema_designer', description: 'AI-powered table schema design', arguments: [{ name: 'requirements', description: 'Table requirements', required: true }] }
+    ],
     execute: async (tool, params) => {
       if (!process.env.SQLITE_DB_PATH) throw new Error('SQLITE_DB_PATH not configured');
       if (!sqliteDb) {

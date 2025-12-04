@@ -21,6 +21,7 @@ import Stripe from 'stripe';
 import axios from 'axios';
 import { executeN8NCommunityTool } from './n8n-community/proxy';
 import { executePostgresTool } from './postgres-tools';
+import { executeSQLiteTool } from './sqlite-tools';
 
 // Connection pools (singleton pattern)
 let mongoClient: MongoClient | null = null;
@@ -423,11 +424,8 @@ Return ONLY valid JSON with this structure:
         sqliteDb = new Database(process.env.SQLITE_DB_PATH);
       }
       
-      if (toolName === 'query') {
-        const stmt = sqliteDb.prepare(params.sql);
-        return stmt.all();
-      }
-      throw new Error(`Unknown sqlite tool: ${toolName}`);
+      // Use new comprehensive SQLite tools (22+ tools!)
+      return await executeSQLiteTool(sqliteDb, toolName, params);
     }
 
     case 'notion': {
