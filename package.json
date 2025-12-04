@@ -13,7 +13,7 @@
     "@anthropic-ai/sdk": "^0.27.0",
     "@leonardsellem/n8n-mcp-server": "^0.1.8",
     "@linear/sdk": "^29.0.0",
-    "@modelcontextprotocol/sdk": "^1.24.2",
+    "@modelcontextprotocol/sdk": "^1.24.3",
     "@notionhq/client": "^2.2.15",
     "@octokit/rest": "^20.0.2",
     "@sentry/node": "^7.99.0",
