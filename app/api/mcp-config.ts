@@ -76,83 +76,46 @@ async function gql(
 
 // ALL 25 MCP SERVERS - FULLY IMPLEMENTED
 export const MCP_SERVERS: Record<string, MCPServer> = {
-  // 1. GIT - simple-git SDK
+  // 1. GIT - simple-git SDK (FULLY UPGRADED: 17+ tools!)
   git: {
     name: "git",
     category: "development",
     enabled: true,
     tools: [
-      {
-        name: "clone",
-        description: "Clone repository",
-        inputSchema: {
-          type: "object",
-          properties: { url: { type: "string" }, path: { type: "string" } },
-          required: ["url", "path"],
-        },
-      },
-      {
-        name: "commit",
-        description: "Commit changes",
-        inputSchema: {
-          type: "object",
-          properties: {
-            message: { type: "string" },
-            files: { type: "array", items: { type: "string" } },
-          },
-          required: ["message"],
-        },
-      },
-      {
-        name: "push",
-        description: "Push to remote",
-        inputSchema: {
-          type: "object",
-          properties: {
-            remote: { type: "string" },
-            branch: { type: "string" },
-          },
-        },
-      },
-      {
-        name: "pull",
-        description: "Pull from remote",
-        inputSchema: {
-          type: "object",
-          properties: {
-            remote: { type: "string" },
-            branch: { type: "string" },
-          },
-        },
-      },
-      {
-        name: "branch",
-        description: "Manage branches",
-        inputSchema: {
-          type: "object",
-          properties: {
-            action: { type: "string", enum: ["list", "create", "delete"] },
-            name: { type: "string" },
-          },
-          required: ["action"],
-        },
-      },
-      {
-        name: "status",
-        description: "Get git status",
-        inputSchema: {
-          type: "object",
-          properties: { path: { type: "string" } },
-        },
-      },
-      {
-        name: "log",
-        description: "Get commit log",
-        inputSchema: {
-          type: "object",
-          properties: { path: { type: "string" }, limit: { type: "number" } },
-        },
-      },
+      // Basic Operations (6 tools)
+      { name: "clone", description: "Clone repository", inputSchema: { type: "object", properties: { url: { type: "string" }, path: { type: "string" } }, required: ["url", "path"] } },
+      { name: "commit", description: "Commit changes", inputSchema: { type: "object", properties: { message: { type: "string" }, files: { type: "array" }, path: { type: "string" } }, required: ["message"] } },
+      { name: "push", description: "Push to remote", inputSchema: { type: "object", properties: { remote: { type: "string" }, branch: { type: "string" }, path: { type: "string" } } } },
+      { name: "pull", description: "Pull from remote", inputSchema: { type: "object", properties: { remote: { type: "string" }, branch: { type: "string" }, path: { type: "string" } } } },
+      { name: "status", description: "Get git status", inputSchema: { type: "object", properties: { path: { type: "string" } } } },
+      { name: "log", description: "Get commit log", inputSchema: { type: "object", properties: { limit: { type: "number" }, path: { type: "string" } } } },
+      
+      // Branch Operations (1 tool with actions)
+      { name: "branch", description: "Manage branches (list/create/delete/checkout)", inputSchema: { type: "object", properties: { action: { type: "string", enum: ["list", "create", "delete", "checkout", "switch"] }, name: { type: "string" }, path: { type: "string" } }, required: ["action"] } },
+      
+      // Diff Operations (2 tools)
+      { name: "diff", description: "Show differences", inputSchema: { type: "object", properties: { options: { type: "object", properties: { staged: { type: "boolean" }, file: { type: "string" } } }, path: { type: "string" } } } },
+      { name: "diffSummary", description: "Get diff summary", inputSchema: { type: "object", properties: { path: { type: "string" } } } },
+      
+      // Stash Operations (1 tool with actions)
+      { name: "stash", description: "Stash operations (save/pop/list/clear/drop)", inputSchema: { type: "object", properties: { action: { type: "string", enum: ["save", "push", "pop", "list", "clear", "drop"] }, path: { type: "string" } }, required: ["action"] } },
+      
+      // Tag Operations (1 tool with actions)
+      { name: "tag", description: "Tag operations (list/create/delete)", inputSchema: { type: "object", properties: { action: { type: "string", enum: ["list", "create", "delete"] }, name: { type: "string" }, message: { type: "string" }, path: { type: "string" } }, required: ["action"] } },
+      
+      // Remote Operations (1 tool with actions)
+      { name: "remote", description: "Remote operations (list/add/remove/get-url)", inputSchema: { type: "object", properties: { action: { type: "string", enum: ["list", "add", "remove", "get-url"] }, name: { type: "string" }, url: { type: "string" }, path: { type: "string" } }, required: ["action"] } },
+      
+      // Merge & Rebase (2 tools)
+      { name: "merge", description: "Merge branch", inputSchema: { type: "object", properties: { branch: { type: "string" }, options: { type: "object", properties: { noFf: { type: "boolean" }, squash: { type: "boolean" } } }, path: { type: "string" } }, required: ["branch"] } },
+      { name: "rebase", description: "Rebase branch", inputSchema: { type: "object", properties: { branch: { type: "string" }, path: { type: "string" } }, required: ["branch"] } },
+      
+      // Reset (1 tool)
+      { name: "reset", description: "Reset to commit", inputSchema: { type: "object", properties: { mode: { type: "string", enum: ["soft", "mixed", "hard"] }, commit: { type: "string" }, path: { type: "string" } } } },
+      
+      // Advanced (2 tools)
+      { name: "blame", description: "Show file blame", inputSchema: { type: "object", properties: { file: { type: "string" }, path: { type: "string" } }, required: ["file"] } },
+      { name: "show", description: "Show commit details", inputSchema: { type: "object", properties: { commit: { type: "string" }, path: { type: "string" } }, required: ["commit"] } },
     ],
     resources: [
       {
@@ -177,37 +140,9 @@ export const MCP_SERVERS: Record<string, MCPServer> = {
       },
     ],
     execute: async (tool, params) => {
-      const git = simpleGit(params.path || process.cwd());
-      switch (tool) {
-        case "clone":
-          return await git.clone(params.url, params.path);
-        case "commit":
-          if (params.files?.length) await git.add(params.files);
-          return await git.commit(params.message);
-        case "push":
-          return await git.push(
-            params.remote || "origin",
-            params.branch || "main"
-          );
-        case "pull":
-          return await git.pull(
-            params.remote || "origin",
-            params.branch || "main"
-          );
-        case "branch":
-          if (params.action === "list") return await git.branch();
-          if (params.action === "create")
-            return await git.checkoutLocalBranch(params.name);
-          if (params.action === "delete")
-            return await git.deleteLocalBranch(params.name);
-          throw new Error("Invalid branch action");
-        case "status":
-          return await git.status();
-        case "log":
-          return await git.log({ maxCount: params.limit || 10 });
-        default:
-          throw new Error(`Unknown git tool: ${tool}`);
-      }
+      // Import the full git tools implementation
+      const { executeGitTool } = await import("./git-tools");
+      return await executeGitTool(tool, params);
     },
   },
 
