@@ -2,8 +2,9 @@
 # Auto-install extensions in devcontainer for VS Code / Cursor
 # This script runs as postCreateCommand to ensure all extensions are installed
 # Extensions are installed via the host editor CLI (VS Code Remote / Cursor Remote)
+# If CLI is not available, extensions will be auto-installed by VS Code/Cursor via devcontainer.json
 
-set -e
+set +e  # Don't exit on errors - extensions will be installed automatically if CLI fails
 
 EXTENSIONS=(
   "Anthropic.claude-code"
@@ -62,31 +63,43 @@ fi
 
 # Try VS Code CLI first
 if [ -n "$CODE_CMD" ]; then
-  echo "✅ Found VS Code CLI - installing extensions..."
+  echo "✅ Found VS Code CLI - attempting to install extensions..."
+  INSTALLED=0
+  FAILED=0
   for ext in "${EXTENSIONS[@]}"; do
-    echo "  Installing: $ext"
-    $CODE_CMD --install-extension "$ext" --force 2>/dev/null || echo "  ⚠️  $ext (may require manual install)"
+    if $CODE_CMD --install-extension "$ext" --force >/dev/null 2>&1; then
+      INSTALLED=$((INSTALLED + 1))
+    else
+      FAILED=$((FAILED + 1))
+    fi
   done
-  echo "✅ VS Code extensions installation complete"
+  echo "   ✅ Installed: $INSTALLED | ⚠️  Failed: $FAILED (will be auto-installed by VS Code)"
+  echo "✅ VS Code extensions installation attempt complete"
 fi
 
 # Try Cursor CLI
 if [ -n "$CURSOR_CMD" ]; then
-  echo "✅ Found Cursor CLI - installing extensions..."
+  echo "✅ Found Cursor CLI - attempting to install extensions..."
+  INSTALLED=0
+  FAILED=0
   for ext in "${EXTENSIONS[@]}"; do
-    echo "  Installing: $ext"
-    $CURSOR_CMD --install-extension "$ext" --force 2>/dev/null || echo "  ⚠️  $ext (may require manual install)"
+    if $CURSOR_CMD --install-extension "$ext" --force >/dev/null 2>&1; then
+      INSTALLED=$((INSTALLED + 1))
+    else
+      FAILED=$((FAILED + 1))
+    fi
   done
-  echo "✅ Cursor extensions installation complete"
+  echo "   ✅ Installed: $INSTALLED | ⚠️  Failed: $FAILED (will be auto-installed by Cursor)"
+  echo "✅ Cursor extensions installation attempt complete"
 fi
 
 # If neither CLI is available, the devcontainer customizations.vscode.extensions
-# should handle it automatically when the container is opened in VS Code / Cursor
+# will handle it automatically when the container is opened in VS Code / Cursor
 if [ -z "$CODE_CMD" ] && [ -z "$CURSOR_CMD" ]; then
-  echo "ℹ️  CLI not found - extensions will be installed automatically by VS Code / Cursor"
-  echo "   when you open this devcontainer (via customizations.vscode.extensions)"
-  echo "📝 Extensions list saved for reference:"
-  printf '   - %s\n' "${EXTENSIONS[@]}"
+  echo "ℹ️  CLI not found in container - this is normal"
+  echo "   Extensions will be installed automatically by VS Code / Cursor"
+  echo "   when you open this devcontainer (via customizations.vscode.extensions in devcontainer.json)"
+  echo "📝 Total extensions to install: ${#EXTENSIONS[@]}"
 fi
 
 echo "🎉 Extension installation script completed"

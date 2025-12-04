@@ -7,8 +7,8 @@ SETTINGS_FILE="$PERSIST_DIR/settings.json"
 DOPPLER_CONFIG="$PERSIST_DIR/doppler-config.json"
 GITHUB_CONFIG="$PERSIST_DIR/github-config.json"
 
-# Create persistent directory if it doesn't exist
-mkdir -p "$PERSIST_DIR"
+# Create persistent directory if it doesn't exist (suppress errors if already exists or permission issues)
+mkdir -p "$PERSIST_DIR" 2>/dev/null || true
 
 # Function to save current settings
 save_settings() {
