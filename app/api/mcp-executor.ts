@@ -371,6 +371,13 @@ export async function executeMCPTool(serverName: string, toolName: string, param
       throw new Error(`Unknown stripe tool: ${toolName}`);
     }
 
+    case 'dagger': {
+      // Use comprehensive Dagger tools (13+ tools!)
+      const { executeDaggerTool } = await import('./dagger-tools');
+      result = await executeDaggerTool(toolName, params);
+      break;
+    }
+
     default:
       throw new Error(`Unknown server: ${serverName}`);
     }

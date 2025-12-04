@@ -3807,4 +3807,90 @@ INTEGRATION NOTES:
       throw new Error(`Unknown stripe tool: ${tool}`);
     },
   },
+
+  // 26. DAGGER - Dagger SDK (CI/CD Pipeline-as-Code)
+  dagger: {
+    name: "dagger",
+    category: "infrastructure",
+    enabled: true,
+    tools: [
+      // Pipeline Operations (3 tools)
+      { name: "createPipeline", description: "Create CI/CD pipeline definition", inputSchema: { type: "object", properties: { name: { type: "string" }, steps: { type: "array" } }, required: ["name", "steps"] } },
+      { name: "runPipeline", description: "Execute pipeline", inputSchema: { type: "object", properties: { pipelineName: { type: "string" }, params: { type: "object" } }, required: ["pipelineName"] } },
+      { name: "listPipelines", description: "List available pipelines", inputSchema: { type: "object", properties: {} } },
+      
+      // Build Operations (2 tools)
+      { name: "buildImage", description: "Build container image with Dagger", inputSchema: { type: "object", properties: { context: { type: "string" }, dockerfile: { type: "string" }, tag: { type: "string" } }, required: ["context"] } },
+      { name: "buildWithCache", description: "Build with intelligent caching", inputSchema: { type: "object", properties: { context: { type: "string" }, cacheKey: { type: "string" } }, required: ["context", "cacheKey"] } },
+      
+      // Deploy Operations (2 tools)
+      { name: "deployToRailway", description: "Deploy to Railway via Dagger", inputSchema: { type: "object", properties: { image: { type: "string" }, serviceName: { type: "string" } }, required: ["image", "serviceName"] } },
+      { name: "deployToDocker", description: "Deploy to Docker via Dagger", inputSchema: { type: "object", properties: { image: { type: "string" }, containerName: { type: "string" } }, required: ["image", "containerName"] } },
+      
+      // Test Operations (2 tools)
+      { name: "runTests", description: "Run tests in isolated container", inputSchema: { type: "object", properties: { context: { type: "string" }, testCommand: { type: "string" } }, required: ["context"] } },
+      { name: "runLint", description: "Run linter in isolated container", inputSchema: { type: "object", properties: { context: { type: "string" } }, required: ["context"] } },
+      
+      // Cache Operations (2 tools)
+      { name: "createCache", description: "Create cache volume", inputSchema: { type: "object", properties: { key: { type: "string" } }, required: ["key"] } },
+      { name: "clearCache", description: "Clear cache volume", inputSchema: { type: "object", properties: { key: { type: "string" } }, required: ["key"] } },
+      
+      // Module Operations (2 tools)
+      { name: "listModules", description: "List Dagger modules", inputSchema: { type: "object", properties: {} } },
+      { name: "createModule", description: "Create Dagger module", inputSchema: { type: "object", properties: { name: { type: "string" }, definition: { type: "object" } }, required: ["name", "definition"] } },
+    ],
+    resources: [
+      { uri: "dagger://pipelines", name: "Pipelines", description: "All CI/CD pipelines" },
+      { uri: "dagger://modules", name: "Modules", description: "Dagger modules" },
+      { uri: "dagger://cache", name: "Cache", description: "Build cache volumes" },
+    ],
+    prompts: [
+      {
+        name: "build_and_deploy",
+        description: "Build and deploy application",
+        arguments: [
+          { name: "context", description: "Build context path", required: true },
+          { name: "target", description: "Deployment target (railway/docker)", required: true },
+        ],
+      },
+    ],
+    execute: async (tool, params) => {
+      const { executeDaggerTool } = await import("./dagger-tools");
+      return await executeDaggerTool(tool, params);
+    },
+    agentBriefing: `DAGGER MCP - Use for ALL CI/CD pipeline operations and DevOps automation.
+
+WHEN TO USE:
+- Building CI/CD pipelines as code
+- Container builds with intelligent caching
+- Automated deployments to Railway/Docker
+- Running tests in isolated environments
+- Managing build cache for faster builds
+- Creating reusable pipeline modules
+- DevOps automation and orchestration
+
+KEY TOOLS:
+- createPipeline/runPipeline: Pipeline management
+- buildImage/buildWithCache: Container builds with caching
+- deployToRailway/deployToDocker: Automated deployments
+- runTests/runLint: Isolated test execution
+- createCache/clearCache: Build cache management
+- listModules/createModule: Module management
+
+USE CASES:
+- "Build the app with Dagger caching"
+- "Create a pipeline for build, test, and deploy"
+- "Deploy the latest build to Railway"
+- "Run tests in an isolated container"
+- "Clear the build cache and rebuild"
+
+BENEFITS:
+- 10x faster than traditional CI/CD (intelligent caching)
+- Pipeline-as-code (version controlled)
+- Local testing before CI
+- Consistent environments
+- Automatic artifact caching
+
+AVOID: Use Docker MCP for simple container operations. Use Dagger MCP for CI/CD pipelines and DevOps automation.`,
+  },
 };
