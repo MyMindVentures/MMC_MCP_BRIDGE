@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  mcp-bridge-dev:
+    image: mmc-mcp-bridge-dev:latest
+    build:
+      context: .
+      dockerfile: .devcontainer/Dockerfile
+      cache_from:
+        - mmc-mcp-bridge-dev:latest
+    container_name: mmc-mcp-bridge-dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/workspaces/MMC_MCP_BRIDGE
+      - mcp-bridge-node-modules:/workspaces/MMC_MCP_BRIDGE/node_modules
+      - mcp-bridge-next-cache:/workspaces/MMC_MCP_BRIDGE/.next
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+    env_file:
+      - .env.local
+    command: npm run dev:host
+    restart: unless-stopped
+    networks:
+      - mcp-dev-network
+    stop_grace_period: 10s
+
+volumes:
+  mcp-bridge-node-modules:
+    driver: local
+  mcp-bridge-next-cache:
+    driver: local
+
+networks:
+  mcp-dev-network:
+    driver: bridge
