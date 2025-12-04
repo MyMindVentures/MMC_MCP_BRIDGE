@@ -81,15 +81,19 @@ auto_commit_push() {
   local branch_name="$1"
   local description="${2:-Auto commit}"
   
-  # Check if there are changes
+  # ALWAYS stage ALL changes first (including untracked files, deletions, etc.)
+  echo "📦 Staging ALL changes (including untracked files)..."
+  git add -A
+  
+  # Check if there are changes after staging
   if [ -z "$(git status --porcelain)" ]; then
-    echo "✅ No changes to commit"
+    echo "✅ No changes to commit after staging"
     return 0
   fi
   
-  # Stage all changes
-  echo "📦 Staging all changes..."
-  git add -A
+  # Show what will be committed
+  echo "📝 Changes to be committed:"
+  git status --short | head -20
   
   # Generate commit message
   local commit_msg="feat: $description"
@@ -150,10 +154,59 @@ commit_work() {
   auto_commit_push "$branch_name" "$description"
 }
 
+# Function to force commit ALL changes immediately
+force_commit_all() {
+  local description="${1:-Force commit all changes}"
+  local current_branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "main")
+  
+  echo "🔥 FORCE COMMIT ALL: Staging, committing and pushing ALL changes..."
+  
+  # Stage EVERYTHING
+  echo "📦 Staging ALL changes (including untracked, deleted, modified)..."
+  git add -A
+  
+  # Show what will be committed
+  local staged_count=$(git diff --cached --name-only | wc -l)
+  if [ "$staged_count" -eq 0 ]; then
+    echo "✅ No changes to commit"
+    return 0
+  fi
+  
+  echo "📝 Staged $staged_count file(s):"
+  git status --short | head -20
+  
+  # Generate commit message
+  local commit_msg="feat: $description"
+  local changed_files=$(git diff --cached --name-only | head -10 | tr '\n' ' ' | cut -c1-100)
+  if [ -n "$changed_files" ]; then
+    commit_msg="feat: $description - Files: $changed_files"
+  fi
+  
+  # Commit
+  echo "💾 Committing: $commit_msg"
+  if ! git commit -m "$commit_msg"; then
+    echo "❌ Commit failed!"
+    return 1
+  fi
+  
+  # Push
+  echo "🚀 Pushing to origin/$current_branch..."
+  if git push -u origin "$current_branch"; then
+    echo "✅ Force commit & push completed successfully"
+  else
+    echo "⚠️  Push failed - but commit is local"
+    return 1
+  fi
+}
+
 # Function to show status
 show_status() {
   local current_feature=$(get_current_feature)
   local current_branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "unknown")
+  
+  # Stage everything first to see real status
+  git add -A 2>/dev/null || true
+  
   local changes=$(git status --porcelain | wc -l)
   
   echo "📊 Git Workflow Status:"
@@ -165,7 +218,7 @@ show_status() {
   echo ""
   if [ "$changes" -gt 0 ]; then
     echo "📝 Uncommitted changes:"
-    git status --short | head -10
+    git status --short | head -20
   fi
 }
 
@@ -177,6 +230,9 @@ case "${1:-status}" in
   commit)
     commit_work "$2"
     ;;
+  force-commit-all)
+    force_commit_all "$2"
+    ;;
   status)
     show_status
     ;;
@@ -185,13 +241,14 @@ case "${1:-status}" in
     ensure_feature_branch "$feature"
     ;;
   *)
-    echo "Usage: $0 [set-feature|commit|status|ensure-branch]"
+    echo "Usage: $0 [set-feature|commit|force-commit-all|status|ensure-branch]"
     echo ""
     echo "Commands:"
-    echo "  set-feature <name>  - Set current feature and create/switch branch"
-    echo "  commit [message]     - Auto commit and push current changes"
-    echo "  status              - Show current git workflow status"
-    echo "  ensure-branch        - Ensure feature branch exists and is checked out"
+    echo "  set-feature <name>     - Set current feature and create/switch branch"
+    echo "  commit [message]        - Auto commit and push current changes"
+    echo "  force-commit-all [msg]  - FORCE commit ALL changes immediately (no waiting)"
+    echo "  status                 - Show current git workflow status"
+    echo "  ensure-branch           - Ensure feature branch exists and is checked out"
     exit 1
     ;;
 esac
