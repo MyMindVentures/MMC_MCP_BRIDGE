@@ -2176,45 +2176,59 @@ export const MCP_SERVERS: Record<string, MCPServer> = {
     },
   },
 
-  // 13. NOTION - @notionhq/client
+  // 13. NOTION - @notionhq/client (FULLY UPGRADED: 25+ tools!)
   notion: {
     name: "notion",
     category: "productivity",
     enabled: true,
     tools: [
-      {
-        name: "queryDatabase",
-        description: "Query database",
-        inputSchema: {
-          type: "object",
-          properties: {
-            databaseId: { type: "string" },
-            filter: { type: "object" },
-          },
-          required: ["databaseId"],
-        },
-      },
-      {
-        name: "createPage",
-        description: "Create page",
-        inputSchema: {
-          type: "object",
-          properties: {
-            parent: { type: "object" },
-            properties: { type: "object" },
-          },
-          required: ["parent"],
-        },
-      },
+      // Page Operations
+      { name: "getPage", description: "Get page details", inputSchema: { type: "object", properties: { pageId: { type: "string" } }, required: ["pageId"] } },
+      { name: "createPage", description: "Create page", inputSchema: { type: "object", properties: { parent: { type: "object" }, properties: { type: "object" }, children: { type: "array" } }, required: ["parent", "properties"] } },
+      { name: "updatePage", description: "Update page properties", inputSchema: { type: "object", properties: { pageId: { type: "string" }, properties: { type: "object" } }, required: ["pageId", "properties"] } },
+      { name: "deletePage", description: "Delete page (archive)", inputSchema: { type: "object", properties: { pageId: { type: "string" } }, required: ["pageId"] } },
+      { name: "listPageChildren", description: "List page children blocks", inputSchema: { type: "object", properties: { pageId: { type: "string" }, startCursor: { type: "string" }, pageSize: { type: "number" } }, required: ["pageId"] } },
+      { name: "duplicatePage", description: "Duplicate page", inputSchema: { type: "object", properties: { pageId: { type: "string" } }, required: ["pageId"] } },
+      { name: "movePageToWorkspace", description: "Move page to workspace", inputSchema: { type: "object", properties: { pageId: { type: "string" }, workspaceId: { type: "string" } }, required: ["pageId"] } },
+      { name: "getPageProperty", description: "Get page property value", inputSchema: { type: "object", properties: { pageId: { type: "string" }, propertyId: { type: "string" } }, required: ["pageId", "propertyId"] } },
+      
+      // Block Operations
+      { name: "getBlock", description: "Get block details", inputSchema: { type: "object", properties: { blockId: { type: "string" } }, required: ["blockId"] } },
+      { name: "appendBlock", description: "Append block children", inputSchema: { type: "object", properties: { blockId: { type: "string" }, children: { type: "array" } }, required: ["blockId", "children"] } },
+      { name: "updateBlock", description: "Update block", inputSchema: { type: "object", properties: { blockId: { type: "string" }, block: { type: "object" } }, required: ["blockId", "block"] } },
+      { name: "deleteBlock", description: "Delete block", inputSchema: { type: "object", properties: { blockId: { type: "string" } }, required: ["blockId"] } },
+      
+      // Database Operations
+      { name: "getDatabase", description: "Get database details", inputSchema: { type: "object", properties: { databaseId: { type: "string" } }, required: ["databaseId"] } },
+      { name: "queryDatabase", description: "Query database with filters", inputSchema: { type: "object", properties: { databaseId: { type: "string" }, filter: { type: "object" }, sorts: { type: "array" }, startCursor: { type: "string" }, pageSize: { type: "number" } }, required: ["databaseId"] } },
+      { name: "createDatabase", description: "Create database", inputSchema: { type: "object", properties: { parentPageId: { type: "string" }, title: { type: "string" }, properties: { type: "object" } }, required: ["parentPageId", "title", "properties"] } },
+      { name: "updateDatabase", description: "Update database", inputSchema: { type: "object", properties: { databaseId: { type: "string" }, title: { type: "string" }, properties: { type: "object" } }, required: ["databaseId"] } },
+      
+      // Search
+      { name: "search", description: "Search pages and databases", inputSchema: { type: "object", properties: { query: { type: "string" }, filter: { type: "object" }, sort: { type: "object" }, startCursor: { type: "string" }, pageSize: { type: "number" } } } },
+      
+      // User Operations
+      { name: "listUsers", description: "List all users", inputSchema: { type: "object", properties: { startCursor: { type: "string" }, pageSize: { type: "number" } } } },
+      { name: "getUser", description: "Get user details", inputSchema: { type: "object", properties: { userId: { type: "string" } }, required: ["userId"] } },
+      { name: "getMe", description: "Get bot user info", inputSchema: { type: "object", properties: {} } },
+      
+      // Comment Operations
+      { name: "createComment", description: "Create comment", inputSchema: { type: "object", properties: { pageId: { type: "string" }, richText: { type: "array" } }, required: ["pageId", "richText"] } },
+      { name: "listComments", description: "List comments", inputSchema: { type: "object", properties: { blockId: { type: "string" }, startCursor: { type: "string" }, pageSize: { type: "number" } }, required: ["blockId"] } },
+      
+      // Bulk Operations
+      { name: "bulkCreatePages", description: "Bulk create pages", inputSchema: { type: "object", properties: { parent: { type: "object" }, pagesData: { type: "array" } }, required: ["parent", "pagesData"] } }
     ],
     resources: [
-      {
-        uri: "notion://databases",
-        name: "Databases",
-        description: "All databases",
-      },
+      { uri: "notion://pages", name: "Pages", description: "All pages" },
+      { uri: "notion://databases", name: "Databases", description: "All databases" },
+      { uri: "notion://users", name: "Users", description: "All users" },
+      { uri: "notion://blocks", name: "Blocks", description: "All blocks" }
     ],
-    prompts: [],
+    prompts: [
+      { name: "create_page", description: "Help create Notion page", arguments: [{ name: "content", description: "Page content", required: true }] },
+      { name: "search_notion", description: "Search Notion workspace", arguments: [{ name: "query", description: "Search query", required: true }] }
+    ],
     execute: async (tool, params) => {
       if (!process.env.NOTION_API_KEY)
         throw new Error("NOTION_API_KEY not configured");

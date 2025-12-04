@@ -23,6 +23,7 @@ import { executeN8NCommunityTool } from './n8n-community/proxy';
 import { executePostgresTool } from './postgres-tools';
 import { executeSQLiteTool } from './sqlite-tools';
 import { executeMongoDBTool } from './mongodb-tools';
+import { executeNotionTool } from './notion-tools';
 
 // Connection pools (singleton pattern)
 let mongoClient: MongoClient | null = null;
@@ -425,15 +426,8 @@ Return ONLY valid JSON with this structure:
       if (!process.env.NOTION_API_KEY) throw new Error('NOTION_API_KEY not configured');
       const notion = new NotionClient({ auth: process.env.NOTION_API_KEY });
       
-      switch (toolName) {
-        case 'queryDatabase':
-          const response = await notion.databases.query({ database_id: params.databaseId, filter: params.filter });
-          return response.results;
-        case 'createPage':
-          const page = await notion.pages.create({ parent: params.parent, properties: params.properties });
-          return page;
-        default: throw new Error(`Unknown notion tool: ${toolName}`);
-      }
+      // Use new comprehensive Notion tools (25+ tools!)
+      return await executeNotionTool(notion, toolName, params);
     }
 
     case 'slack': {
