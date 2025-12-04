@@ -73,8 +73,12 @@ RUN chmod +x /usr/local/bin/build-app-container.sh
 # Install jq for JSON parsing in scripts
 RUN apt-get update && apt-get install -y jq && rm -rf /var/lib/apt/lists/*
 
+# Copy source code to container (for development)
+# Note: For hot reload, use bind mount from devcontainer to host
+COPY --chown=node:node . /workspaces/MMC_MCP_BRIDGE/
+
 # Set working directory
-WORKDIR /workspaces
+WORKDIR /workspaces/MMC_MCP_BRIDGE
 
 # Set user
 USER node
