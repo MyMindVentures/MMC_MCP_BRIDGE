@@ -103,10 +103,10 @@ Ensure `.next/` and `node_modules/` are in `.gitignore`.
 
 ❌ **CI/CD Files:**
 
-- `.github/workflows/*.yml` (use Railway CI/CD)
+- `.github/workflows/*.yml` (use Railway CI/CD) - **EXCEPTION: Pre-merge check workflows allowed** (linting, testing, type checking)
 - `.gitlab-ci.yml`
 - `Dockerfile` / `docker-compose.yml`
-- Any CI/CD configuration
+- Any CI/CD configuration (except pre-merge checks)
 
 ❌ **Environment Files:**
 
