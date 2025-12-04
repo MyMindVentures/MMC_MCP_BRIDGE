@@ -66,21 +66,37 @@ If there is ever a conflict between these rules and your "best practices", **THE
 - `fix/{description}` - Bug fixes
 - `hotfix/{critical}` - Emergency production fixes
 
-### 1.2 Commit Rules
+### 1.2 Commit Rules - STRICT
 
 - **NEVER** commit broken code to ANY branch
-- **ALWAYS** test build before committing
+- **ALWAYS** test build before committing: `npm run build` MUST succeed
 - **NEVER** push untested changes to main
+- **NEVER** push code that fails Railway deployment
 - Commit messages must be clear and descriptive
+- If build fails → Fix on feature branch → Test → Then merge
 
-### 1.3 Debugging/Experimentation
+### 1.3 Debugging/Experimentation - STRICT
 
 When debugging or trying new things:
 
-1. Create a `fix/` or `experiment/` branch
-2. Test thoroughly
-3. Only merge when confirmed working
-4. **NEVER** use main as testing ground
+1. **ALWAYS** create a `fix/` or `experiment/` branch
+2. Test thoroughly: `npm run build` MUST succeed
+3. Test Railway preview deployment
+4. Only merge when confirmed working
+5. **NEVER** use main as testing ground
+6. **NEVER** commit experimental code to main
+
+### 1.4 Railway Deployment Rules - CRITICAL
+
+- **Main branch MUST always deploy successfully on Railway**
+- Before merging to main:
+  1. Build succeeds locally: `npm run build`
+  2. Railway preview deployment succeeds
+  3. Health endpoint responds: `/api/health`
+  4. No TypeScript errors
+  5. No runtime errors in logs
+- If Railway deploy fails → Fix on feature branch → Test → Merge
+- **NEVER** merge broken code that causes Railway failures
 
 ## 2. File System Rules - STRICT
 
