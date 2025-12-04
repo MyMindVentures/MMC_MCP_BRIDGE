@@ -45,6 +45,10 @@ RUN chmod +x /usr/local/bin/auto-git-workflow.sh
 COPY .devcontainer/git-watcher.sh /usr/local/bin/git-watcher.sh
 RUN chmod +x /usr/local/bin/git-watcher.sh
 
+# Copy feature tracker script
+COPY .devcontainer/feature-tracker.sh /usr/local/bin/feature-tracker.sh
+RUN chmod +x /usr/local/bin/feature-tracker.sh
+
 # Install jq for JSON parsing in scripts
 RUN apt-get update && apt-get install -y jq && rm -rf /var/lib/apt/lists/*
 

@@ -43,6 +43,11 @@ check_and_commit() {
 echo "👀 Git watcher started (checks every 60s, commits every ${COMMIT_INTERVAL}s if changes)"
 while true; do
   sleep 60
+  
+  # Update feature tracking
+  /usr/local/bin/feature-tracker.sh update 2>/dev/null || true
+  
+  # Check and commit if needed
   check_and_commit
 done
 
