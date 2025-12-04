@@ -4,6 +4,7 @@
     "dockerfile": "Dockerfile",
     "context": ".."
   },
+  "workspaceFolder": "/workspaces/MMC_MCP_BRIDGE",
 
   "customizations": {
     "vscode": {
