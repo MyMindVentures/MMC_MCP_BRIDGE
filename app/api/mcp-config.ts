@@ -736,8 +736,12 @@ AVOID: Use individual MCP servers (Slack, GitHub, etc.) for simple single-servic
     ],
     execute: async (tool, params) => {
       // Import the full mongodb tools implementation
+      if (!process.env.MONGODB_CONNECTION_STRING) throw new Error('MONGODB_CONNECTION_STRING not configured');
+      const { MongoClient } = await import('mongodb');
+      const client = new MongoClient(process.env.MONGODB_CONNECTION_STRING);
+      await client.connect();
       const { executeMongoDBTool } = await import("./mongodb-tools");
-      return await executeMongoDBTool(tool, params);
+      return await executeMongoDBTool(client, tool, params);
     },
     agentBriefing: `MONGODB MCP - Use for ALL MongoDB database operations.
 
@@ -2140,8 +2144,11 @@ AVOID: Use MongoDB/SQLite MCP for non-relational data. Use Postgres MCP for rela
     ],
     execute: async (tool, params) => {
       // Import the full sqlite tools implementation
-      const { executeSqliteTool } = await import("./sqlite-tools");
-      return executeSqliteTool(tool, params);
+      if (!process.env.SQLITE_DB_PATH) throw new Error('SQLITE_DB_PATH not configured');
+      const Database = (await import('better-sqlite3')).default;
+      const db = new Database(process.env.SQLITE_DB_PATH);
+      const { executeSQLiteTool } = await import("./sqlite-tools");
+      return executeSQLiteTool(db, tool, params);
     },
     agentBriefing: `SQLITE MCP - Use for ALL SQLite database operations (lightweight, file-based).
 

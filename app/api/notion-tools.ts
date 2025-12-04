@@ -160,7 +160,7 @@ export async function executeNotionTool(
     }
     
     case 'getMe': {
-      const bot = await notion.users.me();
+      const bot = await notion.users.me({});
       return bot;
     }
     
@@ -189,27 +189,27 @@ export async function executeNotionTool(
     
     case 'duplicatePage': {
       // Get original page
-      const { pageId } = params;
+      const { pageId, targetParent } = params;
       const original = await notion.pages.retrieve({ page_id: pageId });
       
-      // Create duplicate
-      if ('properties' in original && 'parent' in original) {
+      // Create duplicate with explicit parent
+      if ('properties' in original && targetParent) {
         const duplicate = await notion.pages.create({
-          parent: original.parent,
+          parent: targetParent.type === 'database_id' 
+            ? { database_id: targetParent.database_id }
+            : { page_id: targetParent.page_id },
           properties: original.properties
         });
         return duplicate;
       }
-      throw new Error('Invalid page structure');
+      throw new Error('Invalid page structure or missing targetParent');
     }
     
     case 'movePageToWorkspace': {
-      const { pageId, workspaceId } = params;
-      const page = await notion.pages.update({
-        page_id: pageId,
-        parent: { type: 'workspace', workspace: true }
-      });
-      return page;
+      const { pageId } = params;
+      // Notion API doesn't support moving to workspace directly
+      // This would require updating the parent to a workspace page
+      throw new Error('movePageToWorkspace not supported - use updatePage with new parent');
     }
     
     case 'getPageProperty': {

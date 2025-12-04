@@ -33,7 +33,7 @@ export async function executeMongoDBTool(
     
     case 'collectionStats': {
       const { collection } = params;
-      const stats = await db.collection(collection).stats();
+      const stats = await db.command({ collStats: collection });
       return stats;
     }
     

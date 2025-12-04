@@ -135,7 +135,7 @@ export async function executeOpenAITool(tool: string, params: any): Promise<any>
         style: params.style,
         user: params.user,
       });
-      return image.data[0];
+      return image.data?.[0] || image;
     }
 
     case 'editImage': {
@@ -147,7 +147,7 @@ export async function executeOpenAITool(tool: string, params: any): Promise<any>
         size: params.size || '1024x1024',
         response_format: params.response_format || 'url',
       });
-      return image.data[0];
+      return image.data?.[0] || image;
     }
 
     case 'createImageVariation': {
@@ -157,7 +157,7 @@ export async function executeOpenAITool(tool: string, params: any): Promise<any>
         size: params.size || '1024x1024',
         response_format: params.response_format || 'url',
       });
-      return image.data[0];
+      return image.data?.[0] || image;
     }
 
     // ==================== ASSISTANTS ====================
@@ -168,7 +168,7 @@ export async function executeOpenAITool(tool: string, params: any): Promise<any>
         model: params.model || 'gpt-4',
         instructions: params.instructions,
         tools: params.tools || [],
-        file_ids: params.file_ids || [],
+        ...(params.file_ids && params.file_ids.length > 0 ? { tool_resources: { file_search: { vector_store_ids: params.file_ids } } } : {}),
         metadata: params.metadata,
       });
       return assistant;
@@ -196,7 +196,7 @@ export async function executeOpenAITool(tool: string, params: any): Promise<any>
         model: params.model,
         instructions: params.instructions,
         tools: params.tools,
-        file_ids: params.file_ids,
+        ...(params.file_ids && params.file_ids.length > 0 ? { tool_resources: { file_search: { vector_store_ids: params.file_ids } } } : {}),
         metadata: params.metadata,
       });
       return assistant;

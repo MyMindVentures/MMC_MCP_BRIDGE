@@ -205,7 +205,7 @@ export async function executeMCPTool(serverName: string, toolName: string, param
       }
       
       // Use new comprehensive Postgres tools (25+ tools!)
-      return await executePostgresTool(pgPool, toolName, params);
+      return await executePostgresTool(toolName, params);
     }
 
     case 'sqlite': {

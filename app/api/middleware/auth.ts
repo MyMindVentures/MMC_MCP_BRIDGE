@@ -132,6 +132,11 @@ export async function verifyAuth(request: Request): Promise<{
   allowed: boolean;
   keyConfig?: ApiKeyConfig;
   reason?: string;
+  rateLimit?: {
+    limit: number;
+    remaining: number;
+    reset: number;
+  };
 }> {
   const authHeader = request.headers.get('Authorization');
   const ip = request.headers.get('x-forwarded-for') || 'unknown';

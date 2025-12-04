@@ -221,13 +221,9 @@ export async function executeSQLiteTool(
     
     case 'backup': {
       const { destination } = params;
-      const backup = db.backup(destination);
-      
-      return new Promise((resolve, reject) => {
-        backup.step(-1); // Copy entire database
-        backup.finish();
-        resolve({ success: true, destination, message: 'Backup completed' });
-      });
+      // better-sqlite3 backup is synchronous
+      db.backup(destination);
+      return { success: true, destination, message: 'Backup completed' };
     }
     
     default:
