@@ -118,31 +118,40 @@ export async function executePlaywrightTool(tool: string, params: any): Promise<
       // ==================== VIDEO RECORDING ====================
       case 'recordVideo': {
         // Note: Video recording requires context-level setup
-        const videoContext = await browser.newContext({
-          recordVideo: {
-            dir: params.videoDir || './videos',
-            size: params.videoSize || { width: 1280, height: 720 },
-          },
-        });
-        const videoPage = await videoContext.newPage();
+        let videoContext;
+        let videoPage;
         
-        await videoPage.goto(params.url, { waitUntil: 'networkidle' });
-        
-        // Execute actions if provided
-        if (params.actions) {
-          for (const action of params.actions) {
-            await executePageAction(videoPage, action);
+        try {
+          videoContext = await browser.newContext({
+            recordVideo: {
+              dir: params.videoDir || './videos',
+              size: params.videoSize || { width: 1280, height: 720 },
+            },
+          });
+          videoPage = await videoContext.newPage();
+          
+          await videoPage.goto(params.url, { waitUntil: 'networkidle' });
+          
+          // Execute actions if provided
+          if (params.actions) {
+            for (const action of params.actions) {
+              await executePageAction(videoPage, action);
+            }
+          }
+          
+          await videoPage.waitForTimeout(params.duration || 5000);
+          
+          return {
+            success: true,
+            message: 'Video recorded',
+            path: params.videoDir || './videos',
+          };
+        } finally {
+          // Ensure video context is always closed to prevent leaks
+          if (videoContext) {
+            await videoContext.close();
           }
         }
-        
-        await videoPage.waitForTimeout(params.duration || 5000);
-        await videoContext.close();
-        
-        return {
-          success: true,
-          message: 'Video recorded',
-          path: params.videoDir || './videos',
-        };
       }
 
       // ==================== SCRAPING ====================
@@ -216,7 +225,13 @@ export async function executePlaywrightTool(tool: string, params: any): Promise<
           await page.goto(params.url, { waitUntil: 'networkidle' });
         }
         
-        await page.type(params.selector, params.text, {
+        // Support both 'text' and 'value' for consistency with interact tool
+        const textToType = params.text || params.value;
+        if (!textToType) {
+          throw new Error('Either "text" or "value" parameter is required for type action');
+        }
+        
+        await page.type(params.selector, textToType, {
           delay: params.delay || 50,
         });
         
