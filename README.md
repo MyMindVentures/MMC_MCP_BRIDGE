@@ -1,4 +1,4 @@
-# 🚀 MMC MCP Bridge
+# 🚀 MMC_MCP_Bridge
 
 **Enterprise MCP Orchestration Platform** - 26 MCP Servers + OAuth2 Authentication
 
