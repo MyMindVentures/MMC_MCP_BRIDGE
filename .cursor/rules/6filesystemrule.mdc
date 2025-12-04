@@ -168,4 +168,366 @@ Users configure Cursor IDE to connect to this bridge:
 - Uses **MCP JSON-RPC 2.0** over SSE
 - Implements: `server/info`, `tools/list`, `resources/list`, `prompts/list`, `tools/call`
 - Compatible with Apollo MCP Server spec
-- All 24 servers ALWAYS enabled (throw error if env var missing)
+- All 26 servers ALWAYS enabled (throw error if env var missing)
+
+---
+
+## 7. TASKLIST.PRD - FULL MCP UPGRADE PLAN
+
+### STATUS: 2/26 SERVERS COMPLETED (8%)
+
+**STRICT EXECUTION RULES:**
+1. Read this list from TOP to BOTTOM
+2. Complete each task FULLY before moving to next
+3. Mark task as ✅ when done
+4. Commit & push after each major task
+5. DO NOT skip any task
+6. DO NOT deviate from order
+
+---
+
+### TIER 1: DATABASE SERVERS (3 servers)
+
+#### Task 1.1: Postgres ✅ COMPLETED
+- Status: 1 → 25 tools ✅
+- File: `app/api/postgres-tools.ts` ✅
+- Deployed: Railway ✅
+- Commit: "POSTGRES FULL UPGRADE" ✅
+
+#### Task 1.2: SQLite ✅ COMPLETED
+- Status: 1 → 22 tools ✅
+- File: `app/api/sqlite-tools.ts` ✅
+- Deployed: Railway ✅
+- Commit: "SQLITE FULL UPGRADE" ✅
+
+#### Task 1.3: MongoDB ⏳ IN PROGRESS
+- Current: 5 tools
+- Target: 15+ tools
+- New Tools Needed:
+  * Schema: listCollections, collectionStats, listIndexes
+  * Indexes: createIndex, dropIndex, listIndexes
+  * Aggregation: aggregate, mapReduce
+  * Transactions: startSession, commitTransaction, abortTransaction
+  * Change Streams: watch
+  * Bulk: bulkWrite
+- Action:
+  1. Create `app/api/mongodb-tools.ts`
+  2. Update `app/api/mcp-config.ts` (MongoDB tools array)
+  3. Update `app/api/mcp-executor.ts` (import & use)
+  4. Commit: "MONGODB FULL UPGRADE: 5→15 tools"
+
+---
+
+### TIER 2: PRODUCTIVITY TOOLS (3 servers)
+
+#### Task 2.1: Notion
+- Current: 2 tools (createPage, listDatabases)
+- Target: 25+ tools
+- New Tools Needed:
+  * Pages: getPage, updatePage, deletePage, listPageChildren
+  * Blocks: appendBlock, updateBlock, deleteBlock, getBlock
+  * Databases: updateDatabase, createDatabase, filterDatabase, sortDatabase
+  * Properties: updateProperties, addProperty, removeProperty
+  * Users: listUsers, getUser
+  * Comments: createComment, listComments
+  * Search: search (full-text)
+  * AI: aiSuggestTitle, aiSuggestContent
+- Action:
+  1. Create `app/api/notion-tools.ts`
+  2. Update `app/api/mcp-config.ts`
+  3. Update `app/api/mcp-executor.ts`
+  4. Commit: "NOTION FULL UPGRADE: 2→25 tools"
+
+#### Task 2.2: Slack
+- Current: 2 tools (postMessage, listChannels)
+- Target: 20+ tools
+- New Tools Needed:
+  * Messages: updateMessage, deleteMessage, postEphemeral, scheduleMessage, postThread
+  * Files: uploadFile, deleteFile, shareFile, getFile
+  * Reactions: addReaction, removeReaction, listReactions
+  * Users: listUsers, getUser, setPresence, getUserProfile
+  * Channels: createChannel, archiveChannel, inviteUsers, setChannelTopic
+  * Webhooks: createWebhook, deleteWebhook
+- Action:
+  1. Create `app/api/slack-tools.ts`
+  2. Update `app/api/mcp-config.ts`
+  3. Update `app/api/mcp-executor.ts`
+  4. Commit: "SLACK FULL UPGRADE: 2→20 tools"
+
+#### Task 2.3: Linear
+- Current: 4 tools
+- Target: 20+ tools
+- New Tools Needed:
+  * Projects: listProjects, createProject, updateProject
+  * Cycles: listCycles, createCycle, updateCycle
+  * Labels: listLabels, createLabel, updateLabel
+  * Comments: createComment, updateComment, listComments
+  * Attachments: uploadAttachment, listAttachments
+  * Teams: listTeams, getTeam
+  * Users: listUsers, getUser
+  * Bulk: bulkUpdateIssues
+- Action:
+  1. Create `app/api/linear-tools.ts`
+  2. Update `app/api/mcp-config.ts`
+  3. Update `app/api/mcp-executor.ts`
+  4. Commit: "LINEAR FULL UPGRADE: 4→20 tools"
+
+---
+
+### TIER 3: AI SERVERS (2 servers)
+
+#### Task 3.1: OpenAI
+- Current: 4 tools
+- Target: 15+ tools + STREAMING
+- New Tools Needed:
+  * Chat: chatStreaming (SSE), chatWithFunctions, chatWithVision
+  * Assistants: createAssistant, runAssistant, listAssistants
+  * Fine-tuning: createFineTune, listFineTunes
+  * Moderation: moderateText, moderateImage
+  * Audio: transcribe (Whisper), translate, textToSpeech
+  * Files: uploadFile, listFiles, deleteFile
+- Action:
+  1. Create `app/api/openai-tools.ts`
+  2. Add streaming support
+  3. Update `app/api/mcp-config.ts`
+  4. Update `app/api/mcp-executor.ts`
+  5. Commit: "OPENAI FULL UPGRADE: 4→15 tools + streaming"
+
+#### Task 3.2: Anthropic
+- Current: 2 tools
+- Target: 10+ tools + STREAMING
+- New Tools Needed:
+  * Chat: chatStreaming, chatWithTools, chatWithVision
+  * Prompt: promptCaching
+  * Models: listModels
+  * Token: countTokens
+  * Batch: batchMessages
+- Action:
+  1. Create `app/api/anthropic-tools.ts`
+  2. Add streaming support
+  3. Update `app/api/mcp-config.ts`
+  4. Update `app/api/mcp-executor.ts`
+  5. Commit: "ANTHROPIC FULL UPGRADE: 2→10 tools + streaming"
+
+---
+
+### TIER 4: DEV TOOLS (2 servers)
+
+#### Task 4.1: GitHub
+- Current: 4 tools
+- Target: 25+ tools
+- New Tools Needed:
+  * Workflows: listWorkflows, triggerWorkflow, getWorkflowRun
+  * Releases: createRelease, updateRelease, uploadAsset
+  * Webhooks: createWebhook, deleteWebhook, listWebhooks
+  * Branches: listBranches, createBranch, deleteBranch
+  * Protection: updateBranchProtection, getBranchProtection
+  * Code: getCodeScanning, listCommits, getCommit
+  * PRs: mergePR, reviewPR, listReviews
+  * Gists: createGist, updateGist, deleteGist
+- Action:
+  1. Create `app/api/github-tools.ts`
+  2. Update `app/api/mcp-config.ts`
+  3. Update `app/api/mcp-executor.ts`
+  4. Commit: "GITHUB FULL UPGRADE: 4→25 tools"
+
+#### Task 4.2: Git
+- Current: 7 tools
+- Target: 15+ tools
+- New Tools Needed:
+  * Diff: diff, diffStaged, diffFile
+  * History: blame, log (advanced), show
+  * Tags: listTags, createTag, deleteTag
+  * Stash: stashSave, stashPop, stashList
+  * Remote: addRemote, removeRemote, listRemotes
+  * Merge: merge (with strategies), rebase
+- Action:
+  1. Update `app/api/mcp-executor.ts` (expand git case)
+  2. Update `app/api/mcp-config.ts`
+  3. Commit: "GIT FULL UPGRADE: 7→15 tools"
+
+---
+
+### TIER 5: INTEGRATION TOOLS (3 servers)
+
+#### Task 5.1: Stripe
+- Current: 1 tool (listCustomers)
+- Target: 25+ tools
+- New Tools Needed:
+  * Customers: createCustomer, updateCustomer, deleteCustomer, getCustomer
+  * Payments: createPaymentIntent, confirmPayment, capturePayment, cancelPayment
+  * Subscriptions: createSubscription, updateSubscription, cancelSubscription, listSubscriptions
+  * Products: createProduct, updateProduct, deleteProduct, listProducts
+  * Prices: createPrice, updatePrice, listPrices
+  * Invoices: createInvoice, payInvoice, voidInvoice, listInvoices
+  * Refunds: createRefund, listRefunds
+  * Webhooks: constructEvent (verify webhook)
+- Action:
+  1. Create `app/api/stripe-tools.ts`
+  2. Update `app/api/mcp-config.ts`
+  3. Update `app/api/mcp-executor.ts`
+  4. Commit: "STRIPE FULL UPGRADE: 1→25 tools"
+
+#### Task 5.2: Airtable
+- Current: 1 tool (listRecords)
+- Target: 15+ tools
+- New Tools Needed:
+  * Records: createRecord, updateRecord, deleteRecord, getRecord
+  * Bulk: bulkCreate, bulkUpdate, bulkDelete
+  * Filter: filterRecords, sortRecords, searchRecords
+  * Fields: listFields, createField, updateField
+  * Views: listViews, getView
+  * Tables: listTables, createTable
+- Action:
+  1. Create `app/api/airtable-tools.ts`
+  2. Update `app/api/mcp-config.ts`
+  3. Update `app/api/mcp-executor.ts`
+  4. Commit: "AIRTABLE FULL UPGRADE: 1→15 tools"
+
+#### Task 5.3: Google Drive
+- Current: 1 tool (listFiles)
+- Target: 20+ tools
+- New Tools Needed:
+  * Files: getFile, uploadFile, updateFile, deleteFile, copyFile
+  * Download: downloadFile, exportFile
+  * Sharing: shareFile, unshareFile, listPermissions, updatePermissions
+  * Folders: createFolder, moveFile, listFolders
+  * Search: searchFiles (advanced), searchByQuery
+  * Comments: createComment, listComments, deleteComment
+  * Revisions: listRevisions, getRevision
+- Action:
+  1. Create `app/api/google-drive-tools.ts`
+  2. Update `app/api/mcp-config.ts`
+  3. Update `app/api/mcp-executor.ts`
+  4. Commit: "GOOGLE-DRIVE FULL UPGRADE: 1→20 tools"
+
+---
+
+### TIER 6: REMAINING SERVERS (11 servers)
+
+#### Task 6.1: Railway
+- Current: 5 tools
+- Target: 15+ tools
+- New: setEnvVar, createVolume, getMetrics, streamLogs, rollback, manageDomains
+
+#### Task 6.2: Playwright
+- Current: 5 tools
+- Target: 15+ tools
+- New: generatePDF, recordVideo, interceptNetwork, manageCookies, emulateDevice, setGeolocation
+
+#### Task 6.3: Filesystem
+- Current: 6 tools
+- Target: 15+ tools
+- New: glob, copyFile, moveFile, chmod, readlink, symlink, watch
+
+#### Task 6.4: Doppler
+- Current: 1 tool
+- Target: 10+ tools
+- New: setSecret, deleteSecret, listProjects, listConfigs, getConfig, cloneConfig
+
+#### Task 6.5: Raindrop
+- Current: 1 tool
+- Target: 10+ tools
+- New: createBookmark, updateBookmark, deleteBookmark, searchBookmarks, listCollections, createCollection
+
+#### Task 6.6: Postman
+- Current: 1 tool
+- Target: 10+ tools
+- New: getCollection, createCollection, updateCollection, runCollection, listEnvironments, createEnvironment
+
+#### Task 6.7: Ollama
+- Current: 1 tool
+- Target: 8+ tools
+- New: listModels, pullModel, deleteModel, generateEmbeddings, createModel, streamChat
+
+#### Task 6.8: Brave Search
+- Current: 1 tool
+- Target: 5+ tools
+- New: imageSearch, videoSearch, newsSearch, localSearch
+
+#### Task 6.9: Puppeteer
+- Current: 1 tool
+- Target: 10+ tools
+- New: screenshot, click, type, scroll, pdf, cookies, evaluate, waitFor
+
+#### Task 6.10: Sentry
+- Current: 1 tool
+- Target: 15+ tools
+- New: listIssues, getIssue, updateIssue, listProjects, getProject, listReleases, createRelease
+
+#### Task 6.11: Strapi
+- Current: 1 tool
+- Target: 15+ tools
+- New: createEntry, updateEntry, deleteEntry, listContentTypes, uploadMedia, getMedia
+
+---
+
+### TIER 7: INFRASTRUCTURE (2 tasks)
+
+#### Task 7.1: Rate Limiting & Retry Logic
+- Add to ALL servers:
+  * Rate limiting (per server)
+  * Exponential backoff
+  * Circuit breaker pattern
+  * Error boundaries
+- Action:
+  1. Create `app/api/resilience-utils.ts`
+  2. Update ALL tool executors
+  3. Commit: "INFRASTRUCTURE: Rate limiting & retry logic"
+
+#### Task 7.2: Streaming Support
+- Add SSE streaming to:
+  * OpenAI (chatStreaming)
+  * Anthropic (chatStreaming)
+  * n8n (execution logs)
+- Action:
+  1. Create `app/api/streaming-utils.ts`
+  2. Update streaming endpoints
+  3. Commit: "INFRASTRUCTURE: Streaming support"
+
+---
+
+### TIER 8: FINAL TASKS (3 tasks)
+
+#### Task 8.1: Testing with Real Data
+- Test each upgraded server:
+  * Postgres: CRUD operations
+  * SQLite: CRUD operations
+  * MongoDB: Aggregations
+  * Notion: Page operations
+  * Slack: Message posting
+  * OpenAI: Chat & streaming
+  * Stripe: Payment flow
+  * GitHub: Workflow trigger
+- Action:
+  1. Create test scripts
+  2. Document results in `MCP_TEST_RESULTS.md`
+  3. Commit: "TESTING: All 26 servers validated"
+
+#### Task 8.2: Update Documentation
+- Update files:
+  * `MCP_AUDIT_REPORT.md` (final scores)
+  * `MCP_UPGRADE_PLAN.md` (completion status)
+  * Create `MCP_USAGE_GUIDE.md`
+- Commit: "DOCS: Final documentation"
+
+#### Task 8.3: Final Deployment
+- Verify Railway deployment
+- Test SSE endpoint from Cursor
+- Test all 350+ tools
+- Celebrate! 🎉
+- Commit: "PRODUCTION: All 26 MCP servers fully operational - 350+ tools"
+
+---
+
+### SUCCESS CRITERIA
+
+✅ All 26 servers upgraded
+✅ 350+ total tools implemented
+✅ Streaming support added
+✅ Rate limiting implemented
+✅ All tests passing
+✅ Railway deployed & verified
+✅ Cursor IDE connected successfully
+
+**FINAL SCORE TARGET: 9/10 across all metrics**
