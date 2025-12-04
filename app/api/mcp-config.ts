@@ -540,15 +540,86 @@ export const MCP_SERVERS: Record<string, MCPServer> = {
         },
       },
 
-      // 🚀 AI-POWERED WORKFLOW BUILDING
+      // 🚀 AI-POWERED WORKFLOW BUILDING (6 AI tools!)
       {
         name: "buildWorkflowFromDescription",
         description:
-          "AI-powered: Build complete n8n workflow from natural language description",
+          "🤖 AI: Build complete n8n workflow from natural language (NLP-powered)",
         inputSchema: {
           type: "object",
-          properties: { description: { type: "string" } },
+          properties: { 
+            description: { type: "string" },
+            model: { type: "string", default: "gpt-4" }
+          },
           required: ["description"],
+        },
+      },
+      {
+        name: "explainWorkflow",
+        description:
+          "🤖 AI: Explain workflow in simple terms (perfect for chatbots)",
+        inputSchema: {
+          type: "object",
+          properties: { 
+            workflowId: { type: "string" },
+            model: { type: "string" }
+          },
+          required: ["workflowId"],
+        },
+      },
+      {
+        name: "optimizeWorkflow",
+        description:
+          "🤖 AI: Optimize workflow for performance (AI-powered analysis)",
+        inputSchema: {
+          type: "object",
+          properties: { 
+            workflowId: { type: "string" },
+            applyChanges: { type: "boolean" },
+            model: { type: "string" }
+          },
+          required: ["workflowId"],
+        },
+      },
+      {
+        name: "suggestNodes",
+        description:
+          "🤖 AI: Suggest best nodes for your use case (context-aware)",
+        inputSchema: {
+          type: "object",
+          properties: { 
+            context: { type: "string" },
+            model: { type: "string" }
+          },
+          required: ["context"],
+        },
+      },
+      {
+        name: "debugWorkflowWithAI",
+        description:
+          "🤖 AI: Debug failed workflows with AI analysis",
+        inputSchema: {
+          type: "object",
+          properties: { 
+            executionId: { type: "string" },
+            model: { type: "string" }
+          },
+          required: ["executionId"],
+        },
+      },
+      {
+        name: "convertToWorkflow",
+        description:
+          "🤖 AI: Convert any format to n8n workflow (Zapier, code, etc)",
+        inputSchema: {
+          type: "object",
+          properties: { 
+            source: { type: "string" },
+            sourceType: { type: "string" },
+            createWorkflow: { type: "boolean" },
+            model: { type: "string" }
+          },
+          required: ["source", "sourceType"],
         },
       },
       
@@ -604,27 +675,45 @@ export const MCP_SERVERS: Record<string, MCPServer> = {
     prompts: [
       {
         name: "create_automation",
-        description: "Help create n8n automation with AI",
+        description: "🤖 AI: Create n8n automation from natural language (perfect for chatbots)",
         arguments: [
-          { name: "task", description: "What to automate", required: true },
+          { name: "task", description: "What to automate (in plain English)", required: true },
         ],
       },
       {
         name: "optimize_workflow",
-        description: "Optimize existing workflow",
+        description: "🤖 AI: Optimize existing workflow with AI suggestions",
         arguments: [
-          {
-            name: "workflowId",
-            description: "Workflow to optimize",
-            required: true,
-          },
+          { name: "workflowId", description: "Workflow to optimize", required: true },
         ],
       },
       {
         name: "debug_workflow",
-        description: "Debug workflow execution",
+        description: "🤖 AI: Debug workflow with AI-powered analysis",
         arguments: [
           { name: "executionId", description: "Execution ID", required: true },
+        ],
+      },
+      {
+        name: "explain_workflow",
+        description: "🤖 AI: Explain workflow in simple terms (chatbot-friendly)",
+        arguments: [
+          { name: "workflowId", description: "Workflow to explain", required: true },
+        ],
+      },
+      {
+        name: "suggest_nodes",
+        description: "🤖 AI: Get node suggestions for your use case",
+        arguments: [
+          { name: "useCase", description: "What you want to do", required: true },
+        ],
+      },
+      {
+        name: "convert_automation",
+        description: "🤖 AI: Convert Zapier/Make/IFTTT to n8n",
+        arguments: [
+          { name: "source", description: "Source automation", required: true },
+          { name: "platform", description: "Source platform (Zapier, Make, etc)", required: true },
         ],
       },
     ],

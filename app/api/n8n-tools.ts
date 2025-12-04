@@ -184,13 +184,253 @@ export async function executeN8NTool(tool: string, params: any): Promise<any> {
 
     // ==================== AI-POWERED BUILDING ====================
     case 'buildWorkflowFromDescription': {
-      // This uses AI to generate workflow from natural language
-      // Note: This might be a custom endpoint or require OpenAI integration
-      const { data } = await client.post('/workflows/generate', {
-        description: params.description,
+      // AI-powered workflow generation from natural language
+      // Uses OpenAI to convert description to n8n workflow JSON
+      if (!process.env.OPENAI_API_KEY) {
+        throw new Error('OPENAI_API_KEY required for AI workflow building');
+      }
+
+      const OpenAI = require('openai');
+      const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+      // Get available nodes for context
+      const { data: nodes } = await client.get('/node-types');
+      const nodeList = nodes.map((n: any) => n.name).slice(0, 100); // Top 100 most common
+
+      const prompt = `You are an n8n workflow expert. Convert this natural language description into a complete n8n workflow JSON.
+
+Description: ${params.description}
+
+Available nodes (sample): ${nodeList.join(', ')}
+
+Return ONLY valid JSON in this exact format:
+{
+  "name": "Workflow Name",
+  "nodes": [
+    {
+      "parameters": {},
+      "name": "Node Name",
+      "type": "n8n-nodes-base.nodeName",
+      "typeVersion": 1,
+      "position": [x, y]
+    }
+  ],
+  "connections": {
+    "Node Name": {
+      "main": [[{"node": "Next Node", "type": "main", "index": 0}]]
+    }
+  },
+  "settings": {},
+  "staticData": null
+}
+
+Make it production-ready with proper error handling and realistic parameters.`;
+
+      const completion = await openai.chat.completions.create({
         model: params.model || 'gpt-4',
+        messages: [
+          { role: 'system', content: 'You are an n8n workflow architect. Return only valid JSON.' },
+          { role: 'user', content: prompt }
+        ],
+        temperature: 0.3,
       });
-      return data;
+
+      const workflowJson = JSON.parse(completion.choices[0].message.content || '{}');
+      
+      // Create the workflow in n8n
+      const { data: createdWorkflow } = await client.post('/workflows', workflowJson);
+      
+      return {
+        workflow: createdWorkflow,
+        description: params.description,
+        aiGenerated: true,
+        model: params.model || 'gpt-4',
+      };
+    }
+
+    case 'explainWorkflow': {
+      // AI-powered workflow explanation
+      if (!process.env.OPENAI_API_KEY) {
+        throw new Error('OPENAI_API_KEY required for AI workflow explanation');
+      }
+
+      const { data: workflow } = await client.get(`/workflows/${params.workflowId}`);
+      
+      const OpenAI = require('openai');
+      const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+      const prompt = `Explain this n8n workflow in simple terms:
+
+Workflow: ${workflow.name}
+Nodes: ${JSON.stringify(workflow.nodes, null, 2)}
+Connections: ${JSON.stringify(workflow.connections, null, 2)}
+
+Provide:
+1. What this workflow does (1-2 sentences)
+2. Step-by-step breakdown
+3. Potential improvements
+4. Common use cases`;
+
+      const completion = await openai.chat.completions.create({
+        model: params.model || 'gpt-4',
+        messages: [
+          { role: 'system', content: 'You are an n8n expert. Explain workflows clearly.' },
+          { role: 'user', content: prompt }
+        ],
+        temperature: 0.7,
+      });
+
+      return {
+        workflowId: params.workflowId,
+        workflowName: workflow.name,
+        explanation: completion.choices[0].message.content,
+      };
+    }
+
+    case 'optimizeWorkflow': {
+      // AI-powered workflow optimization
+      if (!process.env.OPENAI_API_KEY) {
+        throw new Error('OPENAI_API_KEY required for AI workflow optimization');
+      }
+
+      const { data: workflow } = await client.get(`/workflows/${params.workflowId}`);
+      
+      const OpenAI = require('openai');
+      const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+      const prompt = `Optimize this n8n workflow for performance and reliability:
+
+${JSON.stringify(workflow, null, 2)}
+
+Provide:
+1. Optimized workflow JSON
+2. List of changes made
+3. Performance improvements
+4. Best practices applied
+
+Return JSON: { "optimizedWorkflow": {...}, "changes": [...], "improvements": [...] }`;
+
+      const completion = await openai.chat.completions.create({
+        model: params.model || 'gpt-4',
+        messages: [
+          { role: 'system', content: 'You are an n8n optimization expert. Return valid JSON.' },
+          { role: 'user', content: prompt }
+        ],
+        temperature: 0.3,
+      });
+
+      const result = JSON.parse(completion.choices[0].message.content || '{}');
+      
+      // Update the workflow
+      if (params.applyChanges) {
+        await client.patch(`/workflows/${params.workflowId}`, result.optimizedWorkflow);
+      }
+
+      return {
+        workflowId: params.workflowId,
+        ...result,
+        applied: params.applyChanges || false,
+      };
+    }
+
+    case 'suggestNodes': {
+      // AI-powered node suggestions based on context
+      if (!process.env.OPENAI_API_KEY) {
+        throw new Error('OPENAI_API_KEY required for AI node suggestions');
+      }
+
+      const { data: nodes } = await client.get('/node-types');
+      
+      const OpenAI = require('openai');
+      const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+      const prompt = `Given this workflow context: "${params.context}"
+
+From these available n8n nodes: ${nodes.map((n: any) => n.name).slice(0, 200).join(', ')}
+
+Suggest the 5 best nodes to use and explain why.
+
+Return JSON: [{"node": "nodeName", "reason": "why", "parameters": {...}}]`;
+
+      const completion = await openai.chat.completions.create({
+        model: params.model || 'gpt-4',
+        messages: [
+          { role: 'system', content: 'You are an n8n node expert. Return valid JSON array.' },
+          { role: 'user', content: prompt }
+        ],
+        temperature: 0.5,
+      });
+
+      return {
+        context: params.context,
+        suggestions: JSON.parse(completion.choices[0].message.content || '[]'),
+      };
+    }
+
+    case 'debugWorkflowWithAI': {
+      // AI-powered workflow debugging
+      if (!process.env.OPENAI_API_KEY) {
+        throw new Error('OPENAI_API_KEY required for AI debugging');
+      }
+
+      const { data: execution } = await client.get(`/executions/${params.executionId}`);
+      
+      const OpenAI = require('openai');
+      const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+      const prompt = `Debug this failed n8n workflow execution:
+
+Execution: ${JSON.stringify(execution, null, 2)}
+
+Provide:
+1. Root cause analysis
+2. Specific fix recommendations
+3. Code examples if needed
+4. Prevention strategies`;
+
+      const completion = await openai.chat.completions.create({
+        model: params.model || 'gpt-4',
+        messages: [
+          { role: 'system', content: 'You are an n8n debugging expert.' },
+          { role: 'user', content: prompt }
+        ],
+        temperature: 0.3,
+      });
+
+      return {
+        executionId: params.executionId,
+        analysis: completion.choices[0].message.content,
+      };
+    }
+
+    case 'convertToWorkflow': {
+      // Convert various formats to n8n workflow
+      const OpenAI = require('openai');
+      const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+      const prompt = `Convert this ${params.sourceType} to an n8n workflow:
+
+${params.source}
+
+Return valid n8n workflow JSON with proper nodes and connections.`;
+
+      const completion = await openai.chat.completions.create({
+        model: params.model || 'gpt-4',
+        messages: [
+          { role: 'system', content: 'You are an n8n workflow converter. Return only valid JSON.' },
+          { role: 'user', content: prompt }
+        ],
+        temperature: 0.2,
+      });
+
+      const workflowJson = JSON.parse(completion.choices[0].message.content || '{}');
+      
+      if (params.createWorkflow) {
+        const { data: created } = await client.post('/workflows', workflowJson);
+        return { workflow: created, converted: true };
+      }
+
+      return { workflowJson, preview: true };
     }
 
     // ==================== WORKFLOW IMPORT/EXPORT ====================
