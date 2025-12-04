@@ -405,9 +405,104 @@ AVOID: Use Puppeteer MCP for similar tasks (they overlap). Playwright is more mo
     enabled: true,
     tools: [
       {
-        name: "dynamic",
-        description: "Tools from @leonardsellem/n8n-mcp-server",
-        inputSchema: { type: "object", properties: {} },
+        name: "listWorkflows",
+        description: "List all n8n workflows",
+        inputSchema: { 
+          type: "object", 
+          properties: {
+            active: { type: "boolean", description: "Filter by active status" },
+            tags: { type: "array", items: { type: "string" }, description: "Filter by tags" }
+          }
+        },
+      },
+      {
+        name: "getWorkflow",
+        description: "Get workflow by ID",
+        inputSchema: { 
+          type: "object", 
+          properties: {
+            id: { type: "string", description: "Workflow ID" }
+          },
+          required: ["id"]
+        },
+      },
+      {
+        name: "createWorkflow",
+        description: "Create new n8n workflow",
+        inputSchema: { 
+          type: "object", 
+          properties: {
+            name: { type: "string" },
+            nodes: { type: "array" },
+            connections: { type: "object" },
+            settings: { type: "object" },
+            tags: { type: "array", items: { type: "string" } }
+          },
+          required: ["name", "nodes", "connections"]
+        },
+      },
+      {
+        name: "updateWorkflow",
+        description: "Update existing n8n workflow",
+        inputSchema: { 
+          type: "object", 
+          properties: {
+            id: { type: "string" },
+            name: { type: "string" },
+            nodes: { type: "array" },
+            connections: { type: "object" },
+            settings: { type: "object" },
+            active: { type: "boolean" }
+          },
+          required: ["id"]
+        },
+      },
+      {
+        name: "executeWorkflow",
+        description: "Execute/trigger n8n workflow",
+        inputSchema: { 
+          type: "object", 
+          properties: {
+            id: { type: "string" },
+            data: { type: "object", description: "Input data for workflow" }
+          },
+          required: ["id"]
+        },
+      },
+      {
+        name: "getExecution",
+        description: "Get workflow execution by ID",
+        inputSchema: { 
+          type: "object", 
+          properties: {
+            id: { type: "string", description: "Execution ID" }
+          },
+          required: ["id"]
+        },
+      },
+      {
+        name: "listExecutions",
+        description: "List workflow executions",
+        inputSchema: { 
+          type: "object", 
+          properties: {
+            workflowId: { type: "string" },
+            status: { type: "string", enum: ["waiting", "error", "success", "running"] },
+            limit: { type: "number" }
+          }
+        },
+      },
+      {
+        name: "buildWorkflowFromDescription",
+        description: "AI workflow builder - create workflow from natural language description",
+        inputSchema: { 
+          type: "object", 
+          properties: {
+            description: { type: "string", description: "Natural language workflow description" },
+            name: { type: "string" }
+          },
+          required: ["description"]
+        },
       },
     ],
     resources: [
