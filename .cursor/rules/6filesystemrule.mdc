@@ -131,6 +131,22 @@ If you think any of these files would be “best practice”, you must **ignore 
   }
   ```
 
+### 5.5 Git Branching Strategy
+
+- **ALWAYS work on feature branches** for each MCP server upgrade or feature
+- Branch naming convention: `feature/mcp-{server-name}` (e.g. `feature/mcp-openai`)
+- Workflow for each feature:
+  1. Create feature branch: `git checkout -b feature/mcp-{server-name}`
+  2. Make all changes on the feature branch
+  3. Commit with descriptive message
+  4. Push to remote: `git push -u origin feature/mcp-{server-name}`
+  5. Merge to main: `git checkout main && git merge feature/mcp-{server-name} --no-ff`
+  6. Push main: `git push origin main`
+  7. Delete feature branch: `git branch -d feature/mcp-{server-name} && git push origin --delete feature/mcp-{server-name}`
+- **NEVER commit directly to main** unless it's a critical hotfix
+- Each MCP upgrade = separate feature branch
+- This keeps main stable and Railway deployments predictable
+
 ## 6. MCP Bridge Architecture
 
 This project IS an **MCP Bridge** - it acts as a server that Cursor IDE connects to as an MCP client.

@@ -364,10 +364,11 @@ export const MCP_SERVERS: Record<string, MCPServer> = {
   },
 
   // 4. N8N COMMUNITY - @leonardsellem/n8n-mcp-server (Community Best!)
+  // TEMPORARILY DISABLED: Requires N8N_API_URL env var on Railway
   "n8n-community": {
     name: "n8n-community",
     category: "automation",
-    enabled: true,
+    enabled: false,
     tools: [
       {
         name: "dynamic",
@@ -1517,115 +1518,82 @@ export const MCP_SERVERS: Record<string, MCPServer> = {
     },
   },
 
-  // 9. OPENAI - OpenAI SDK with Sampling
+  // 9. OPENAI - OpenAI SDK with Sampling (FULLY UPGRADED: 30+ tools!)
   openai: {
     name: "openai",
     category: "ai",
     enabled: true,
     supportsSampling: true,
     tools: [
-      {
-        name: "chat",
-        description: "Chat with GPT",
-        inputSchema: {
-          type: "object",
-          properties: {
-            model: { type: "string", default: "gpt-4" },
-            messages: { type: "array" },
-            temperature: { type: "number" },
-          },
-          required: ["messages"],
-        },
-      },
-      {
-        name: "completion",
-        description: "Text completion",
-        inputSchema: {
-          type: "object",
-          properties: {
-            prompt: { type: "string" },
-            model: { type: "string" },
-            max_tokens: { type: "number" },
-          },
-          required: ["prompt"],
-        },
-      },
-      {
-        name: "embedding",
-        description: "Generate embeddings",
-        inputSchema: {
-          type: "object",
-          properties: {
-            input: { type: "string" },
-            model: { type: "string", default: "text-embedding-3-small" },
-          },
-          required: ["input"],
-        },
-      },
-      {
-        name: "image",
-        description: "Generate image with DALL-E",
-        inputSchema: {
-          type: "object",
-          properties: {
-            prompt: { type: "string" },
-            size: { type: "string", default: "1024x1024" },
-          },
-          required: ["prompt"],
-        },
-      },
+      // Chat Completions (5 tools)
+      { name: "chat", description: "Chat with GPT", inputSchema: { type: "object", properties: { model: { type: "string" }, messages: { type: "array" }, temperature: { type: "number" }, max_tokens: { type: "number" } }, required: ["messages"] } },
+      { name: "chatStreaming", description: "Chat with streaming", inputSchema: { type: "object", properties: { model: { type: "string" }, messages: { type: "array" }, temperature: { type: "number" } }, required: ["messages"] } },
+      { name: "chatWithFunctions", description: "Chat with function calling", inputSchema: { type: "object", properties: { model: { type: "string" }, messages: { type: "array" }, functions: { type: "array" }, function_call: { type: "string" } }, required: ["messages", "functions"] } },
+      { name: "chatWithTools", description: "Chat with tools", inputSchema: { type: "object", properties: { model: { type: "string" }, messages: { type: "array" }, tools: { type: "array" }, tool_choice: { type: "string" } }, required: ["messages", "tools"] } },
+      { name: "chatWithVision", description: "Chat with vision (images)", inputSchema: { type: "object", properties: { model: { type: "string" }, messages: { type: "array" }, max_tokens: { type: "number" } }, required: ["messages"] } },
+      
+      // Legacy Completions (1 tool)
+      { name: "completion", description: "Text completion", inputSchema: { type: "object", properties: { prompt: { type: "string" }, model: { type: "string" }, max_tokens: { type: "number" } }, required: ["prompt"] } },
+      
+      // Embeddings (2 tools)
+      { name: "embedding", description: "Generate embeddings", inputSchema: { type: "object", properties: { input: { type: "string" }, model: { type: "string" } }, required: ["input"] } },
+      { name: "batchEmbeddings", description: "Generate embeddings for multiple inputs", inputSchema: { type: "object", properties: { inputs: { type: "array" }, model: { type: "string" } }, required: ["inputs"] } },
+      
+      // Images (3 tools)
+      { name: "generateImage", description: "Generate image with DALL-E", inputSchema: { type: "object", properties: { prompt: { type: "string" }, model: { type: "string" }, size: { type: "string" }, quality: { type: "string" }, style: { type: "string" } }, required: ["prompt"] } },
+      { name: "editImage", description: "Edit image with DALL-E", inputSchema: { type: "object", properties: { image: { type: "string" }, prompt: { type: "string" }, mask: { type: "string" }, size: { type: "string" } }, required: ["image", "prompt"] } },
+      { name: "createImageVariation", description: "Create image variation", inputSchema: { type: "object", properties: { image: { type: "string" }, size: { type: "string" } }, required: ["image"] } },
+      
+      // Assistants (8 tools)
+      { name: "createAssistant", description: "Create assistant", inputSchema: { type: "object", properties: { name: { type: "string" }, description: { type: "string" }, model: { type: "string" }, instructions: { type: "string" }, tools: { type: "array" } }, required: ["name", "model"] } },
+      { name: "listAssistants", description: "List assistants", inputSchema: { type: "object", properties: { limit: { type: "number" }, order: { type: "string" } } } },
+      { name: "getAssistant", description: "Get assistant", inputSchema: { type: "object", properties: { assistant_id: { type: "string" } }, required: ["assistant_id"] } },
+      { name: "updateAssistant", description: "Update assistant", inputSchema: { type: "object", properties: { assistant_id: { type: "string" }, name: { type: "string" }, instructions: { type: "string" } }, required: ["assistant_id"] } },
+      { name: "deleteAssistant", description: "Delete assistant", inputSchema: { type: "object", properties: { assistant_id: { type: "string" } }, required: ["assistant_id"] } },
+      { name: "createThread", description: "Create thread", inputSchema: { type: "object", properties: { messages: { type: "array" }, metadata: { type: "object" } } } },
+      { name: "runAssistant", description: "Run assistant", inputSchema: { type: "object", properties: { thread_id: { type: "string" }, assistant_id: { type: "string" }, instructions: { type: "string" } }, required: ["thread_id", "assistant_id"] } },
+      { name: "getRun", description: "Get run status", inputSchema: { type: "object", properties: { thread_id: { type: "string" }, run_id: { type: "string" } }, required: ["thread_id", "run_id"] } },
+      
+      // Fine-tuning (4 tools)
+      { name: "createFineTune", description: "Create fine-tune job", inputSchema: { type: "object", properties: { training_file: { type: "string" }, model: { type: "string" }, hyperparameters: { type: "object" } }, required: ["training_file"] } },
+      { name: "listFineTunes", description: "List fine-tune jobs", inputSchema: { type: "object", properties: { limit: { type: "number" } } } },
+      { name: "getFineTune", description: "Get fine-tune job", inputSchema: { type: "object", properties: { fine_tuning_job_id: { type: "string" } }, required: ["fine_tuning_job_id"] } },
+      { name: "cancelFineTune", description: "Cancel fine-tune job", inputSchema: { type: "object", properties: { fine_tuning_job_id: { type: "string" } }, required: ["fine_tuning_job_id"] } },
+      
+      // Audio (3 tools)
+      { name: "transcribe", description: "Transcribe audio (Whisper)", inputSchema: { type: "object", properties: { file: { type: "string" }, model: { type: "string" }, language: { type: "string" } }, required: ["file"] } },
+      { name: "translate", description: "Translate audio", inputSchema: { type: "object", properties: { file: { type: "string" }, model: { type: "string" } }, required: ["file"] } },
+      { name: "textToSpeech", description: "Text to speech", inputSchema: { type: "object", properties: { input: { type: "string" }, voice: { type: "string" }, model: { type: "string" } }, required: ["input"] } },
+      
+      // Files (5 tools)
+      { name: "uploadFile", description: "Upload file", inputSchema: { type: "object", properties: { file: { type: "string" }, purpose: { type: "string" } }, required: ["file"] } },
+      { name: "listFiles", description: "List files", inputSchema: { type: "object", properties: { purpose: { type: "string" } } } },
+      { name: "getFile", description: "Get file", inputSchema: { type: "object", properties: { file_id: { type: "string" } }, required: ["file_id"] } },
+      { name: "deleteFile", description: "Delete file", inputSchema: { type: "object", properties: { file_id: { type: "string" } }, required: ["file_id"] } },
+      { name: "getFileContent", description: "Get file content", inputSchema: { type: "object", properties: { file_id: { type: "string" } }, required: ["file_id"] } },
+      
+      // Moderation (2 tools)
+      { name: "moderateText", description: "Moderate text", inputSchema: { type: "object", properties: { input: { type: "string" }, model: { type: "string" } }, required: ["input"] } },
+      { name: "moderateBatch", description: "Moderate multiple texts", inputSchema: { type: "object", properties: { inputs: { type: "array" }, model: { type: "string" } }, required: ["inputs"] } },
+      
+      // Models (3 tools)
+      { name: "listModels", description: "List models", inputSchema: { type: "object", properties: {} } },
+      { name: "getModel", description: "Get model", inputSchema: { type: "object", properties: { model: { type: "string" } }, required: ["model"] } },
+      { name: "deleteModel", description: "Delete fine-tuned model", inputSchema: { type: "object", properties: { model: { type: "string" } }, required: ["model"] } },
     ],
     resources: [
-      {
-        uri: "openai://models",
-        name: "Models",
-        description: "Available OpenAI models",
-      },
+      { uri: "openai://models", name: "Models", description: "Available OpenAI models" },
+      { uri: "openai://assistants", name: "Assistants", description: "Available assistants" },
+      { uri: "openai://files", name: "Files", description: "Uploaded files" },
     ],
     prompts: [
-      {
-        name: "ai_assistant",
-        description: "AI assistant",
-        arguments: [
-          { name: "task", description: "Task description", required: true },
-        ],
-      },
+      { name: "ai_assistant", description: "AI assistant", arguments: [{ name: "task", description: "Task description", required: true }] },
+      { name: "code_review", description: "Code review assistant", arguments: [{ name: "code", description: "Code to review", required: true }] },
+      { name: "summarize", description: "Summarize text", arguments: [{ name: "text", description: "Text to summarize", required: true }] },
     ],
     execute: async (tool, params) => {
-      if (!process.env.OPENAI_API_KEY)
-        throw new Error("OPENAI_API_KEY not configured");
-      const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-
-      switch (tool) {
-        case "chat":
-          const chatCompletion = await openai.chat.completions.create({
-            model: params.model || "gpt-4",
-            messages: params.messages,
-            temperature: params.temperature,
-          });
-          return chatCompletion.choices[0].message;
-        case "completion":
-          const completion = await openai.completions.create({
-            model: params.model || "gpt-3.5-turbo-instruct",
-            prompt: params.prompt,
-            max_tokens: params.max_tokens,
-          });
-          return completion.choices[0].text;
-        case "embedding":
-          const embedding = await openai.embeddings.create({
-            model: params.model || "text-embedding-3-small",
-            input: params.input,
-          });
-          return embedding.data[0].embedding;
-        case "image":
-          const image = await openai.images.generate({
-            prompt: params.prompt,
-            size: params.size || "1024x1024",
-          });
-          return image.data[0];
-        default:
-          throw new Error(`Unknown openai tool: ${tool}`);
-      }
+      const { executeOpenAITool } = await import("./openai-tools");
+      return await executeOpenAITool(tool, params);
     },
   },
 
