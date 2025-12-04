@@ -178,26 +178,10 @@ export async function executeMCPTool(serverName: string, toolName: string, param
     }
 
     case 'github': {
-      if (!process.env.GITHUB_TOKEN) throw new Error('GITHUB_TOKEN not configured');
-      const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
-      
-      switch (toolName) {
-        case 'listRepos':
-          const { data: repos } = params.owner 
-            ? await octokit.repos.listForUser({ username: params.owner, per_page: params.limit || 30 })
-            : await octokit.repos.listForAuthenticatedUser({ per_page: params.limit || 30 });
-          return repos;
-        case 'createIssue':
-          const { data: issue } = await octokit.issues.create({ owner: params.owner, repo: params.repo, title: params.title, body: params.body });
-          return issue;
-        case 'createPR':
-          const { data: pr } = await octokit.pulls.create({ owner: params.owner, repo: params.repo, title: params.title, head: params.head, base: params.base });
-          return pr;
-        case 'searchCode':
-          const { data: results } = await octokit.search.code({ q: params.query });
-          return results;
-        default: throw new Error(`Unknown github tool: ${toolName}`);
-      }
+      // Use comprehensive GitHub tools (35+ tools!)
+      const { executeGitHubTool } = await import('./github-tools');
+      result = await executeGitHubTool(toolName, params);
+      break;
     }
 
     case 'openai': {
