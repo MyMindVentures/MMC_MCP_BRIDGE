@@ -86,17 +86,50 @@ When debugging or trying new things:
 5. **NEVER** use main as testing ground
 6. **NEVER** commit experimental code to main
 
-### 1.4 Railway Deployment Rules - CRITICAL
+### 1.4 Enterprise CI/CD Workflow - MANDATORY
 
-- **Main branch MUST always deploy successfully on Railway**
-- Before merging to main:
-  1. Build succeeds locally: `npm run build`
-  2. Railway preview deployment succeeds
-  3. Health endpoint responds: `/api/health`
-  4. No TypeScript errors
-  5. No runtime errors in logs
-- If Railway deploy fails → Fix on feature branch → Test → Merge
-- **NEVER** merge broken code that causes Railway failures
+**The Workflow (STRICT ORDER):**
+
+1. **Local Development:**
+   - Work on feature branch: `git checkout -b feature/name`
+   - Make changes
+   - Test locally: `npm run type-check && npm run build`
+   - MUST succeed before committing
+
+2. **Commit & Push:**
+   - Commit to feature branch
+   - Push: `git push origin feature/name`
+   - GitHub Actions runs automatically
+
+3. **GitHub Pre-Merge Checks (REQUIRED):**
+   - Pre-merge-check.yml runs on PR
+   - TypeScript type-check: `npm run type-check`
+   - Build: `npm run build`
+   - **PR CANNOT be merged if checks fail**
+
+4. **Railway Preview Deployment:**
+   - Railway auto-deploys PR branch
+   - Test preview URL
+   - Verify `/api/health` responds
+   - Check Railway logs for errors
+
+5. **Merge to Main (ONLY IF):**
+   - ✅ All GitHub checks pass
+   - ✅ Railway preview works
+   - ✅ Health endpoint responds
+   - ✅ No errors in logs
+
+6. **Production Deployment:**
+   - Railway auto-deploys main after merge
+   - Monitor deployment
+   - Verify production health
+
+**CRITICAL RULES:**
+- **NEVER** merge if GitHub checks fail
+- **NEVER** merge if Railway preview fails
+- **NEVER** push broken code to main
+- **ALWAYS** test locally first: `npm run type-check && npm run build`
+- **ALWAYS** verify Railway preview before merging
 
 ## 2. File System Rules - STRICT
 
