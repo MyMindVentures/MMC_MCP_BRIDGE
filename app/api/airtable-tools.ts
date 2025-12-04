@@ -60,7 +60,7 @@ export async function executeAirtableTool(tool: string, params: any): Promise<an
 
       return {
         id: (record as any).id,
-        fields: record.fields,
+        fields: (record as any).fields,
         createdTime: (record as any)._rawJson?.createdTime,
       };
     }
@@ -73,7 +73,7 @@ export async function executeAirtableTool(tool: string, params: any): Promise<an
 
       return {
         id: (record as any).id,
-        fields: record.fields,
+        fields: (record as any).fields,
       };
     }
 
@@ -97,7 +97,7 @@ export async function executeAirtableTool(tool: string, params: any): Promise<an
 
       return records.map(record => ({
         id: (record as any).id,
-        fields: record.fields,
+        fields: (record as any).fields,
       }));
     }
 
@@ -113,7 +113,7 @@ export async function executeAirtableTool(tool: string, params: any): Promise<an
 
       return records.map(record => ({
         id: (record as any).id,
-        fields: record.fields,
+        fields: (record as any).fields,
       }));
     }
 
@@ -140,7 +140,7 @@ export async function executeAirtableTool(tool: string, params: any): Promise<an
 
       return records.map(record => ({
         id: (record as any).id,
-        fields: record.fields,
+        fields: (record as any).fields,
       }));
     }
 
@@ -155,7 +155,7 @@ export async function executeAirtableTool(tool: string, params: any): Promise<an
 
       return records.map(record => ({
         id: (record as any).id,
-        fields: record.fields,
+        fields: (record as any).fields,
       }));
     }
 
@@ -183,7 +183,7 @@ export async function executeAirtableTool(tool: string, params: any): Promise<an
 
       return records.map(record => ({
         id: (record as any).id,
-        fields: record.fields,
+        fields: (record as any).fields,
       }));
     }
 
@@ -339,7 +339,7 @@ export async function executeAirtableTool(tool: string, params: any): Promise<an
 
       return {
         id: (record as any).id,
-        fields: record.fields,
+        fields: (record as any).fields,
       };
     }
 
