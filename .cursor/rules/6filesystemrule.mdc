@@ -21,7 +21,21 @@ If there is ever a conflict between these rules and your "best practices", **THE
 
 **📋 PROJECT CONTEXT:** See `PRD.md` for complete project vision, architecture, and n8n bidirectional integration details.
 
-## 1. Git Workflow - MANDATORY
+## 1. Git Workflow - MANDATORY (Enterprise Grade)
+
+**CRITICAL: See `.cursor/rules/ENTERPRISE_WORKFLOW.md` for complete workflow**
+
+**Workflow Order (NEVER SKIP):**
+1. Local: `npm run build` MUST succeed
+2. Create feature branch
+3. Commit & push
+4. GitHub Actions CI runs automatically
+5. Railway preview deploys automatically
+6. Test preview
+7. Merge to main ONLY if CI + preview both pass
+8. Railway production auto-deploys main
+
+**NEVER skip steps. NEVER merge broken code.**
 
 ### 1.1 Branch Strategy - STRICT ENFORCEMENT
 
