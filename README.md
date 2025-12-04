@@ -4,6 +4,8 @@
 
 Single SSE endpoint that orchestrates 26+ MCP servers for Cursor IDE and n8n workflows.
 
+> **Note:** This commit tests GitHub Actions workflows (CI/CD pre-merge checks).
+
 ---
 
 ## 📋 Architecture
