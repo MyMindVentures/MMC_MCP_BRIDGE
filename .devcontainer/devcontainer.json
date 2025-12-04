@@ -94,7 +94,8 @@
   },
 
   "mounts": [
-    "source=mmc-devcontainer-persist,target=/workspaces/.devcontainer-persist,type=volume"
+    "source=mmc-devcontainer-persist,target=/workspaces/.devcontainer-persist,type=volume",
+    "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
   ],
 
   "remoteUser": "node"
