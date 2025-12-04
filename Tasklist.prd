@@ -17,8 +17,8 @@
 ⏳ feat-06-databases-sqlite-full: SQLite MCP: alle 22+ tools volledig testen (schema, indexes, foreign keys, DDL operations)
 ⏳ feat-06-databases-mongodb-full: MongoDB MCP: alle 18+ tools volledig testen (collections, documents, aggregations, indexes)
 ✅ feat-07-linear-issues: Linear MCP: listIssues, createIssue, updateIssue, searchIssues tools - volledig geïmplementeerd met executeLinearTool (30+ tools beschikbaar)
-⏳ feat-07-github-repos: GitHub MCP: listRepos, createIssue, createPR, searchCode tools testen
-⏳ feat-07-github-workflow: GitHub + Linear MCP: volledige dev workflow testen (issue creation, PR workflow, code search)
+✅ feat-07-github-repos: GitHub MCP: listRepos, createIssue, createPR, searchCode tools - volledig geïmplementeerd via executeGitHubTool (35+ tools beschikbaar)
+⏳ feat-07-github-workflow: GitHub + Linear MCP: volledige dev workflow testen (issue creation, PR workflow, code search) - ready voor testing
 ⏳ feat-08-notion-pages: Notion MCP: alle 25+ tools testen (createPage, updatePage, queryDatabase, search)
 ⏳ feat-08-slack-messages: Slack MCP: alle 30+ tools testen (postMessage, listChannels, getHistory, file uploads)
 ⏳ feat-08-collab-workflow: Notion + Slack MCP: volledige collaboration workflow testen (documentatie + notificaties)
