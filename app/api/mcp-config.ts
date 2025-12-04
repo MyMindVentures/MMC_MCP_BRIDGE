@@ -1597,76 +1597,50 @@ export const MCP_SERVERS: Record<string, MCPServer> = {
     },
   },
 
-  // 10. ANTHROPIC - Anthropic SDK with Sampling
+  // 10. ANTHROPIC - Anthropic SDK with Sampling (FULLY UPGRADED: 14+ tools!)
   anthropic: {
     name: "anthropic",
     category: "ai",
     enabled: true,
     supportsSampling: true,
     tools: [
-      {
-        name: "chat",
-        description: "Chat with Claude",
-        inputSchema: {
-          type: "object",
-          properties: {
-            model: { type: "string", default: "claude-3-5-sonnet-20241022" },
-            messages: { type: "array" },
-            max_tokens: { type: "number", default: 1024 },
-          },
-          required: ["messages"],
-        },
-      },
-      {
-        name: "completion",
-        description: "Text completion",
-        inputSchema: {
-          type: "object",
-          properties: { prompt: { type: "string" }, model: { type: "string" } },
-          required: ["prompt"],
-        },
-      },
+      // Messages (5 tools)
+      { name: "chat", description: "Chat with Claude", inputSchema: { type: "object", properties: { model: { type: "string" }, messages: { type: "array" }, max_tokens: { type: "number" }, temperature: { type: "number" }, system: { type: "string" } }, required: ["messages"] } },
+      { name: "chatStreaming", description: "Chat with streaming", inputSchema: { type: "object", properties: { model: { type: "string" }, messages: { type: "array" }, max_tokens: { type: "number" }, system: { type: "string" } }, required: ["messages"] } },
+      { name: "chatWithTools", description: "Chat with tool use", inputSchema: { type: "object", properties: { model: { type: "string" }, messages: { type: "array" }, tools: { type: "array" }, tool_choice: { type: "object" }, max_tokens: { type: "number" } }, required: ["messages", "tools"] } },
+      { name: "chatWithVision", description: "Chat with vision (images)", inputSchema: { type: "object", properties: { model: { type: "string" }, messages: { type: "array" }, max_tokens: { type: "number" } }, required: ["messages"] } },
+      { name: "chatWithCaching", description: "Chat with prompt caching", inputSchema: { type: "object", properties: { model: { type: "string" }, messages: { type: "array" }, system: { type: "string" }, max_tokens: { type: "number" } }, required: ["messages"] } },
+      
+      // Legacy (1 tool)
+      { name: "completion", description: "Text completion", inputSchema: { type: "object", properties: { prompt: { type: "string" }, model: { type: "string" }, max_tokens: { type: "number" } }, required: ["prompt"] } },
+      
+      // Batch (1 tool)
+      { name: "batchMessages", description: "Process multiple messages", inputSchema: { type: "object", properties: { messages_batch: { type: "array" }, model: { type: "string" }, max_tokens: { type: "number" } }, required: ["messages_batch"] } },
+      
+      // Token Counting (1 tool)
+      { name: "countTokens", description: "Count tokens", inputSchema: { type: "object", properties: { model: { type: "string" }, messages: { type: "array" }, system: { type: "string" } }, required: ["messages"] } },
+      
+      // Models (2 tools)
+      { name: "listModels", description: "List Claude models", inputSchema: { type: "object", properties: {} } },
+      { name: "getModel", description: "Get model info", inputSchema: { type: "object", properties: { model: { type: "string" } }, required: ["model"] } },
+      
+      // Advanced (4 tools)
+      { name: "extractStructuredData", description: "Extract structured data from text", inputSchema: { type: "object", properties: { text: { type: "string" }, schema: { type: "object" }, model: { type: "string" } }, required: ["text", "schema"] } },
+      { name: "analyzeImage", description: "Analyze image with vision", inputSchema: { type: "object", properties: { image_data: { type: "string" }, prompt: { type: "string" }, media_type: { type: "string" }, model: { type: "string" } }, required: ["image_data"] } },
+      { name: "continueConversation", description: "Continue multi-turn conversation", inputSchema: { type: "object", properties: { message: { type: "string" }, history: { type: "array" }, system: { type: "string" }, model: { type: "string" } }, required: ["message"] } },
     ],
     resources: [
-      {
-        uri: "anthropic://models",
-        name: "Models",
-        description: "Claude models",
-      },
+      { uri: "anthropic://models", name: "Models", description: "Claude models" },
+      { uri: "anthropic://capabilities", name: "Capabilities", description: "Model capabilities" },
     ],
     prompts: [
-      {
-        name: "claude_assistant",
-        description: "Claude assistant",
-        arguments: [{ name: "task", description: "Task", required: true }],
-      },
+      { name: "claude_assistant", description: "Claude assistant", arguments: [{ name: "task", description: "Task", required: true }] },
+      { name: "code_review", description: "Code review with Claude", arguments: [{ name: "code", description: "Code to review", required: true }] },
+      { name: "analyze_data", description: "Data analysis", arguments: [{ name: "data", description: "Data to analyze", required: true }] },
     ],
     execute: async (tool, params) => {
-      if (!process.env.ANTHROPIC_API_KEY)
-        throw new Error("ANTHROPIC_API_KEY not configured");
-      const anthropic = new Anthropic({
-        apiKey: process.env.ANTHROPIC_API_KEY,
-      });
-
-      switch (tool) {
-        case "chat":
-          const message = await anthropic.messages.create({
-            model: params.model || "claude-3-5-sonnet-20241022",
-            max_tokens: params.max_tokens || 1024,
-            messages: params.messages,
-          });
-          return message.content[0];
-        case "completion":
-          // Legacy completion endpoint
-          const completion = await anthropic.messages.create({
-            model: params.model || "claude-3-5-sonnet-20241022",
-            max_tokens: 1024,
-            messages: [{ role: "user", content: params.prompt }],
-          });
-          return completion.content[0];
-        default:
-          throw new Error(`Unknown anthropic tool: ${tool}`);
-      }
+      const { executeAnthropicTool } = await import("./anthropic-tools");
+      return await executeAnthropicTool(tool, params);
     },
   },
 
