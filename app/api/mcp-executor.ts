@@ -391,10 +391,12 @@ export async function executeMCPTool(serverName: string, toolName: string, param
       throw new Error(`Unknown server: ${serverName}`);
     }
     
+    // Log successful execution
     const duration = Date.now() - startTime;
     await logToolExecution(serverName, toolName, params, result, undefined);
     return result;
   } catch (error: any) {
+    // Log failed execution
     const duration = Date.now() - startTime;
     await logToolExecution(serverName, toolName, params, null, error);
     throw error;
