@@ -1,13 +1,55 @@
 {
+  // Doppler Integration
   "doppler.autocomplete.enable": true,
   "doppler.hover.enable": true,
+  
+  // MCP Configuration - Railway Production Endpoint
   "mcp": {
     "mcpServers": {
       "MMC-MCP-Bridge-Railway": {
         "type": "sse",
         "url": "https://mmcmcphttpbridge-production.up.railway.app/api/sse",
-        "description": "Production MCP Bridge on Railway - ALL 26 MCP servers (git, filesystem, playwright, n8n, mongodb, linear, railway, github, openai, anthropic, postgres, sqlite, notion, slack, airtable, doppler, raindrop, postman, google-drive, ollama, brave-search, puppeteer, sentry, strapi, stripe)"
+        "description": "Production MCP Bridge on Railway - ALL 26 MCP servers"
       }
     }
-  }
+  },
+  
+  // TypeScript Configuration
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "typescript.preferences.importModuleSpecifier": "relative",
+  
+  // Editor Configuration
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  
+  // File Exclusions
+  "files.exclude": {
+    "**/.git": true,
+    "**/.next": true,
+    "**/node_modules": true,
+    "**/.DS_Store": true
+  },
+  
+  "files.watcherExclude": {
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true,
+    "**/node_modules/**": true,
+    "**/.next/**": true
+  },
+  
+  // Next.js Specific
+  "eslint.workingDirectories": [
+    { "mode": "auto" }
+  ],
+  
+  // Git Configuration
+  "git.enableSmartCommit": true,
+  "git.confirmSync": false,
+  "git.autofetch": true
 }

@@ -11,20 +11,28 @@
         "terminal.integrated.defaultProfile.linux": "bash",
         "editor.formatOnSave": true,
         "editor.defaultFormatter": "esbenp.prettier-vscode",
-        "mcp": {
-          "mcpServers": {
-            "MMC-MCP-Bridge-Railway": {
-              "type": "sse",
-              "url": "https://mmcmcphttpbridge-production.up.railway.app/api/sse",
-              "description": "Production MCP Bridge on Railway - ALL 26 servers"
-            }
-          }
+        "typescript.tsdk": "node_modules/typescript/lib",
+        "typescript.enablePromptUseWorkspaceTsdk": true,
+        "files.watcherExclude": {
+          "**/.git/objects/**": true,
+          "**/.git/subtree-cache/**": true,
+          "**/node_modules/**": true,
+          "**/.next/**": true
         }
       },
       "extensions": [
         "dbaeumer.vscode-eslint",
         "esbenp.prettier-vscode",
-        "bradlc.vscode-tailwindcss"
+        "bradlc.vscode-tailwindcss",
+        "GitHub.copilot",
+        "GitHub.copilot-chat",
+        "ms-vscode.vscode-typescript-next",
+        "ms-azuretools.vscode-docker",
+        "eamodio.gitlens",
+        "usernamehw.errorlens",
+        "christian-kohler.path-intellisense",
+        "ms-vscode-remote.remote-containers",
+        "shaharkazaz.git-merger"
       ]
     }
   },
