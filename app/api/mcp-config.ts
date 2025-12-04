@@ -251,115 +251,74 @@ export const MCP_SERVERS: Record<string, MCPServer> = {
     },
   },
 
-  // 3. PLAYWRIGHT - Playwright SDK
+  // 3. PLAYWRIGHT - Playwright SDK (FULLY UPGRADED: 24+ tools!)
   playwright: {
     name: "playwright",
     category: "automation",
     enabled: true,
     tools: [
-      {
-        name: "navigate",
-        description: "Navigate to URL",
-        inputSchema: {
-          type: "object",
-          properties: { url: { type: "string" } },
-          required: ["url"],
-        },
-      },
-      {
-        name: "screenshot",
-        description: "Take screenshot",
-        inputSchema: {
-          type: "object",
-          properties: {
-            url: { type: "string" },
-            selector: { type: "string" },
-            fullPage: { type: "boolean" },
-          },
-          required: ["url"],
-        },
-      },
-      {
-        name: "scrape",
-        description: "Scrape content",
-        inputSchema: {
-          type: "object",
-          properties: { url: { type: "string" }, selector: { type: "string" } },
-          required: ["url"],
-        },
-      },
-      {
-        name: "interact",
-        description: "Interact with elements",
-        inputSchema: {
-          type: "object",
-          properties: { url: { type: "string" }, actions: { type: "array" } },
-          required: ["url", "actions"],
-        },
-      },
-      {
-        name: "click",
-        description: "Click element",
-        inputSchema: {
-          type: "object",
-          properties: { url: { type: "string" }, selector: { type: "string" } },
-          required: ["url", "selector"],
-        },
-      },
+      // Navigation (4 tools)
+      { name: "navigate", description: "Navigate to URL", inputSchema: { type: "object", properties: { url: { type: "string" }, waitUntil: { type: "string" }, timeout: { type: "number" } }, required: ["url"] } },
+      { name: "goBack", description: "Go back", inputSchema: { type: "object", properties: { waitUntil: { type: "string" } } } },
+      { name: "goForward", description: "Go forward", inputSchema: { type: "object", properties: { waitUntil: { type: "string" } } } },
+      { name: "reload", description: "Reload page", inputSchema: { type: "object", properties: { waitUntil: { type: "string" } } } },
+      
+      // Screenshots (2 tools)
+      { name: "screenshot", description: "Take screenshot", inputSchema: { type: "object", properties: { url: { type: "string" }, fullPage: { type: "boolean" }, type: { type: "string" }, quality: { type: "number" } } } },
+      { name: "screenshotElement", description: "Screenshot element", inputSchema: { type: "object", properties: { url: { type: "string" }, selector: { type: "string" }, type: { type: "string" } }, required: ["selector"] } },
+      
+      // PDF (1 tool)
+      { name: "generatePDF", description: "Generate PDF", inputSchema: { type: "object", properties: { url: { type: "string" }, format: { type: "string" }, landscape: { type: "boolean" }, printBackground: { type: "boolean" } } } },
+      
+      // Video (1 tool)
+      { name: "recordVideo", description: "Record video", inputSchema: { type: "object", properties: { url: { type: "string" }, duration: { type: "number" }, actions: { type: "array" }, videoDir: { type: "string" } }, required: ["url"] } },
+      
+      // Scraping (3 tools)
+      { name: "scrape", description: "Scrape content", inputSchema: { type: "object", properties: { url: { type: "string" }, selector: { type: "string" } } } },
+      { name: "scrapeMultiple", description: "Scrape multiple selectors", inputSchema: { type: "object", properties: { url: { type: "string" }, selectors: { type: "object" } }, required: ["selectors"] } },
+      { name: "evaluate", description: "Evaluate JavaScript", inputSchema: { type: "object", properties: { url: { type: "string" }, script: { type: "string" } }, required: ["script"] } },
+      
+      // Interactions (5 tools)
+      { name: "click", description: "Click element", inputSchema: { type: "object", properties: { url: { type: "string" }, selector: { type: "string" }, button: { type: "string" }, clickCount: { type: "number" } }, required: ["selector"] } },
+      { name: "fill", description: "Fill input", inputSchema: { type: "object", properties: { url: { type: "string" }, selector: { type: "string" }, value: { type: "string" } }, required: ["selector", "value"] } },
+      { name: "type", description: "Type text", inputSchema: { type: "object", properties: { url: { type: "string" }, selector: { type: "string" }, text: { type: "string" }, delay: { type: "number" } }, required: ["selector", "text"] } },
+      { name: "select", description: "Select option", inputSchema: { type: "object", properties: { url: { type: "string" }, selector: { type: "string" }, value: { type: "string" } }, required: ["selector", "value"] } },
+      { name: "interact", description: "Execute multiple actions", inputSchema: { type: "object", properties: { url: { type: "string" }, actions: { type: "array" } }, required: ["actions"] } },
+      
+      // Waiting (2 tools)
+      { name: "waitForSelector", description: "Wait for selector", inputSchema: { type: "object", properties: { url: { type: "string" }, selector: { type: "string" }, state: { type: "string" }, timeout: { type: "number" } }, required: ["selector"] } },
+      { name: "waitForNavigation", description: "Wait for navigation", inputSchema: { type: "object", properties: { url: { type: "string" }, waitUntil: { type: "string" }, timeout: { type: "number" } }, required: ["url"] } },
+      
+      // Network (2 tools)
+      { name: "interceptNetwork", description: "Intercept network requests", inputSchema: { type: "object", properties: { url: { type: "string" } }, required: ["url"] } },
+      { name: "blockResources", description: "Block resources", inputSchema: { type: "object", properties: { url: { type: "string" }, pattern: { type: "string" } }, required: ["url"] } },
+      
+      // Cookies (3 tools)
+      { name: "getCookies", description: "Get cookies", inputSchema: { type: "object", properties: { url: { type: "string" }, urls: { type: "array" } } } },
+      { name: "setCookies", description: "Set cookies", inputSchema: { type: "object", properties: { cookies: { type: "array" } }, required: ["cookies"] } },
+      { name: "clearCookies", description: "Clear cookies", inputSchema: { type: "object", properties: {} } } },
+      
+      // Storage (2 tools)
+      { name: "getLocalStorage", description: "Get localStorage", inputSchema: { type: "object", properties: { url: { type: "string" } } } },
+      { name: "setLocalStorage", description: "Set localStorage", inputSchema: { type: "object", properties: { url: { type: "string" }, items: { type: "object" } }, required: ["items"] } },
+      
+      // Emulation (3 tools)
+      { name: "emulateDevice", description: "Emulate device", inputSchema: { type: "object", properties: { url: { type: "string" }, device: { type: "string" } }, required: ["url", "device"] } },
+      { name: "setGeolocation", description: "Set geolocation", inputSchema: { type: "object", properties: { url: { type: "string" }, latitude: { type: "number" }, longitude: { type: "number" }, accuracy: { type: "number" } }, required: ["latitude", "longitude"] } },
+      { name: "setViewport", description: "Set viewport", inputSchema: { type: "object", properties: { width: { type: "number" }, height: { type: "number" } }, required: ["width", "height"] } },
     ],
     resources: [
-      {
-        uri: "playwright://browsers",
-        name: "Browsers",
-        description: "Available browsers",
-      },
+      { uri: "playwright://browsers", name: "Browsers", description: "Available browsers" },
+      { uri: "playwright://devices", name: "Devices", description: "Emulated devices" },
     ],
     prompts: [
-      {
-        name: "web_automation",
-        description: "Help automate web tasks",
-        arguments: [
-          { name: "task", description: "What to automate", required: true },
-        ],
-      },
+      { name: "web_automation", description: "Help automate web tasks", arguments: [{ name: "task", description: "What to automate", required: true }] },
+      { name: "scrape_data", description: "Help scrape data", arguments: [{ name: "url", description: "URL to scrape", required: true }] },
+      { name: "test_website", description: "Help test website", arguments: [{ name: "url", description: "URL to test", required: true }] },
     ],
     execute: async (tool, params) => {
-      const browser = await chromium.launch({ headless: true });
-      const page = await browser.newPage();
-      try {
-        await page.goto(params.url);
-        switch (tool) {
-          case "navigate":
-            return { url: page.url(), title: await page.title() };
-          case "screenshot":
-            const screenshot = await page.screenshot({
-              fullPage: params.fullPage,
-              path: params.selector ? undefined : "screenshot.png",
-            });
-            return { screenshot: screenshot.toString("base64") };
-          case "scrape":
-            const content = params.selector
-              ? await page.locator(params.selector).textContent()
-              : await page.content();
-            return { content };
-          case "click":
-            await page.click(params.selector);
-            return { success: true };
-          case "interact":
-            for (const action of params.actions) {
-              if (action.type === "click") await page.click(action.selector);
-              if (action.type === "fill")
-                await page.fill(action.selector, action.value);
-              if (action.type === "select")
-                await page.selectOption(action.selector, action.value);
-            }
-            return { success: true };
-          default:
-            throw new Error(`Unknown playwright tool: ${tool}`);
-        }
-      } finally {
-        await browser.close();
-      }
+      const { executePlaywrightTool } = await import("./playwright-tools");
+      return await executePlaywrightTool(tool, params);
     },
   },
 
