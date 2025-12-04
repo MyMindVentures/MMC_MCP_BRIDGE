@@ -37,6 +37,17 @@ RUN chmod +x /usr/local/bin/persist-settings.sh
 COPY .devcontainer/sync-todos.sh /usr/local/bin/sync-todos.sh
 RUN chmod +x /usr/local/bin/sync-todos.sh
 
+# Copy auto git workflow script
+COPY .devcontainer/auto-git-workflow.sh /usr/local/bin/auto-git-workflow.sh
+RUN chmod +x /usr/local/bin/auto-git-workflow.sh
+
+# Copy git watcher script
+COPY .devcontainer/git-watcher.sh /usr/local/bin/git-watcher.sh
+RUN chmod +x /usr/local/bin/git-watcher.sh
+
+# Install jq for JSON parsing in scripts
+RUN apt-get update && apt-get install -y jq && rm -rf /var/lib/apt/lists/*
+
 # Set working directory
 WORKDIR /workspaces
 
