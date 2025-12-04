@@ -1,6 +1,5 @@
 {
   "name": "MMC_MCP_Bridge_DevContainer",
-  "image": "mymindventures/mmc-mcp-bridge-devcontainer:2.0.0",
   "build": {
     "dockerfile": "Dockerfile",
     "context": ".."
@@ -82,7 +81,7 @@
   },
 
   "postCreateCommand": "bash -c 'cd /workspaces/MMC_MCP_BRIDGE && mkdir -p /workspaces/.devcontainer-persist 2>/dev/null || true && if [ -f package-lock.json ]; then npm ci; else npm install; fi && /usr/local/bin/persist-settings.sh restore && /usr/local/bin/install-extensions.sh && /usr/local/bin/auto-git-workflow.sh ensure-branch'",
-  "postStartCommand": "bash -c 'mkdir -p /workspaces/.devcontainer-persist 2>/dev/null || true && /usr/local/bin/persist-settings.sh restore && /usr/local/bin/install-extensions.sh && /usr/local/bin/feature-tracker.sh update && /usr/local/bin/build-app-container.sh && /usr/local/bin/sync-todos.sh & /usr/local/bin/git-watcher.sh &'",
+  "postStartCommand": "bash -c 'mkdir -p /workspaces/.devcontainer-persist 2>/dev/null || true && /usr/local/bin/persist-settings.sh restore && /usr/local/bin/install-extensions.sh && /usr/local/bin/feature-tracker.sh update && /usr/local/bin/sync-todos.sh & /usr/local/bin/git-watcher.sh &'",
   "postAttachCommand": "bash -c 'mkdir -p /workspaces/.devcontainer-persist 2>/dev/null || true && /usr/local/bin/persist-settings.sh restore && /usr/local/bin/auto-git-workflow.sh ensure-branch'",
 
   "forwardPorts": [3000],
