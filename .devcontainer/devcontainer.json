@@ -18,6 +18,15 @@
           "**/.git/subtree-cache/**": true,
           "**/node_modules/**": true,
           "**/.next/**": true
+        },
+        "mcp": {
+          "mcpServers": {
+            "MMC-MCP-Bridge-Railway": {
+              "type": "sse",
+              "url": "https://mmcmcphttpbridge-production.up.railway.app/api/sse",
+              "description": "Production MCP Bridge on Railway - ALL 26 servers"
+            }
+          }
         }
       },
       "extensions": [

@@ -2,7 +2,7 @@
   // Doppler Integration
   "doppler.autocomplete.enable": true,
   "doppler.hover.enable": true,
-  
+
   // MCP Configuration - Railway Production Endpoint
   "mcp": {
     "mcpServers": {
@@ -13,12 +13,12 @@
       }
     }
   },
-  
+
   // TypeScript Configuration
   "typescript.tsdk": "node_modules/typescript/lib",
   "typescript.enablePromptUseWorkspaceTsdk": true,
   "typescript.preferences.importModuleSpecifier": "relative",
-  
+
   // Editor Configuration
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
@@ -27,7 +27,7 @@
   },
   "editor.tabSize": 2,
   "editor.insertSpaces": true,
-  
+
   // File Exclusions
   "files.exclude": {
     "**/.git": true,
@@ -35,19 +35,17 @@
     "**/node_modules": true,
     "**/.DS_Store": true
   },
-  
+
   "files.watcherExclude": {
     "**/.git/objects/**": true,
     "**/.git/subtree-cache/**": true,
     "**/node_modules/**": true,
     "**/.next/**": true
   },
-  
+
   // Next.js Specific
-  "eslint.workingDirectories": [
-    { "mode": "auto" }
-  ],
-  
+  "eslint.workingDirectories": [{ "mode": "auto" }],
+
   // Git Configuration
   "git.enableSmartCommit": true,
   "git.confirmSync": false,
