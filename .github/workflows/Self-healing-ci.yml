@@ -1,4 +1,4 @@
-name: "self-healing-ci"
+name: "Self-healing-ci"
 
 on:
   push:
@@ -52,7 +52,7 @@ jobs:
       pull-requests: write
 
     env:
-      OPENAI_API_KEY: ${{ secrets.MMC_PENAI_API_KEY }}
+      OPENAI_API_KEY: ${{ secrets.MMC_OPENAI_API_KEY }}
       GITHUB_TOKEN: ${{ secrets.MMC_GITHUB_TOKEN_FULL }}
 
     steps:
