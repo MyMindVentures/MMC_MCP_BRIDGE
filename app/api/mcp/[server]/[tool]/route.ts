@@ -3,6 +3,7 @@
 
 import { NextResponse } from 'next/server';
 import { MCP_SERVERS } from '../../../mcp-config';
+import { executeMCPTool } from '../../../mcp-executor';
 
 export async function POST(
   request: Request,
@@ -29,9 +30,8 @@ export async function POST(
 
     const body = await request.json();
 
-    const result = server.execute
-      ? await server.execute(toolName, body)
-      : { message: `${serverName}.${toolName} executed`, params: body };
+    // Use centralized executor with real SDK implementations
+    const result = await executeMCPTool(serverName, toolName, body);
 
     return NextResponse.json({ success: true, result });
   } catch (error: any) {

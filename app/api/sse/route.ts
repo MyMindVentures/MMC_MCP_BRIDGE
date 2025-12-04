@@ -3,6 +3,7 @@
 // Cursor IDE config: { "type": "sse", "url": "https://your-bridge.railway.app/api/sse" }
 
 import { MCP_SERVERS } from '../mcp-config';
+import { executeMCPTool } from '../mcp-executor';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -148,9 +149,8 @@ export async function POST(request: Request) {
         });
       }
       
-      const result = server.execute
-        ? await server.execute(toolName, args)
-        : { message: `${serverName}.${toolName} executed`, params: args };
+      // Use centralized executor with real SDK implementations
+      const result = await executeMCPTool(serverName, toolName, args);
       
       return Response.json({
         jsonrpc: '2.0',
