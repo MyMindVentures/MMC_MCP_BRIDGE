@@ -1,5 +1,6 @@
 {
-  "name": "MMC MCP Bridge - Next.js",
+  "name": "MMC MCP Bridge DevContainer",
+  "image": "mmc-mcp-bridge-devcontainer:2.0.0",
   "build": {
     "dockerfile": "Dockerfile",
     "context": ".."

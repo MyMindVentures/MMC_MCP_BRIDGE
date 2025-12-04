@@ -1,4 +1,12 @@
+# MMC MCP Bridge DevContainer Image
+# Base: Microsoft DevContainer TypeScript Node.js 20
 FROM mcr.microsoft.com/devcontainers/typescript-node:1-20-bullseye
+
+LABEL maintainer="MyMind Ventures <hello@mymindventures.io>"
+LABEL com.mmc.project="mmc-mcp-bridge"
+LABEL com.mmc.component="devcontainer"
+LABEL com.mmc.version="2.0.0"
+LABEL com.mmc.description="MMC MCP Bridge Development Container - Full development environment with Docker CLI"
 
 # Install additional tools (including lsb-release for Docker installation)
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
@@ -22,12 +30,13 @@ RUN curl -sSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor 
     && apt-get -y install --no-install-recommends powershell \
     && apt-get clean -y && rm -rf /var/lib/apt/lists/*
 
-# Install Docker CLI (to connect to Docker Desktop on host)
+# Install Docker CLI and Buildx (to connect to Docker Desktop on host)
 RUN curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg \
     && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list \
     && apt-get update \
-    && apt-get -y install --no-install-recommends docker-ce-cli docker-compose-plugin \
-    && apt-get clean -y && rm -rf /var/lib/apt/lists/*
+    && apt-get -y install --no-install-recommends docker-ce-cli docker-compose-plugin docker-buildx-plugin \
+    && apt-get clean -y && rm -rf /var/lib/apt/lists/* \
+    && docker buildx version || echo "Buildx will be available after Docker connection"
 
 # Copy extension installation script
 COPY .devcontainer/install-extensions.sh /usr/local/bin/install-extensions.sh
