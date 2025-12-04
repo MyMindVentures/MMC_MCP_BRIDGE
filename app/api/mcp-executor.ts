@@ -151,24 +151,10 @@ export async function executeMCPTool(serverName: string, toolName: string, param
     }
 
     case 'linear': {
-      if (!process.env.LINEAR_API_KEY) throw new Error('LINEAR_API_KEY not configured');
-      const client = new LinearClient({ apiKey: process.env.LINEAR_API_KEY });
-      
-      switch (toolName) {
-        case 'listIssues':
-          const issues = await client.issues(params.filter);
-          return await issues.nodes;
-        case 'createIssue':
-          const issue = await client.createIssue({ teamId: params.teamId, title: params.title, description: params.description });
-          return issue;
-        case 'updateIssue':
-          const updated = await client.updateIssue(params.issueId, params.data);
-          return updated;
-        case 'searchIssues':
-          const results = await client.searchIssues(params.query);
-          return results;
-        default: throw new Error(`Unknown linear tool: ${toolName}`);
-      }
+      // Use comprehensive Linear tools (30+ tools!)
+      const { executeLinearTool } = await import('./linear-tools');
+      result = await executeLinearTool(toolName, params);
+      break;
     }
 
     case 'railway': {
