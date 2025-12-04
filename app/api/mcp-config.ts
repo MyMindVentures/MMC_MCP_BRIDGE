@@ -1504,7 +1504,7 @@ export const MCP_SERVERS: Record<string, MCPServer> = {
     },
   },
 
-  // 8. GITHUB - Octokit SDK
+  // 8. GITHUB - Octokit SDK (FULLY UPGRADED: 35+ tools!)
   github: {
     name: "github",
     category: "development",
@@ -1514,52 +1514,55 @@ export const MCP_SERVERS: Record<string, MCPServer> = {
       headers: { Authorization: `Bearer ${process.env.GITHUB_TOKEN || ""}` },
     },
     tools: [
-      {
-        name: "listRepos",
-        description: "List GitHub repos",
-        inputSchema: {
-          type: "object",
-          properties: { owner: { type: "string" }, limit: { type: "number" } },
-        },
-      },
-      {
-        name: "createIssue",
-        description: "Create GitHub issue",
-        inputSchema: {
-          type: "object",
-          properties: {
-            owner: { type: "string" },
-            repo: { type: "string" },
-            title: { type: "string" },
-            body: { type: "string" },
-          },
-          required: ["owner", "repo", "title"],
-        },
-      },
-      {
-        name: "createPR",
-        description: "Create pull request",
-        inputSchema: {
-          type: "object",
-          properties: {
-            owner: { type: "string" },
-            repo: { type: "string" },
-            title: { type: "string" },
-            head: { type: "string" },
-            base: { type: "string" },
-          },
-          required: ["owner", "repo", "title", "head", "base"],
-        },
-      },
-      {
-        name: "searchCode",
-        description: "Search code",
-        inputSchema: {
-          type: "object",
-          properties: { query: { type: "string" } },
-          required: ["query"],
-        },
-      },
+      // Repository Operations (5 tools)
+      { name: "listRepos", description: "List repos", inputSchema: { type: "object", properties: { owner: { type: "string" }, limit: { type: "number" } } } },
+      { name: "getRepo", description: "Get repo details", inputSchema: { type: "object", properties: { owner: { type: "string" }, repo: { type: "string" } }, required: ["owner", "repo"] } },
+      { name: "createRepo", description: "Create repo", inputSchema: { type: "object", properties: { name: { type: "string" }, description: { type: "string" }, private: { type: "boolean" } }, required: ["name"] } },
+      { name: "updateRepo", description: "Update repo", inputSchema: { type: "object", properties: { owner: { type: "string" }, repo: { type: "string" }, data: { type: "object" } }, required: ["owner", "repo", "data"] } },
+      { name: "deleteRepo", description: "Delete repo", inputSchema: { type: "object", properties: { owner: { type: "string" }, repo: { type: "string" } }, required: ["owner", "repo"] } },
+      
+      // Issue Operations (5 tools)
+      { name: "listIssues", description: "List issues", inputSchema: { type: "object", properties: { owner: { type: "string" }, repo: { type: "string" }, state: { type: "string" } }, required: ["owner", "repo"] } },
+      { name: "getIssue", description: "Get issue", inputSchema: { type: "object", properties: { owner: { type: "string" }, repo: { type: "string" }, issue_number: { type: "number" } }, required: ["owner", "repo", "issue_number"] } },
+      { name: "createIssue", description: "Create issue", inputSchema: { type: "object", properties: { owner: { type: "string" }, repo: { type: "string" }, title: { type: "string" }, body: { type: "string" }, labels: { type: "array" } }, required: ["owner", "repo", "title"] } },
+      { name: "updateIssue", description: "Update issue", inputSchema: { type: "object", properties: { owner: { type: "string" }, repo: { type: "string" }, issue_number: { type: "number" }, data: { type: "object" } }, required: ["owner", "repo", "issue_number", "data"] } },
+      { name: "closeIssue", description: "Close issue", inputSchema: { type: "object", properties: { owner: { type: "string" }, repo: { type: "string" }, issue_number: { type: "number" } }, required: ["owner", "repo", "issue_number"] } },
+      
+      // Pull Request Operations (5 tools)
+      { name: "listPRs", description: "List PRs", inputSchema: { type: "object", properties: { owner: { type: "string" }, repo: { type: "string" }, state: { type: "string" } }, required: ["owner", "repo"] } },
+      { name: "getPR", description: "Get PR", inputSchema: { type: "object", properties: { owner: { type: "string" }, repo: { type: "string" }, pull_number: { type: "number" } }, required: ["owner", "repo", "pull_number"] } },
+      { name: "createPR", description: "Create PR", inputSchema: { type: "object", properties: { owner: { type: "string" }, repo: { type: "string" }, title: { type: "string" }, head: { type: "string" }, base: { type: "string" }, body: { type: "string" } }, required: ["owner", "repo", "title", "head", "base"] } },
+      { name: "mergePR", description: "Merge PR", inputSchema: { type: "object", properties: { owner: { type: "string" }, repo: { type: "string" }, pull_number: { type: "number" }, merge_method: { type: "string" } }, required: ["owner", "repo", "pull_number"] } },
+      { name: "reviewPR", description: "Review PR", inputSchema: { type: "object", properties: { owner: { type: "string" }, repo: { type: "string" }, pull_number: { type: "number" }, event: { type: "string" }, body: { type: "string" } }, required: ["owner", "repo", "pull_number", "event"] } },
+      
+      // Workflow Operations (5 tools)
+      { name: "listWorkflows", description: "List workflows", inputSchema: { type: "object", properties: { owner: { type: "string" }, repo: { type: "string" } }, required: ["owner", "repo"] } },
+      { name: "getWorkflow", description: "Get workflow", inputSchema: { type: "object", properties: { owner: { type: "string" }, repo: { type: "string" }, workflow_id: { type: "number" } }, required: ["owner", "repo", "workflow_id"] } },
+      { name: "triggerWorkflow", description: "Trigger workflow", inputSchema: { type: "object", properties: { owner: { type: "string" }, repo: { type: "string" }, workflow_id: { type: "number" }, ref: { type: "string" }, inputs: { type: "object" } }, required: ["owner", "repo", "workflow_id", "ref"] } },
+      { name: "listWorkflowRuns", description: "List workflow runs", inputSchema: { type: "object", properties: { owner: { type: "string" }, repo: { type: "string" }, workflow_id: { type: "number" } }, required: ["owner", "repo"] } },
+      { name: "getWorkflowRun", description: "Get workflow run", inputSchema: { type: "object", properties: { owner: { type: "string" }, repo: { type: "string" }, run_id: { type: "number" } }, required: ["owner", "repo", "run_id"] } },
+      
+      // Release Operations (5 tools)
+      { name: "listReleases", description: "List releases", inputSchema: { type: "object", properties: { owner: { type: "string" }, repo: { type: "string" } }, required: ["owner", "repo"] } },
+      { name: "getRelease", description: "Get release", inputSchema: { type: "object", properties: { owner: { type: "string" }, repo: { type: "string" }, release_id: { type: "number" } }, required: ["owner", "repo", "release_id"] } },
+      { name: "createRelease", description: "Create release", inputSchema: { type: "object", properties: { owner: { type: "string" }, repo: { type: "string" }, tag_name: { type: "string" }, name: { type: "string" }, body: { type: "string" } }, required: ["owner", "repo", "tag_name"] } },
+      { name: "updateRelease", description: "Update release", inputSchema: { type: "object", properties: { owner: { type: "string" }, repo: { type: "string" }, release_id: { type: "number" }, data: { type: "object" } }, required: ["owner", "repo", "release_id", "data"] } },
+      { name: "deleteRelease", description: "Delete release", inputSchema: { type: "object", properties: { owner: { type: "string" }, repo: { type: "string" }, release_id: { type: "number" } }, required: ["owner", "repo", "release_id"] } },
+      
+      // Branch Operations (4 tools)
+      { name: "listBranches", description: "List branches", inputSchema: { type: "object", properties: { owner: { type: "string" }, repo: { type: "string" } }, required: ["owner", "repo"] } },
+      { name: "getBranch", description: "Get branch", inputSchema: { type: "object", properties: { owner: { type: "string" }, repo: { type: "string" }, branch: { type: "string" } }, required: ["owner", "repo", "branch"] } },
+      { name: "createBranch", description: "Create branch", inputSchema: { type: "object", properties: { owner: { type: "string" }, repo: { type: "string" }, branch: { type: "string" }, sha: { type: "string" } }, required: ["owner", "repo", "branch", "sha"] } },
+      { name: "deleteBranch", description: "Delete branch", inputSchema: { type: "object", properties: { owner: { type: "string" }, repo: { type: "string" }, branch: { type: "string" } }, required: ["owner", "repo", "branch"] } },
+      
+      // Commit Operations (2 tools)
+      { name: "listCommits", description: "List commits", inputSchema: { type: "object", properties: { owner: { type: "string" }, repo: { type: "string" }, sha: { type: "string" }, path: { type: "string" } }, required: ["owner", "repo"] } },
+      { name: "getCommit", description: "Get commit", inputSchema: { type: "object", properties: { owner: { type: "string" }, repo: { type: "string" }, ref: { type: "string" } }, required: ["owner", "repo", "ref"] } },
+      
+      // Search Operations (3 tools)
+      { name: "searchCode", description: "Search code", inputSchema: { type: "object", properties: { query: { type: "string" } }, required: ["query"] } },
+      { name: "searchRepos", description: "Search repos", inputSchema: { type: "object", properties: { query: { type: "string" } }, required: ["query"] } },
+      { name: "searchIssues", description: "Search issues", inputSchema: { type: "object", properties: { query: { type: "string" } }, required: ["query"] } },
     ],
     resources: [
       { uri: "github://repos", name: "Repositories", description: "All repos" },
@@ -1573,46 +1576,9 @@ export const MCP_SERVERS: Record<string, MCPServer> = {
       },
     ],
     execute: async (tool, params) => {
-      if (!process.env.GITHUB_TOKEN)
-        throw new Error("GITHUB_TOKEN not configured");
-      const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
-
-      switch (tool) {
-        case "listRepos":
-          const { data: repos } = params.owner
-            ? await octokit.repos.listForUser({
-                username: params.owner,
-                per_page: params.limit || 30,
-              })
-            : await octokit.repos.listForAuthenticatedUser({
-                per_page: params.limit || 30,
-              });
-          return repos;
-        case "createIssue":
-          const { data: issue } = await octokit.issues.create({
-            owner: params.owner,
-            repo: params.repo,
-            title: params.title,
-            body: params.body,
-          });
-          return issue;
-        case "createPR":
-          const { data: pr } = await octokit.pulls.create({
-            owner: params.owner,
-            repo: params.repo,
-            title: params.title,
-            head: params.head,
-            base: params.base,
-          });
-          return pr;
-        case "searchCode":
-          const { data: results } = await octokit.search.code({
-            q: params.query,
-          });
-          return results;
-        default:
-          throw new Error(`Unknown github tool: ${tool}`);
-      }
+      // Import the full github tools implementation
+      const { executeGitHubTool } = await import("./github-tools");
+      return await executeGitHubTool(tool, params);
     },
   },
 
