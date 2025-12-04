@@ -1,0 +1,103 @@
+name: Temporary CI Fix — add fallback npm scripts and remove Pages workflow
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  add-fallback-scripts:
+    name: Add fallback npm scripts and remove Pages workflow
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js (used for small JSON edits)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Add fallback scripts and remove pages workflow (modify files)
+        id: modify_files
+        run: |
+          set -e
+          echo "Adding fallback scripts to package.json if missing..."
+          node -e "
+          const fs = require('fs');
+          const path = require('path');
+          const pj = path.join(process.cwd(),'package.json');
+          if (!fs.existsSync(pj)) { console.error('package.json not found'); process.exit(1); }
+          const p = JSON.parse(fs.readFileSync(pj,'utf8'));
+          p.scripts = p.scripts || {};
+          const defaults = {
+            lint: 'echo \"No lint script defined; skipping\"',
+            'type-check': 'echo \"No type-check script defined; skipping\"',
+            test: 'echo \"No tests defined; skipping\"',
+            'test:e2e': 'echo \"No e2e tests defined; skipping\"'
+          };
+          let changed = false;
+          for (const k of Object.keys(defaults)) {
+            if (!Object.prototype.hasOwnProperty.call(p.scripts, k)) {
+              p.scripts[k] = defaults[k];
+              changed = true;
+              console.log('Added script:', k);
+            }
+          }
+          if (changed) {
+            fs.writeFileSync(pj, JSON.stringify(p, null, 2) + '\\n');
+            console.log('package.json updated');
+          } else {
+            console.log('No changes to package.json needed');
+          }
+
+          // remove Pages workflow if present
+          const pagesPath = path.join(process.cwd(),'.github','workflows','jekyll-gh-pages.yml');
+          if (fs.existsSync(pagesPath)) {
+            fs.unlinkSync(pagesPath);
+            console.log('Removed', pagesPath);
+          } else {
+            console.log('No Pages workflow file to remove at', pagesPath);
+          }
+          "
+
+      - name: Show git status and diff
+        run: |
+          git --no-pager status --porcelain
+          git --no-pager diff || true
+
+      - name: Commit and push branch
+        id: commit_push
+        env:
+          BRANCH: ci/temporary-add-scripts
+        run: |
+          set -e
+          if git status --porcelain | grep -q .; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git checkout -b "$BRANCH"
+            git add -A
+            git commit -m "ci: add fallback npm scripts (temporary) and remove Pages workflow"
+            git push --set-upstream origin "$BRANCH" --force
+            echo "branch_created=true" >> $GITHUB_OUTPUT
+          else
+            echo "No changes to commit"
+            echo "branch_created=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create Pull Request
+        if: steps.commit_push.outputs.branch_created == 'true'
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ci/temporary-add-scripts
+          title: Temporary: add fallback npm scripts and remove Pages workflow
+          body: |
+            This temporary PR:
+            - Adds safe no-op fallback npm scripts (lint, type-check, test, test:e2e) when they are missing. This prevents CI steps that call these scripts from failing.
+            - Deletes the Pages workflow at .github/workflows/jekyll-gh-pages.yml (this project is private and does not use Pages).
+            Please review and merge, then replace the no-op scripts with real commands or remove them when not needed.
+          labels: temporary, ci
