@@ -1,4 +1,4 @@
-name: Temporary CI Fix — add fallback npm scripts and remove Pages workflow
+name: "ci-temporary-add-scripts.yml"
 
 on:
   workflow_dispatch:
