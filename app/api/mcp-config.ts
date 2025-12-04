@@ -2183,51 +2183,301 @@ export const MCP_SERVERS: Record<string, MCPServer> = {
     enabled: true,
     tools: [
       // Page Operations
-      { name: "getPage", description: "Get page details", inputSchema: { type: "object", properties: { pageId: { type: "string" } }, required: ["pageId"] } },
-      { name: "createPage", description: "Create page", inputSchema: { type: "object", properties: { parent: { type: "object" }, properties: { type: "object" }, children: { type: "array" } }, required: ["parent", "properties"] } },
-      { name: "updatePage", description: "Update page properties", inputSchema: { type: "object", properties: { pageId: { type: "string" }, properties: { type: "object" } }, required: ["pageId", "properties"] } },
-      { name: "deletePage", description: "Delete page (archive)", inputSchema: { type: "object", properties: { pageId: { type: "string" } }, required: ["pageId"] } },
-      { name: "listPageChildren", description: "List page children blocks", inputSchema: { type: "object", properties: { pageId: { type: "string" }, startCursor: { type: "string" }, pageSize: { type: "number" } }, required: ["pageId"] } },
-      { name: "duplicatePage", description: "Duplicate page", inputSchema: { type: "object", properties: { pageId: { type: "string" } }, required: ["pageId"] } },
-      { name: "movePageToWorkspace", description: "Move page to workspace", inputSchema: { type: "object", properties: { pageId: { type: "string" }, workspaceId: { type: "string" } }, required: ["pageId"] } },
-      { name: "getPageProperty", description: "Get page property value", inputSchema: { type: "object", properties: { pageId: { type: "string" }, propertyId: { type: "string" } }, required: ["pageId", "propertyId"] } },
-      
+      {
+        name: "getPage",
+        description: "Get page details",
+        inputSchema: {
+          type: "object",
+          properties: { pageId: { type: "string" } },
+          required: ["pageId"],
+        },
+      },
+      {
+        name: "createPage",
+        description: "Create page",
+        inputSchema: {
+          type: "object",
+          properties: {
+            parent: { type: "object" },
+            properties: { type: "object" },
+            children: { type: "array" },
+          },
+          required: ["parent", "properties"],
+        },
+      },
+      {
+        name: "updatePage",
+        description: "Update page properties",
+        inputSchema: {
+          type: "object",
+          properties: {
+            pageId: { type: "string" },
+            properties: { type: "object" },
+          },
+          required: ["pageId", "properties"],
+        },
+      },
+      {
+        name: "deletePage",
+        description: "Delete page (archive)",
+        inputSchema: {
+          type: "object",
+          properties: { pageId: { type: "string" } },
+          required: ["pageId"],
+        },
+      },
+      {
+        name: "listPageChildren",
+        description: "List page children blocks",
+        inputSchema: {
+          type: "object",
+          properties: {
+            pageId: { type: "string" },
+            startCursor: { type: "string" },
+            pageSize: { type: "number" },
+          },
+          required: ["pageId"],
+        },
+      },
+      {
+        name: "duplicatePage",
+        description: "Duplicate page",
+        inputSchema: {
+          type: "object",
+          properties: { pageId: { type: "string" } },
+          required: ["pageId"],
+        },
+      },
+      {
+        name: "movePageToWorkspace",
+        description: "Move page to workspace",
+        inputSchema: {
+          type: "object",
+          properties: {
+            pageId: { type: "string" },
+            workspaceId: { type: "string" },
+          },
+          required: ["pageId"],
+        },
+      },
+      {
+        name: "getPageProperty",
+        description: "Get page property value",
+        inputSchema: {
+          type: "object",
+          properties: {
+            pageId: { type: "string" },
+            propertyId: { type: "string" },
+          },
+          required: ["pageId", "propertyId"],
+        },
+      },
+
       // Block Operations
-      { name: "getBlock", description: "Get block details", inputSchema: { type: "object", properties: { blockId: { type: "string" } }, required: ["blockId"] } },
-      { name: "appendBlock", description: "Append block children", inputSchema: { type: "object", properties: { blockId: { type: "string" }, children: { type: "array" } }, required: ["blockId", "children"] } },
-      { name: "updateBlock", description: "Update block", inputSchema: { type: "object", properties: { blockId: { type: "string" }, block: { type: "object" } }, required: ["blockId", "block"] } },
-      { name: "deleteBlock", description: "Delete block", inputSchema: { type: "object", properties: { blockId: { type: "string" } }, required: ["blockId"] } },
-      
+      {
+        name: "getBlock",
+        description: "Get block details",
+        inputSchema: {
+          type: "object",
+          properties: { blockId: { type: "string" } },
+          required: ["blockId"],
+        },
+      },
+      {
+        name: "appendBlock",
+        description: "Append block children",
+        inputSchema: {
+          type: "object",
+          properties: {
+            blockId: { type: "string" },
+            children: { type: "array" },
+          },
+          required: ["blockId", "children"],
+        },
+      },
+      {
+        name: "updateBlock",
+        description: "Update block",
+        inputSchema: {
+          type: "object",
+          properties: {
+            blockId: { type: "string" },
+            block: { type: "object" },
+          },
+          required: ["blockId", "block"],
+        },
+      },
+      {
+        name: "deleteBlock",
+        description: "Delete block",
+        inputSchema: {
+          type: "object",
+          properties: { blockId: { type: "string" } },
+          required: ["blockId"],
+        },
+      },
+
       // Database Operations
-      { name: "getDatabase", description: "Get database details", inputSchema: { type: "object", properties: { databaseId: { type: "string" } }, required: ["databaseId"] } },
-      { name: "queryDatabase", description: "Query database with filters", inputSchema: { type: "object", properties: { databaseId: { type: "string" }, filter: { type: "object" }, sorts: { type: "array" }, startCursor: { type: "string" }, pageSize: { type: "number" } }, required: ["databaseId"] } },
-      { name: "createDatabase", description: "Create database", inputSchema: { type: "object", properties: { parentPageId: { type: "string" }, title: { type: "string" }, properties: { type: "object" } }, required: ["parentPageId", "title", "properties"] } },
-      { name: "updateDatabase", description: "Update database", inputSchema: { type: "object", properties: { databaseId: { type: "string" }, title: { type: "string" }, properties: { type: "object" } }, required: ["databaseId"] } },
-      
+      {
+        name: "getDatabase",
+        description: "Get database details",
+        inputSchema: {
+          type: "object",
+          properties: { databaseId: { type: "string" } },
+          required: ["databaseId"],
+        },
+      },
+      {
+        name: "queryDatabase",
+        description: "Query database with filters",
+        inputSchema: {
+          type: "object",
+          properties: {
+            databaseId: { type: "string" },
+            filter: { type: "object" },
+            sorts: { type: "array" },
+            startCursor: { type: "string" },
+            pageSize: { type: "number" },
+          },
+          required: ["databaseId"],
+        },
+      },
+      {
+        name: "createDatabase",
+        description: "Create database",
+        inputSchema: {
+          type: "object",
+          properties: {
+            parentPageId: { type: "string" },
+            title: { type: "string" },
+            properties: { type: "object" },
+          },
+          required: ["parentPageId", "title", "properties"],
+        },
+      },
+      {
+        name: "updateDatabase",
+        description: "Update database",
+        inputSchema: {
+          type: "object",
+          properties: {
+            databaseId: { type: "string" },
+            title: { type: "string" },
+            properties: { type: "object" },
+          },
+          required: ["databaseId"],
+        },
+      },
+
       // Search
-      { name: "search", description: "Search pages and databases", inputSchema: { type: "object", properties: { query: { type: "string" }, filter: { type: "object" }, sort: { type: "object" }, startCursor: { type: "string" }, pageSize: { type: "number" } } } },
-      
+      {
+        name: "search",
+        description: "Search pages and databases",
+        inputSchema: {
+          type: "object",
+          properties: {
+            query: { type: "string" },
+            filter: { type: "object" },
+            sort: { type: "object" },
+            startCursor: { type: "string" },
+            pageSize: { type: "number" },
+          },
+        },
+      },
+
       // User Operations
-      { name: "listUsers", description: "List all users", inputSchema: { type: "object", properties: { startCursor: { type: "string" }, pageSize: { type: "number" } } } },
-      { name: "getUser", description: "Get user details", inputSchema: { type: "object", properties: { userId: { type: "string" } }, required: ["userId"] } },
-      { name: "getMe", description: "Get bot user info", inputSchema: { type: "object", properties: {} } },
-      
+      {
+        name: "listUsers",
+        description: "List all users",
+        inputSchema: {
+          type: "object",
+          properties: {
+            startCursor: { type: "string" },
+            pageSize: { type: "number" },
+          },
+        },
+      },
+      {
+        name: "getUser",
+        description: "Get user details",
+        inputSchema: {
+          type: "object",
+          properties: { userId: { type: "string" } },
+          required: ["userId"],
+        },
+      },
+      {
+        name: "getMe",
+        description: "Get bot user info",
+        inputSchema: { type: "object", properties: {} },
+      },
+
       // Comment Operations
-      { name: "createComment", description: "Create comment", inputSchema: { type: "object", properties: { pageId: { type: "string" }, richText: { type: "array" } }, required: ["pageId", "richText"] } },
-      { name: "listComments", description: "List comments", inputSchema: { type: "object", properties: { blockId: { type: "string" }, startCursor: { type: "string" }, pageSize: { type: "number" } }, required: ["blockId"] } },
-      
+      {
+        name: "createComment",
+        description: "Create comment",
+        inputSchema: {
+          type: "object",
+          properties: {
+            pageId: { type: "string" },
+            richText: { type: "array" },
+          },
+          required: ["pageId", "richText"],
+        },
+      },
+      {
+        name: "listComments",
+        description: "List comments",
+        inputSchema: {
+          type: "object",
+          properties: {
+            blockId: { type: "string" },
+            startCursor: { type: "string" },
+            pageSize: { type: "number" },
+          },
+          required: ["blockId"],
+        },
+      },
+
       // Bulk Operations
-      { name: "bulkCreatePages", description: "Bulk create pages", inputSchema: { type: "object", properties: { parent: { type: "object" }, pagesData: { type: "array" } }, required: ["parent", "pagesData"] } }
+      {
+        name: "bulkCreatePages",
+        description: "Bulk create pages",
+        inputSchema: {
+          type: "object",
+          properties: {
+            parent: { type: "object" },
+            pagesData: { type: "array" },
+          },
+          required: ["parent", "pagesData"],
+        },
+      },
     ],
     resources: [
       { uri: "notion://pages", name: "Pages", description: "All pages" },
-      { uri: "notion://databases", name: "Databases", description: "All databases" },
+      {
+        uri: "notion://databases",
+        name: "Databases",
+        description: "All databases",
+      },
       { uri: "notion://users", name: "Users", description: "All users" },
-      { uri: "notion://blocks", name: "Blocks", description: "All blocks" }
+      { uri: "notion://blocks", name: "Blocks", description: "All blocks" },
     ],
     prompts: [
-      { name: "create_page", description: "Help create Notion page", arguments: [{ name: "content", description: "Page content", required: true }] },
-      { name: "search_notion", description: "Search Notion workspace", arguments: [{ name: "query", description: "Search query", required: true }] }
+      {
+        name: "create_page",
+        description: "Help create Notion page",
+        arguments: [
+          { name: "content", description: "Page content", required: true },
+        ],
+      },
+      {
+        name: "search_notion",
+        description: "Search Notion workspace",
+        arguments: [
+          { name: "query", description: "Search query", required: true },
+        ],
+      },
     ],
     execute: async (tool, params) => {
       if (!process.env.NOTION_API_KEY)
@@ -2253,35 +2503,61 @@ export const MCP_SERVERS: Record<string, MCPServer> = {
     },
   },
 
-  // 14. SLACK - @slack/web-api
+  // 14. SLACK - @slack/web-api (FULLY UPGRADED: 30+ tools!)
   slack: {
     name: "slack",
     category: "communication",
     enabled: true,
     tools: [
-      {
-        name: "postMessage",
-        description: "Post message",
-        inputSchema: {
-          type: "object",
-          properties: { channel: { type: "string" }, text: { type: "string" } },
-          required: ["channel", "text"],
-        },
-      },
-      {
-        name: "listChannels",
-        description: "List channels",
-        inputSchema: { type: "object", properties: {} },
-      },
+      // Message Operations
+      { name: "postMessage", description: "Post message", inputSchema: { type: "object", properties: { channel: { type: "string" }, text: { type: "string" }, blocks: { type: "array" }, thread_ts: { type: "string" }, attachments: { type: "array" } }, required: ["channel", "text"] } },
+      { name: "updateMessage", description: "Update message", inputSchema: { type: "object", properties: { channel: { type: "string" }, ts: { type: "string" }, text: { type: "string" }, blocks: { type: "array" } }, required: ["channel", "ts", "text"] } },
+      { name: "deleteMessage", description: "Delete message", inputSchema: { type: "object", properties: { channel: { type: "string" }, ts: { type: "string" } }, required: ["channel", "ts"] } },
+      { name: "postEphemeral", description: "Post ephemeral message", inputSchema: { type: "object", properties: { channel: { type: "string" }, user: { type: "string" }, text: { type: "string" }, blocks: { type: "array" } }, required: ["channel", "user", "text"] } },
+      { name: "scheduleMessage", description: "Schedule message", inputSchema: { type: "object", properties: { channel: { type: "string" }, text: { type: "string" }, post_at: { type: "number" }, blocks: { type: "array" } }, required: ["channel", "text", "post_at"] } },
+      { name: "postThreadReply", description: "Reply in thread", inputSchema: { type: "object", properties: { channel: { type: "string" }, thread_ts: { type: "string" }, text: { type: "string" }, blocks: { type: "array" } }, required: ["channel", "thread_ts", "text"] } },
+      { name: "getPermalink", description: "Get message permalink", inputSchema: { type: "object", properties: { channel: { type: "string" }, message_ts: { type: "string" } }, required: ["channel", "message_ts"] } },
+      
+      // File Operations
+      { name: "uploadFile", description: "Upload file", inputSchema: { type: "object", properties: { channels: { type: "string" }, content: { type: "string" }, filename: { type: "string" }, filetype: { type: "string" }, title: { type: "string" }, initial_comment: { type: "string" } }, required: ["channels", "content"] } },
+      { name: "getFile", description: "Get file info", inputSchema: { type: "object", properties: { file: { type: "string" } }, required: ["file"] } },
+      { name: "deleteFile", description: "Delete file", inputSchema: { type: "object", properties: { file: { type: "string" } }, required: ["file"] } },
+      { name: "shareFile", description: "Share file publicly", inputSchema: { type: "object", properties: { file: { type: "string" }, channel: { type: "string" } }, required: ["file"] } },
+      { name: "listFiles", description: "List files", inputSchema: { type: "object", properties: { channel: { type: "string" }, user: { type: "string" }, count: { type: "number" } } } },
+      
+      // Reaction Operations
+      { name: "addReaction", description: "Add reaction", inputSchema: { type: "object", properties: { channel: { type: "string" }, name: { type: "string" }, timestamp: { type: "string" } }, required: ["channel", "name", "timestamp"] } },
+      { name: "removeReaction", description: "Remove reaction", inputSchema: { type: "object", properties: { channel: { type: "string" }, name: { type: "string" }, timestamp: { type: "string" } }, required: ["channel", "name", "timestamp"] } },
+      { name: "getReactions", description: "Get reactions", inputSchema: { type: "object", properties: { channel: { type: "string" }, timestamp: { type: "string" } }, required: ["channel", "timestamp"] } },
+      
+      // User Operations
+      { name: "listUsers", description: "List users", inputSchema: { type: "object", properties: { limit: { type: "number" }, cursor: { type: "string" } } } },
+      { name: "getUser", description: "Get user info", inputSchema: { type: "object", properties: { user: { type: "string" } }, required: ["user"] } },
+      { name: "getUserProfile", description: "Get user profile", inputSchema: { type: "object", properties: { user: { type: "string" } }, required: ["user"] } },
+      { name: "setUserPresence", description: "Set presence", inputSchema: { type: "object", properties: { presence: { type: "string" } }, required: ["presence"] } },
+      { name: "getUserPresence", description: "Get user presence", inputSchema: { type: "object", properties: { user: { type: "string" } }, required: ["user"] } },
+      
+      // Channel Operations
+      { name: "listChannels", description: "List channels", inputSchema: { type: "object", properties: { limit: { type: "number" }, cursor: { type: "string" }, exclude_archived: { type: "boolean" } } } },
+      { name: "createChannel", description: "Create channel", inputSchema: { type: "object", properties: { name: { type: "string" }, is_private: { type: "boolean" } }, required: ["name"] } },
+      { name: "archiveChannel", description: "Archive channel", inputSchema: { type: "object", properties: { channel: { type: "string" } }, required: ["channel"] } },
+      { name: "unarchiveChannel", description: "Unarchive channel", inputSchema: { type: "object", properties: { channel: { type: "string" } }, required: ["channel"] } },
+      { name: "inviteToChannel", description: "Invite users to channel", inputSchema: { type: "object", properties: { channel: { type: "string" }, users: { type: "string" } }, required: ["channel", "users"] } },
+      { name: "kickFromChannel", description: "Remove user from channel", inputSchema: { type: "object", properties: { channel: { type: "string" }, user: { type: "string" } }, required: ["channel", "user"] } },
+      { name: "setChannelTopic", description: "Set channel topic", inputSchema: { type: "object", properties: { channel: { type: "string" }, topic: { type: "string" } }, required: ["channel", "topic"] } },
+      { name: "setChannelPurpose", description: "Set channel purpose", inputSchema: { type: "object", properties: { channel: { type: "string" }, purpose: { type: "string" } }, required: ["channel", "purpose"] } },
+      { name: "getChannelHistory", description: "Get channel history", inputSchema: { type: "object", properties: { channel: { type: "string" }, limit: { type: "number" }, cursor: { type: "string" } }, required: ["channel"] } }
     ],
     resources: [
-      {
-        uri: "slack://channels",
-        name: "Channels",
-        description: "All channels",
-      },
+      { uri: "slack://channels", name: "Channels", description: "All channels" },
+      { uri: "slack://users", name: "Users", description: "All users" },
+      { uri: "slack://files", name: "Files", description: "All files" },
+      { uri: "slack://messages", name: "Messages", description: "Recent messages" }
     ],
-    prompts: [],
+    prompts: [
+      { name: "compose_message", description: "Help compose Slack message", arguments: [{ name: "context", description: "Message context", required: true }] },
+      { name: "channel_management", description: "Help manage channels", arguments: [{ name: "action", description: "What to do", required: true }] }
+    ],
     execute: async (tool, params) => {
       if (!process.env.SLACK_BOT_TOKEN)
         throw new Error("SLACK_BOT_TOKEN not configured");

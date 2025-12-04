@@ -24,6 +24,7 @@ import { executePostgresTool } from './postgres-tools';
 import { executeSQLiteTool } from './sqlite-tools';
 import { executeMongoDBTool } from './mongodb-tools';
 import { executeNotionTool } from './notion-tools';
+import { executeSlackTool } from './slack-tools';
 
 // Connection pools (singleton pattern)
 let mongoClient: MongoClient | null = null;
@@ -434,15 +435,8 @@ Return ONLY valid JSON with this structure:
       if (!process.env.SLACK_BOT_TOKEN) throw new Error('SLACK_BOT_TOKEN not configured');
       const slack = new SlackClient(process.env.SLACK_BOT_TOKEN);
       
-      switch (toolName) {
-        case 'postMessage':
-          const result = await slack.chat.postMessage({ channel: params.channel, text: params.text });
-          return result;
-        case 'listChannels':
-          const channels = await slack.conversations.list();
-          return channels.channels;
-        default: throw new Error(`Unknown slack tool: ${toolName}`);
-      }
+      // Use new comprehensive Slack tools (30+ tools!)
+      return await executeSlackTool(slack, toolName, params);
     }
 
     case 'airtable': {
