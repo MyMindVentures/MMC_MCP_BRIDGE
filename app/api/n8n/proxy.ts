@@ -12,18 +12,25 @@ async function initializeClient() {
   if (clientInitialized) return mcpClient;
   
   try {
-    if (!process.env.N8N_BASE_URL || !process.env.N8N_API_KEY) {
-      console.log('[n8n-community] N8N_BASE_URL or N8N_API_KEY not configured, skipping');
+    // Support both new and legacy env vars
+    const apiKey = process.env.N8N_INSTANCE_APIKEY || process.env.N8N_API_KEY;
+    const baseUrl = process.env.N8N_BASE_URL || 'https://mmc-n8n-instance.up.railway.app';
+    
+    if (!apiKey) {
+      console.log('[n8n-community] N8N_INSTANCE_APIKEY or N8N_API_KEY not configured, skipping');
       return null;
     }
+
+    console.log(`[n8n-community] Initializing with URL: ${baseUrl}/api/v1`);
 
     // StdioClientTransport spawns its own process internally
     const transport = new StdioClientTransport({
       command: 'node',
       args: [require.resolve('@leonardsellem/n8n-mcp-server/build/index.js')],
       env: {
-        N8N_API_URL: `${process.env.N8N_BASE_URL}/api/v1`,
-        N8N_API_KEY: process.env.N8N_API_KEY
+        ...process.env, // Pass all env vars
+        N8N_API_URL: `${baseUrl}/api/v1`,
+        N8N_API_KEY: apiKey
       }
     });
 
