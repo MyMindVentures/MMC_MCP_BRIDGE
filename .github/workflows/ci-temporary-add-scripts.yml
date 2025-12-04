@@ -94,7 +94,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: ci/temporary-add-scripts
-          title: Temporary: add fallback npm scripts and remove Pages workflow
+          title: "ci-temporary-add-scripts"
           body: |
             This temporary PR:
             - Adds safe no-op fallback npm scripts (lint, type-check, test, test:e2e) when they are missing. This prevents CI steps that call these scripts from failing.
