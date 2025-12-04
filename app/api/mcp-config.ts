@@ -551,6 +551,32 @@ export const MCP_SERVERS: Record<string, MCPServer> = {
           required: ["description"],
         },
       },
+      
+      // Additional Credential & Tag Management
+      { name: "updateCredential", description: "Update credential", inputSchema: { type: "object", properties: { credentialId: { type: "string" }, name: { type: "string" }, data: { type: "object" } }, required: ["credentialId"] } },
+      { name: "deleteCredential", description: "Delete credential", inputSchema: { type: "object", properties: { credentialId: { type: "string" } }, required: ["credentialId"] } },
+      { name: "updateTag", description: "Update tag", inputSchema: { type: "object", properties: { tagId: { type: "string" }, name: { type: "string" } }, required: ["tagId", "name"] } },
+      { name: "deleteTag", description: "Delete tag", inputSchema: { type: "object", properties: { tagId: { type: "string" } }, required: ["tagId"] } },
+      
+      // Import/Export
+      { name: "exportWorkflow", description: "Export workflow", inputSchema: { type: "object", properties: { workflowId: { type: "string" } }, required: ["workflowId"] } },
+      { name: "importWorkflow", description: "Import workflow", inputSchema: { type: "object", properties: { workflow: { type: "object" } }, required: ["workflow"] } },
+      
+      // Sharing
+      { name: "shareWorkflow", description: "Share workflow", inputSchema: { type: "object", properties: { workflowId: { type: "string" }, shareWithIds: { type: "array" } }, required: ["workflowId"] } },
+      { name: "getWorkflowSharing", description: "Get workflow sharing", inputSchema: { type: "object", properties: { workflowId: { type: "string" } }, required: ["workflowId"] } },
+      
+      // Versioning
+      { name: "getWorkflowVersions", description: "Get workflow versions", inputSchema: { type: "object", properties: { workflowId: { type: "string" } }, required: ["workflowId"] } },
+      { name: "restoreWorkflowVersion", description: "Restore workflow version", inputSchema: { type: "object", properties: { workflowId: { type: "string" }, versionId: { type: "string" } }, required: ["workflowId", "versionId"] } },
+      
+      // Execution Retry
+      { name: "retryExecution", description: "Retry failed execution", inputSchema: { type: "object", properties: { executionId: { type: "string" } }, required: ["executionId"] } },
+      
+      // Bulk Operations
+      { name: "bulkActivateWorkflows", description: "Bulk activate workflows", inputSchema: { type: "object", properties: { workflowIds: { type: "array" } }, required: ["workflowIds"] } },
+      { name: "bulkDeactivateWorkflows", description: "Bulk deactivate workflows", inputSchema: { type: "object", properties: { workflowIds: { type: "array" } }, required: ["workflowIds"] } },
+      { name: "bulkDeleteWorkflows", description: "Bulk delete workflows", inputSchema: { type: "object", properties: { workflowIds: { type: "array" } }, required: ["workflowIds"] } },
     ],
     resources: [
       {
@@ -603,41 +629,8 @@ export const MCP_SERVERS: Record<string, MCPServer> = {
       },
     ],
     execute: async (tool, params) => {
-      if (!process.env.N8N_API_KEY)
-        throw new Error("N8N_API_KEY not configured");
-      const baseURL = process.env.N8N_BASE_URL || "https://n8n.example.com";
-      const headers = { "X-N8N-API-KEY": process.env.N8N_API_KEY };
-
-      switch (tool) {
-        case "listWorkflows":
-          const { data: workflows } = await axios.get(
-            `${baseURL}/api/v1/workflows`,
-            { headers, params: { active: params.active } }
-          );
-          return workflows;
-        case "executeWorkflow":
-          const { data: execution } = await axios.post(
-            `${baseURL}/api/v1/workflows/${params.workflowId}/execute`,
-            params.data,
-            { headers }
-          );
-          return execution;
-        case "createWorkflow":
-          const { data: workflow } = await axios.post(
-            `${baseURL}/api/v1/workflows`,
-            { name: params.name, nodes: params.nodes },
-            { headers }
-          );
-          return workflow;
-        case "getWorkflow":
-          const { data: wf } = await axios.get(
-            `${baseURL}/api/v1/workflows/${params.workflowId}`,
-            { headers }
-          );
-          return wf;
-        default:
-          throw new Error(`Unknown n8n tool: ${tool}`);
-      }
+      const { executeN8NTool } = await import("./n8n-tools");
+      return await executeN8NTool(tool, params);
     },
   },
 
