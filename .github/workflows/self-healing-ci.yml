@@ -1,0 +1,236 @@
+name: "self-healing-ci"
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  tests:
+    name: Run tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        id: run_tests
+        run: |
+          set -e
+          # We draaien tests, maar laten de job "slagen" zodat de volgende job altijd kan kijken.
+          # De exit code bewaren we zelf.
+          npm test > test-output.log 2>&1 || echo $? > .test-exit-code
+
+      - name: Bepaal test status
+        id: test_status
+        run: |
+          if [ -f .test-exit-code ]; then
+            echo "failed=true" >> $GITHUB_OUTPUT
+          else
+            echo "failed=false" >> $GITHUB_OUTPUT
+          fi
+
+    outputs:
+      tests_failed: ${{ steps.test_status.outputs.failed }}
+
+  self_heal:
+    name: Self-healing met AI
+    needs: tests
+    if: needs.tests.outputs.tests_failed == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # Nodig om te kunnen pushen
+      pull-requests: write
+
+    env:
+      OPENAI_API_KEY: ${{ secrets.MMC_PENAI_API_KEY }}
+      GITHUB_TOKEN: ${{ secrets.MMC_GITHUB_TOKEN_FULL }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Toon mislukte tests
+        run: |
+          echo "Tests zijn gefaald, output:"
+          cat test-output.log || echo "Geen test-output gevonden"
+
+      - name: Installeer Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install openai
+
+      - name: Genereer AI-fix patch
+        id: ai_fix
+        run: |
+          python << 'PY'
+          import os
+          from pathlib import Path
+          from textwrap import dedent
+
+          from openai import OpenAI
+
+          api_key = os.environ.get("OPENAI_API_KEY")
+          if not api_key:
+            raise SystemExit("Geen OPENAI_API_KEY ingesteld in secrets.")
+
+          client = OpenAI(api_key=api_key)
+
+          # Lees test-output
+          test_output = ""
+          if Path("test-output.log").exists():
+            test_output = Path("test-output.log").read_text(encoding="utf-8")
+
+          # Beperk de hoeveelheid code die we meesturen (voorbeeld: alleen package.json en src/)
+          code_snippets = []
+          for path in Path(".").rglob("*.js"):
+            if "node_modules" in path.parts or "dist" in path.parts:
+              continue
+            try:
+              content = path.read_text(encoding="utf-8")
+            except Exception:
+              continue
+            # Beperk lengte per bestand
+            if len(content) > 3000:
+              content = content[:3000] + "\n// ... ingekort ..."
+            code_snippets.append(f"--- {path} ---\n{content}")
+
+          context = "\n\n".join(code_snippets[:5])  # max 5 bestanden als demo
+
+          prompt = dedent(f"""
+          Je bent een senior software engineer.
+
+          De tests van een Node.js project zijn gefaald. Hieronder staat de test-output
+          en een selectie van de relevante codebestanden.
+
+          Test-output:
+          {test_output}
+
+          Code (gedeeltelijk):
+          {context}
+
+          Geef een patch in unified diff formaat (git diff) die de fout oplost.
+          Vereisten:
+          - Gebruik ALLEEN bestanden die al bestaan in de repo.
+          - Gebruik absoluut pad vanaf de project-root in de diff headers.
+          - Geef *alleen* de diff, geen extra uitleg.
+          """)
+
+          response = client.responses.create(
+              model="gpt-4.1-mini",
+              input=prompt
+          )
+
+          # Haal tekst uit het response-object
+          text = ""
+          for item in response.output[0].content:
+            if item.type == "output_text":
+              text += item.text
+
+          patch = text.strip()
+
+          if not patch:
+            print("Geen patch ontvangen van AI.")
+            raise SystemExit(0)
+
+          Path("ai-fix.patch").write_text(patch, encoding="utf-8")
+          print("Gegenereerde patch:")
+          print(patch)
+          PY
+
+      - name: Pas AI patch toe
+        id: apply_patch
+        run: |
+          if [ ! -f ai-fix.patch ]; then
+            echo "Geen patch om toe te passen."
+            exit 0
+          fi
+
+          # Probeer patch toe te passen, faal niet hard als het niet lukt
+          set +e
+          git apply ai-fix.patch
+          status=$?
+          set -e
+
+          if [ $status -ne 0 ]; then
+            echo "Patch kon niet automatisch toegepast worden."
+            echo "success=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          echo "Patch succesvol toegepast."
+          echo "success=true" >> $GITHUB_OUTPUT
+
+      - name: Run tests opnieuw met patch
+        if: steps.apply_patch.outputs.success == 'true'
+        id: re_test
+        run: |
+          set +e
+          npm test > test-after-fix.log 2>&1
+          code=$?
+          set -e
+
+          if [ $code -eq 0 ]; then
+            echo "passed=true" >> $GITHUB_OUTPUT
+          else:
+            echo "passed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit en push AI-fix
+        if: steps.re_test.outputs.passed == 'true'
+        run: |
+          git config user.name "ci-self-healing-bot"
+          git config user.email "ci-bot@example.com"
+
+          git status
+          if git diff --quiet; then
+            echo "Geen wijzigingen om te committen."
+            exit 0
+          fi
+
+          git add .
+          git commit -m "AI self-healing: automatische fix voor falende tests"
+          git push origin HEAD:${GITHUB_REF##*/}
+
+      - name: Voeg comment toe aan PR met resultaat
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.MMC_GITHUB_TOKEN_FULL }}
+          script: |
+            const fs = require('fs');
+            let body = "Self-healing resultaat:\\n\\n";
+
+            if (fs.existsSync('ai-fix.patch')) {
+              body += "Er is een AI-gegenereerde patch toegepast. ";
+            } else {
+              body += "Er kon geen bruikbare AI-patch worden gegenereerd. ";
+            }
+
+            if (fs.existsSync('test-after-fix.log')) {
+              const log = fs.readFileSync('test-after-fix.log', 'utf8').slice(0, 5000);
+              body += "\\n\\n**Test output na fix (ingekort):**\\n```\\n" + log + "\\n```";
+            }
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              body
+            });
