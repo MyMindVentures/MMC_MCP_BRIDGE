@@ -220,7 +220,7 @@ export async function executeAirtableTool(tool: string, params: any): Promise<an
         fieldName,
         sampleValues: values.slice(0, 5),
         valueCount: values.length,
-        types: [...new Set(values.map(v => typeof v))],
+        types: [...new Set(values.map((v: any) => typeof v))],
       };
     }
 

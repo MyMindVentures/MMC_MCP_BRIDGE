@@ -1,6 +1,6 @@
 // app/api/agent/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { submitAgentTask } from '@/app/api/agent-worker';
+import { submitAgentTask } from './queue';
 
 // Define valid agent task types
 const VALID_AGENT_TYPES = ['tool_execution', 'workflow', 'analysis'] as const;
