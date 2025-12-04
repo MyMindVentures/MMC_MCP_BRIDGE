@@ -13,7 +13,7 @@ export async function POST(
   // 🔐 Authentication check
   const authResult = await verifyAuth(request);
   if (!authResult.allowed) {
-    return authErrorResponse(authResult.reason || 'Unauthorized', 401);
+    return authErrorResponse(authResult.reason || 'Unauthorized', 401, authResult.rateLimit);
   }
   
   try {
@@ -37,14 +37,53 @@ export async function POST(
 
     const body = await request.json();
 
+    // Validate tool input schema if available
+    if (tool.inputSchema && tool.inputSchema.required) {
+      const missing = tool.inputSchema.required.filter((field: string) => !(field in body));
+      if (missing.length > 0) {
+        return NextResponse.json(
+          { 
+            error: 'Missing required parameters',
+            missing: missing,
+            schema: tool.inputSchema
+          },
+          { status: 400 }
+        );
+      }
+    }
+
     // Use centralized executor with real SDK implementations
     const result = await executeMCPTool(serverName, toolName, body);
 
-    return NextResponse.json({ success: true, result });
+    // Add rate limit headers to response
+    const headers: Record<string, string> = {};
+    if (authResult.rateLimit) {
+      headers['X-RateLimit-Limit'] = authResult.rateLimit.limit.toString();
+      headers['X-RateLimit-Remaining'] = authResult.rateLimit.remaining.toString();
+      headers['X-RateLimit-Reset'] = authResult.rateLimit.reset.toString();
+    }
+
+    return NextResponse.json({ 
+      success: true, 
+      result,
+      server: serverName,
+      tool: toolName
+    }, { headers });
   } catch (error: any) {
+    // Enhanced error handling
+    const statusCode = error.message?.includes('not configured') ? 503 
+                     : error.message?.includes('not found') ? 404
+                     : error.message?.includes('Invalid') ? 400
+                     : 500;
+    
     return NextResponse.json(
-      { error: error.message },
-      { status: 500 }
+      { 
+        error: error.message || 'Internal server error',
+        server: (await context.params).server,
+        tool: (await context.params).tool,
+        timestamp: new Date().toISOString()
+      },
+      { status: statusCode }
     );
   }
 }

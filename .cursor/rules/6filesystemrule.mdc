@@ -73,6 +73,7 @@ You MAY create/modify:
 8. `next-env.d.ts` - Next.js TypeScript types (auto-generated, may exist in repo)
 9. `.devcontainer/**` - Devcontainer config (Dockerfile + devcontainer.json) when explicitly requested
 10. `.vscode/**` and `.cursor/**` - Editor/Workspace settings for VS Code / Cursor
+11. `Tasklist.prd` - Task list / PRD file for project management
 
 ### 2.2 Auto-Generated Files (IGNORE/DELETE)
 

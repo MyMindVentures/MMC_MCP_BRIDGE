@@ -67,9 +67,11 @@ function validateApiKey(token: string): ApiKeyConfig | null {
 }
 
 // Rate limiting (Redis-based)
-async function checkRateLimit(keyConfig: ApiKeyConfig, ip: string): Promise<boolean> {
+async function checkRateLimit(keyConfig: ApiKeyConfig, ip: string): Promise<{ allowed: boolean; remaining: number; reset: number }> {
   const redisClient = getRedis();
-  if (!redisClient) return true; // No Redis = no rate limiting
+  if (!redisClient) {
+    return { allowed: true, remaining: keyConfig.rateLimit, reset: Date.now() + 60000 };
+  }
   
   const key = `ratelimit:${keyConfig.name}:${ip}`;
   const now = Date.now();
@@ -88,10 +90,17 @@ async function checkRateLimit(keyConfig: ApiKeyConfig, ip: string): Promise<bool
     // Set expiry
     await redisClient.expire(key, 60);
     
-    return count <= keyConfig.rateLimit;
+    const remaining = Math.max(0, keyConfig.rateLimit - count);
+    const reset = now + windowMs;
+    
+    return {
+      allowed: count <= keyConfig.rateLimit,
+      remaining,
+      reset
+    };
   } catch (error) {
     console.error('[Auth] Rate limit check failed:', error);
-    return true; // Fail open
+    return { allowed: true, remaining: keyConfig.rateLimit, reset: Date.now() + 60000 }; // Fail open
   }
 }
 
@@ -177,23 +186,49 @@ export async function verifyAuth(request: Request): Promise<{
   }
   
   // Check rate limit
-  const withinLimit = await checkRateLimit(keyConfig, ip);
-  if (!withinLimit) {
+  const rateLimitResult = await checkRateLimit(keyConfig, ip);
+  if (!rateLimitResult.allowed) {
     await logRequest(keyConfig, request, false);
     return { 
       allowed: false, 
       keyConfig,
-      reason: `Rate limit exceeded (${keyConfig.rateLimit} requests/minute)` 
+      reason: `Rate limit exceeded (${keyConfig.rateLimit} requests/minute)`,
+      rateLimit: {
+        limit: keyConfig.rateLimit,
+        remaining: rateLimitResult.remaining,
+        reset: rateLimitResult.reset
+      }
     };
   }
   
   // Success!
   await logRequest(keyConfig, request, true);
-  return { allowed: true, keyConfig };
+  return { 
+    allowed: true, 
+    keyConfig,
+    rateLimit: {
+      limit: keyConfig.rateLimit,
+      remaining: rateLimitResult.remaining,
+      reset: rateLimitResult.reset
+    }
+  };
 }
 
-// Error responses
-export function authErrorResponse(reason: string, status: number = 401) {
+// Error responses with rate limit headers
+export function authErrorResponse(reason: string, status: number = 401, rateLimit?: { limit: number; remaining: number; reset: number }) {
+  const headers: Record<string, string> = { 
+    'Content-Type': 'application/json',
+    'WWW-Authenticate': 'Bearer realm="MCP Bridge", charset="UTF-8"'
+  };
+
+  // Add rate limit headers if provided
+  if (rateLimit) {
+    headers['X-RateLimit-Limit'] = rateLimit.limit.toString();
+    headers['X-RateLimit-Remaining'] = rateLimit.remaining.toString();
+    headers['X-RateLimit-Reset'] = rateLimit.reset.toString();
+    headers['Retry-After'] = Math.ceil((rateLimit.reset - Date.now()) / 1000).toString();
+  }
+
   return new Response(
     JSON.stringify({
       jsonrpc: '2.0',
@@ -202,16 +237,14 @@ export function authErrorResponse(reason: string, status: number = 401) {
         message: reason,
         data: {
           hint: 'Add header: Authorization: Bearer <your-api-key>',
-          docs: 'https://github.com/MyMindVentures/MMC_MCP_BRIDGE#authentication'
+          docs: 'https://github.com/MyMindVentures/MMC_MCP_BRIDGE#authentication',
+          ...(rateLimit && { rateLimit })
         }
       }
     }),
     { 
       status,
-      headers: { 
-        'Content-Type': 'application/json',
-        'WWW-Authenticate': 'Bearer realm="MCP Bridge", charset="UTF-8"'
-      }
+      headers
     }
   );
 }

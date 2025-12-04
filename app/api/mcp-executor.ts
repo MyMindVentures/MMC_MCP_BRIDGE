@@ -37,8 +37,35 @@ async function gql(endpoint: string, query: string, vars: any, headers: Record<s
   return res.data;
 }
 
+// Log MCP tool execution
+async function logToolExecution(serverName: string, toolName: string, params: any, result: any, error?: any) {
+  const redisClient = getRedis();
+  if (!redisClient) return;
+  
+  const log = {
+    timestamp: new Date().toISOString(),
+    server: serverName,
+    tool: toolName,
+    params: JSON.stringify(params),
+    success: !error,
+    error: error?.message,
+    duration: Date.now() // Will be calculated by caller
+  };
+  
+  try {
+    await redisClient.lpush('audit:mcp-tools', JSON.stringify(log));
+    await redisClient.ltrim('audit:mcp-tools', 0, 9999); // Keep last 10k executions
+  } catch (err) {
+    console.error('[MCP] Tool execution logging failed:', err);
+  }
+}
+
 export async function executeMCPTool(serverName: string, toolName: string, params: any): Promise<any> {
-  switch (serverName) {
+  const startTime = Date.now();
+  try {
+    let result: any;
+    
+    switch (serverName) {
     case 'n8n': {
       // Use @leonardsellem/n8n-mcp-server (BEST IN THE WORLD! 🌍)
       const result = await executeN8NCommunityTool(toolName, params);
@@ -46,23 +73,9 @@ export async function executeMCPTool(serverName: string, toolName: string, param
     }
 
     case 'git': {
-      const git = simpleGit(params.path || process.cwd());
-      switch (toolName) {
-        case 'clone': return await git.clone(params.url, params.path);
-        case 'commit': 
-          if (params.files?.length) await git.add(params.files);
-          return await git.commit(params.message);
-        case 'push': return await git.push(params.remote || 'origin', params.branch || 'main');
-        case 'pull': return await git.pull(params.remote || 'origin', params.branch || 'main');
-        case 'branch':
-          if (params.action === 'list') return await git.branch();
-          if (params.action === 'create') return await git.checkoutLocalBranch(params.name);
-          if (params.action === 'delete') return await git.deleteLocalBranch(params.name);
-          throw new Error('Invalid branch action');
-        case 'status': return await git.status();
-        case 'log': return await git.log({ maxCount: params.limit || 10 });
-        default: throw new Error(`Unknown git tool: ${toolName}`);
-      }
+      // Use comprehensive Git tools (17+ tools!)
+      const { executeGitTool } = await import('./git-tools');
+      return await executeGitTool(toolName, params);
     }
 
     case 'filesystem': {
@@ -112,167 +125,6 @@ export async function executeMCPTool(serverName: string, toolName: string, param
       }
     }
 
-    case 'n8n': {
-      if (!process.env.N8N_API_KEY) throw new Error('N8N_API_KEY not configured');
-      const baseURL = process.env.N8N_BASE_URL || 'https://n8n.example.com';
-      const headers = { 'X-N8N-API-KEY': process.env.N8N_API_KEY };
-      
-      switch (toolName) {
-        // Workflow Management
-        case 'listWorkflows':
-          const { data: workflows } = await axios.get(`${baseURL}/api/v1/workflows`, { 
-            headers, 
-            params: { active: params.active, tags: params.tags } 
-          });
-          return workflows;
-        
-        case 'getWorkflow':
-          const { data: wf } = await axios.get(`${baseURL}/api/v1/workflows/${params.workflowId}`, { headers });
-          return wf;
-        
-        case 'createWorkflow':
-          const { data: workflow } = await axios.post(`${baseURL}/api/v1/workflows`, {
-            name: params.name,
-            nodes: params.nodes,
-            connections: params.connections || {},
-            settings: params.settings || {},
-            staticData: params.staticData || {},
-            tags: params.tags || []
-          }, { headers });
-          return workflow;
-        
-        case 'updateWorkflow':
-          const { data: updated } = await axios.patch(`${baseURL}/api/v1/workflows/${params.workflowId}`, {
-            name: params.name,
-            nodes: params.nodes,
-            connections: params.connections,
-            settings: params.settings,
-            active: params.active
-          }, { headers });
-          return updated;
-        
-        case 'deleteWorkflow':
-          await axios.delete(`${baseURL}/api/v1/workflows/${params.workflowId}`, { headers });
-          return { success: true, workflowId: params.workflowId };
-        
-        case 'activateWorkflow':
-          const { data: activated } = await axios.patch(`${baseURL}/api/v1/workflows/${params.workflowId}`, {
-            active: true
-          }, { headers });
-          return activated;
-        
-        case 'deactivateWorkflow':
-          const { data: deactivated } = await axios.patch(`${baseURL}/api/v1/workflows/${params.workflowId}`, {
-            active: false
-          }, { headers });
-          return deactivated;
-        
-        // Workflow Execution
-        case 'executeWorkflow':
-          const { data: execution } = await axios.post(`${baseURL}/api/v1/workflows/${params.workflowId}/execute`, 
-            params.data || {}, 
-            { headers }
-          );
-          return execution;
-        
-        case 'getExecution':
-          const { data: exec } = await axios.get(`${baseURL}/api/v1/executions/${params.executionId}`, { headers });
-          return exec;
-        
-        case 'listExecutions':
-          const { data: executions } = await axios.get(`${baseURL}/api/v1/executions`, {
-            headers,
-            params: {
-              workflowId: params.workflowId,
-              status: params.status,
-              limit: params.limit || 20
-            }
-          });
-          return executions;
-        
-        case 'deleteExecution':
-          await axios.delete(`${baseURL}/api/v1/executions/${params.executionId}`, { headers });
-          return { success: true, executionId: params.executionId };
-        
-        // Node Discovery (525+ nodes!)
-        case 'listNodes':
-          const { data: nodes } = await axios.get(`${baseURL}/api/v1/node-types`, { headers });
-          return nodes;
-        
-        case 'getNodeInfo':
-          const { data: nodeInfo } = await axios.get(`${baseURL}/api/v1/node-types/${params.nodeType}`, { headers });
-          return nodeInfo;
-        
-        // Credentials Management
-        case 'listCredentials':
-          const { data: creds } = await axios.get(`${baseURL}/api/v1/credentials`, { headers });
-          return creds;
-        
-        case 'createCredential':
-          const { data: cred } = await axios.post(`${baseURL}/api/v1/credentials`, {
-            name: params.name,
-            type: params.type,
-            data: params.data
-          }, { headers });
-          return cred;
-        
-        // Tags Management
-        case 'listTags':
-          const { data: tags } = await axios.get(`${baseURL}/api/v1/tags`, { headers });
-          return tags;
-        
-        case 'createTag':
-          const { data: tag } = await axios.post(`${baseURL}/api/v1/tags`, {
-            name: params.name
-          }, { headers });
-          return tag;
-        
-        // Webhook Management
-        case 'testWebhook':
-          const { data: webhookTest } = await axios.post(`${baseURL}/webhook-test/${params.path}`, 
-            params.data || {}, 
-            { headers }
-          );
-          return webhookTest;
-        
-        // AI-Powered Workflow Building
-        case 'buildWorkflowFromDescription':
-          // Use AI to generate workflow from natural language
-          if (!process.env.OPENAI_API_KEY) throw new Error('OPENAI_API_KEY required for AI workflow building');
-          const OpenAI = (await import('openai')).default;
-          const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-          
-          const completion = await openai.chat.completions.create({
-            model: 'gpt-4',
-            messages: [
-              {
-                role: 'system',
-                content: `You are an n8n workflow expert. Generate a valid n8n workflow JSON with nodes and connections based on the user's description. 
-Available node types include: HTTP Request, Set, IF, Switch, Code, Webhook, Schedule Trigger, Email Send, Slack, Discord, GitHub, Linear, MongoDB, Postgres, etc.
-Return ONLY valid JSON with this structure:
-{
-  "name": "Workflow Name",
-  "nodes": [...],
-  "connections": {...}
-}`
-              },
-              {
-                role: 'user',
-                content: params.description
-              }
-            ],
-            temperature: 0.3
-          });
-          
-          const workflowJson = JSON.parse(completion.choices[0].message.content || '{}');
-          
-          // Create the workflow in n8n
-          const { data: aiWorkflow } = await axios.post(`${baseURL}/api/v1/workflows`, workflowJson, { headers });
-          return aiWorkflow;
-        
-        default: throw new Error(`Unknown n8n tool: ${toolName}`);
-      }
-    }
 
     case 'mongodb': {
       if (!process.env.MONGODB_CONNECTION_STRING) throw new Error('MONGODB_CONNECTION_STRING not configured');
@@ -307,19 +159,9 @@ Return ONLY valid JSON with this structure:
     }
 
     case 'railway': {
-      if (!process.env.RAILWAY_TOKEN) throw new Error('RAILWAY_TOKEN not configured');
-      const endpoint = 'https://backboard.railway.com/graphql/v2';
-      const headers = { Authorization: `Bearer ${process.env.RAILWAY_TOKEN}`, 'Content-Type': 'application/json' };
-      
-      const queries: Record<string, string> = {
-        listProjects: 'query { projects { edges { node { id name } } } }',
-        getProject: 'query($id: String!) { project(id: $id) { id name services { edges { node { id name } } } } }',
-        listServices: 'query($projectId: String!) { project(id: $projectId) { services { edges { node { id name } } } } }',
-        deployService: 'mutation($serviceId: String!) { serviceDeploy(serviceId: $serviceId) { id } }',
-        getLogs: 'query($serviceId: String!, $limit: Int) { serviceLogs(serviceId: $serviceId, limit: $limit) { logs } }'
-      };
-      
-      return await gql(endpoint, queries[toolName], params, headers);
+      // Use comprehensive Railway tools (22+ tools!)
+      const { executeRailwayTool } = await import('./railway-tools');
+      return await executeRailwayTool(toolName, params);
     }
 
     case 'github': {

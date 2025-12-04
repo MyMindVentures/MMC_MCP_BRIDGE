@@ -75,8 +75,10 @@
     }
   },
 
-  "postCreateCommand": "bash -c 'npm ci && /usr/local/bin/install-extensions.sh'",
-  "postStartCommand": "bash -c '/usr/local/bin/install-extensions.sh && /usr/local/bin/start-dev.sh'",
+  "postCreateCommand": "bash -c 'npm ci && /usr/local/bin/install-extensions.sh && /usr/local/bin/persist-settings.sh restore'",
+  "postStartCommand": "bash -c '/usr/local/bin/persist-settings.sh restore && /usr/local/bin/install-extensions.sh && /usr/local/bin/start-dev.sh && /usr/local/bin/sync-todos.sh &'",
+  "postAttachCommand": "bash -c '/usr/local/bin/persist-settings.sh restore'",
+  "initializeCommand": "bash -c 'mkdir -p /workspaces/.devcontainer-persist'",
 
   "forwardPorts": [3000],
 
@@ -86,6 +88,10 @@
       "onAutoForward": "notify"
     }
   },
+
+  "mounts": [
+    "source=mmc-devcontainer-persist,target=/workspaces/.devcontainer-persist,type=volume"
+  ],
 
   "remoteUser": "node"
 }

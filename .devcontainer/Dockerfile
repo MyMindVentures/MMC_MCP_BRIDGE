@@ -29,6 +29,14 @@ RUN chmod +x /usr/local/bin/install-extensions.sh
 COPY .devcontainer/start-dev.sh /usr/local/bin/start-dev.sh
 RUN chmod +x /usr/local/bin/start-dev.sh
 
+# Copy settings persistence script
+COPY .devcontainer/persist-settings.sh /usr/local/bin/persist-settings.sh
+RUN chmod +x /usr/local/bin/persist-settings.sh
+
+# Copy todo sync script
+COPY .devcontainer/sync-todos.sh /usr/local/bin/sync-todos.sh
+RUN chmod +x /usr/local/bin/sync-todos.sh
+
 # Set working directory
 WORKDIR /workspaces
 

@@ -30,3 +30,6 @@ Thumbs.db
 
 # IDE - Ignore VS Code (we use Cursor!)
 # Keep .devcontainer/ for Docker dev environment
+
+# Devcontainer persistent settings (local only, never commit)
+.devcontainer-persist/

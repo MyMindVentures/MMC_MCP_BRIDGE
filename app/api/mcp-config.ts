@@ -52,6 +52,7 @@ export interface MCPServer {
   supportsSampling?: boolean;
   graphql?: { endpoint: string; headers: Record<string, string> };
   execute?: (tool: string, params: any) => Promise<any>;
+  agentBriefing?: string; // AI agent usage guide: when and how to use this MCP
 }
 
 // Helper for GraphQL
@@ -144,6 +145,30 @@ export const MCP_SERVERS: Record<string, MCPServer> = {
       const { executeGitTool } = await import("./git-tools");
       return await executeGitTool(tool, params);
     },
+    agentBriefing: `GIT MCP - Use for ALL version control operations.
+
+WHEN TO USE:
+- Cloning repositories, committing changes, pushing/pulling code
+- Managing branches (create, switch, merge, delete)
+- Viewing git history, diffs, blame, status
+- Stashing changes, tagging releases, managing remotes
+- Any task involving source code version control
+
+KEY TOOLS:
+- clone: Get a repository from remote
+- commit/push/pull: Standard git workflow
+- branch: Create feature branches, switch between branches
+- merge/rebase: Integrate changes
+- status/log/diff: Inspect repository state
+
+USE CASES:
+- "Create a feature branch for new authentication system"
+- "Commit all changes with message 'Add user login'"
+- "Show me what files changed in the last commit"
+- "Merge feature branch into main"
+- "Clone the repository from GitHub"
+
+AVOID: Use GitHub MCP for GitHub-specific features (issues, PRs, workflows). Use Git MCP for local git operations.`,
   },
 
   // 2. FILESYSTEM - Node.js fs/promises
