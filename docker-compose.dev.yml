@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  mcp-bridge-dev:
+    build:
+      context: .
+      dockerfile: .devcontainer/Dockerfile
+    container_name: mmc-mcp-bridge-dev
+    ports:
+      - "3000:3000"
+    volumes:
+      # Hot reload: mount source code
+      - .:/workspaces/MMC_MCP_BRIDGE
+      - /workspaces/MMC_MCP_BRIDGE/node_modules
+      - /workspaces/MMC_MCP_BRIDGE/.next
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      # Pass through all env vars from .env.local
+      - DOTENV_CONFIG_PATH=.env.local
+    env_file:
+      - .env.local
+    command: npm run dev
+    restart: unless-stopped
+    networks:
+      - mcp-dev-network
+
+networks:
+  mcp-dev-network:
+    driver: bridge
+

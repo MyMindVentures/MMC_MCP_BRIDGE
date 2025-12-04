@@ -32,10 +32,15 @@
         },
         "mcp": {
           "mcpServers": {
+            "MMC-MCP-Bridge-Local": {
+              "type": "sse",
+              "url": "http://localhost:3000/api/sse",
+              "description": "Local MCP Bridge (Docker) - ALL 26+ servers with hot reload"
+            },
             "MMC-MCP-Bridge-Railway": {
               "type": "sse",
               "url": "https://mmcmcphttpbridge-production.up.railway.app/api/sse",
-              "description": "Production MCP Bridge on Railway - ALL 26 servers"
+              "description": "Production MCP Bridge on Railway - ALL 26 servers (fallback)"
             }
           }
         }
