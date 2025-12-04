@@ -2885,46 +2885,58 @@ export const MCP_SERVERS: Record<string, MCPServer> = {
     },
   },
 
-  // 15. AIRTABLE - airtable SDK
+  // 15. AIRTABLE - airtable SDK (FULLY UPGRADED: 18+ tools!)
   airtable: {
     name: "airtable",
     category: "productivity",
     enabled: true,
     tools: [
-      {
-        name: "listRecords",
-        description: "List records",
-        inputSchema: {
-          type: "object",
-          properties: {
-            baseId: { type: "string" },
-            tableId: { type: "string" },
-          },
-          required: ["baseId", "tableId"],
-        },
-      },
+      // Record Operations (5 tools)
+      { name: "listRecords", description: "List records", inputSchema: { type: "object", properties: { baseId: { type: "string" }, table: { type: "string" }, maxRecords: { type: "number" }, view: { type: "string" }, filterByFormula: { type: "string" }, sort: { type: "array" } }, required: ["baseId", "table"] } },
+      { name: "getRecord", description: "Get record", inputSchema: { type: "object", properties: { baseId: { type: "string" }, table: { type: "string" }, recordId: { type: "string" } }, required: ["baseId", "table", "recordId"] } },
+      { name: "createRecord", description: "Create record", inputSchema: { type: "object", properties: { baseId: { type: "string" }, table: { type: "string" }, fields: { type: "object" }, typecast: { type: "boolean" } }, required: ["baseId", "table", "fields"] } },
+      { name: "updateRecord", description: "Update record", inputSchema: { type: "object", properties: { baseId: { type: "string" }, table: { type: "string" }, recordId: { type: "string" }, fields: { type: "object" }, typecast: { type: "boolean" } }, required: ["baseId", "table", "recordId", "fields"] } },
+      { name: "deleteRecord", description: "Delete record", inputSchema: { type: "object", properties: { baseId: { type: "string" }, table: { type: "string" }, recordId: { type: "string" } }, required: ["baseId", "table", "recordId"] } },
+      
+      // Bulk Operations (3 tools)
+      { name: "bulkCreate", description: "Bulk create records", inputSchema: { type: "object", properties: { baseId: { type: "string" }, table: { type: "string" }, records: { type: "array" }, typecast: { type: "boolean" } }, required: ["baseId", "table", "records"] } },
+      { name: "bulkUpdate", description: "Bulk update records", inputSchema: { type: "object", properties: { baseId: { type: "string" }, table: { type: "string" }, records: { type: "array" }, typecast: { type: "boolean" } }, required: ["baseId", "table", "records"] } },
+      { name: "bulkDelete", description: "Bulk delete records", inputSchema: { type: "object", properties: { baseId: { type: "string" }, table: { type: "string" }, recordIds: { type: "array" } }, required: ["baseId", "table", "recordIds"] } },
+      
+      // Search & Filter (3 tools)
+      { name: "filterRecords", description: "Filter records by formula", inputSchema: { type: "object", properties: { baseId: { type: "string" }, table: { type: "string" }, formula: { type: "string" }, maxRecords: { type: "number" }, view: { type: "string" } }, required: ["baseId", "table", "formula"] } },
+      { name: "sortRecords", description: "Sort records", inputSchema: { type: "object", properties: { baseId: { type: "string" }, table: { type: "string" }, sort: { type: "array" }, maxRecords: { type: "number" } }, required: ["baseId", "table", "sort"] } },
+      { name: "searchRecords", description: "Search records", inputSchema: { type: "object", properties: { baseId: { type: "string" }, table: { type: "string" }, searchTerm: { type: "string" }, searchFields: { type: "array" }, maxRecords: { type: "number" } }, required: ["baseId", "table", "searchTerm"] } },
+      
+      // Fields (2 tools)
+      { name: "listFields", description: "List table fields", inputSchema: { type: "object", properties: { baseId: { type: "string" }, table: { type: "string" } }, required: ["baseId", "table"] } },
+      { name: "getFieldInfo", description: "Get field info", inputSchema: { type: "object", properties: { baseId: { type: "string" }, table: { type: "string" }, fieldName: { type: "string" } }, required: ["baseId", "table", "fieldName"] } },
+      
+      // Views (2 tools)
+      { name: "listViews", description: "List views", inputSchema: { type: "object", properties: { baseId: { type: "string" }, table: { type: "string" }, view: { type: "string" }, maxRecords: { type: "number" } }, required: ["baseId", "table", "view"] } },
+      { name: "getView", description: "Get view data", inputSchema: { type: "object", properties: { baseId: { type: "string" }, table: { type: "string" }, view: { type: "string" }, maxRecords: { type: "number" } }, required: ["baseId", "table", "view"] } },
+      
+      // Tables (2 tools)
+      { name: "listTables", description: "List tables", inputSchema: { type: "object", properties: { baseId: { type: "string" } }, required: ["baseId"] } },
+      { name: "getTableInfo", description: "Get table info", inputSchema: { type: "object", properties: { baseId: { type: "string" }, table: { type: "string" } }, required: ["baseId", "table"] } },
+      
+      // Advanced (3 tools)
+      { name: "getPage", description: "Get paginated records", inputSchema: { type: "object", properties: { baseId: { type: "string" }, table: { type: "string" }, pageSize: { type: "number" }, offset: { type: "string" }, view: { type: "string" } }, required: ["baseId", "table"] } },
+      { name: "replaceRecord", description: "Replace record (PUT)", inputSchema: { type: "object", properties: { baseId: { type: "string" }, table: { type: "string" }, recordId: { type: "string" }, fields: { type: "object" } }, required: ["baseId", "table", "recordId", "fields"] } },
+      { name: "upsertRecord", description: "Upsert record", inputSchema: { type: "object", properties: { baseId: { type: "string" }, table: { type: "string" }, recordId: { type: "string" }, fields: { type: "object" } }, required: ["baseId", "table", "recordId", "fields"] } },
     ],
     resources: [
       { uri: "airtable://bases", name: "Bases", description: "All bases" },
+      { uri: "airtable://tables", name: "Tables", description: "All tables" },
+      { uri: "airtable://views", name: "Views", description: "All views" },
     ],
-    prompts: [],
+    prompts: [
+      { name: "create_record", description: "Help create record", arguments: [{ name: "table", description: "Table name", required: true }] },
+      { name: "query_data", description: "Help query data", arguments: [{ name: "query", description: "Query description", required: true }] },
+    ],
     execute: async (tool, params) => {
-      if (!process.env.AIRTABLE_API_KEY)
-        throw new Error("AIRTABLE_API_KEY not configured");
-      Airtable.configure({ apiKey: process.env.AIRTABLE_API_KEY });
-      const base = Airtable.base(params.baseId);
-
-      if (tool === "listRecords") {
-        const records: any[] = [];
-        await base(params.tableId)
-          .select()
-          .eachPage((pageRecords, fetchNextPage) => {
-            records.push(...pageRecords);
-            fetchNextPage();
-          });
-        return records;
-      }
-      throw new Error(`Unknown airtable tool: ${tool}`);
+      const { executeAirtableTool } = await import("./airtable-tools");
+      return await executeAirtableTool(tool, params);
     },
   },
 
