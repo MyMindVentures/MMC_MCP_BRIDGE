@@ -138,7 +138,12 @@ export async function createCycle(data: {
   endsAt: string;
 }): Promise<any> {
   const client = getClient();
-  const payload = await client.createCycle(data);
+  const payload = await client.createCycle({
+    teamId: data.teamId,
+    name: data.name,
+    startsAt: new Date(data.startsAt),
+    endsAt: new Date(data.endsAt)
+  });
   return payload.cycle;
 }
 

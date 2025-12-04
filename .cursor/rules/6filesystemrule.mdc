@@ -23,19 +23,42 @@ If there is ever a conflict between these rules and your "best practices", **THE
 
 ## 1. Git Workflow - MANDATORY
 
-### 1.1 Branch Strategy
+### 1.1 Branch Strategy - STRICT ENFORCEMENT
 
-**NEVER COMMIT DIRECTLY TO MAIN** (except critical hotfixes)
+**NEVER COMMIT DIRECTLY TO MAIN** - Main moet ALTIJD perfect werken!
+
+**CRITICAL RULE: Main = Production Ready**
+- Main branch MOET altijd builden zonder errors
+- Main branch MOET altijd deployen op Railway zonder failures
+- Als iets niet werkt → DIRECT naar feature branch
+- Geen experimentele code op main
+- Geen broken builds op main
 
 **ALWAYS:**
 
-1. Create feature branch: `git checkout -b feature/description` or `fix/description`
-2. Make ALL changes on feature branch
-3. Test locally: `npm run build` MUST succeed
-4. Commit with clear message
-5. Push feature branch: `git push origin feature/description`
-6. **ONLY** merge to main when feature is complete and tested
-7. Delete feature branch after merge
+1. **Voor nieuwe features:**
+   - Create feature branch: `git checkout -b feature/description`
+   - Make ALL changes on feature branch
+   - Test locally: `npm run build` MUST succeed
+   - Test Railway preview deployment
+   - Commit with clear message
+   - Push feature branch: `git push origin feature/description`
+   - **ONLY** merge to main when feature is complete, tested, and Railway preview works
+
+2. **Voor bug fixes:**
+   - Create fix branch: `git checkout -b fix/description`
+   - Fix the issue
+   - Test locally: `npm run build` MUST succeed
+   - Test Railway preview deployment
+   - Commit and push
+   - Merge to main ONLY when fix is verified working
+
+3. **Voor build/deploy errors:**
+   - Create fix branch: `git checkout -b fix/build-errors-main` or `fix/railway-deploy`
+   - Fix ALL errors
+   - Verify build succeeds: `npm run build`
+   - Test locally before pushing
+   - Merge to main ONLY when build is clean
 
 **Branch Naming:**
 
