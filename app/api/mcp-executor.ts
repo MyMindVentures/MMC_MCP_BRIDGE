@@ -456,16 +456,9 @@ Return ONLY valid JSON with this structure:
     }
 
     case 'doppler': {
-      if (!process.env.DOPPLER_TOKEN) throw new Error('DOPPLER_TOKEN not configured');
-      
-      if (toolName === 'getSecrets') {
-        const { data } = await axios.get(`https://api.doppler.com/v3/configs/config/secrets`, {
-          headers: { Authorization: `Bearer ${process.env.DOPPLER_TOKEN}` },
-          params: { project: params.project }
-        });
-        return data;
-      }
-      throw new Error(`Unknown doppler tool: ${toolName}`);
+      // Use comprehensive Doppler tools (38+ tools!)
+      const { executeDopplerTool } = await import('./doppler-tools');
+      return await executeDopplerTool(toolName, params);
     }
 
     case 'raindrop': {

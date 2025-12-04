@@ -11,6 +11,14 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     nano \
     redis-tools \
     postgresql-client \
+    gnupg \
+    && apt-get clean -y && rm -rf /var/lib/apt/lists/*
+
+# Install PowerShell Core (pwsh) for Linux
+RUN curl -sSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > /usr/share/keyrings/microsoft-prod.gpg \
+    && echo "deb [arch=amd64,arm64,armhf signed-by=/usr/share/keyrings/microsoft-prod.gpg] https://packages.microsoft.com/repos/microsoft-debian-bullseye-prod bullseye main" > /etc/apt/sources.list.d/microsoft-prod.list \
+    && apt-get update \
+    && apt-get -y install --no-install-recommends powershell \
     && apt-get clean -y && rm -rf /var/lib/apt/lists/*
 
 # Copy extension installation script
