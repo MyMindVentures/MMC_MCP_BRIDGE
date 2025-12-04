@@ -10,6 +10,9 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [instruction, setInstruction] = useState('');
   const [result, setResult] = useState<any>(null);
+  const [agentJobId, setAgentJobId] = useState<string | null>(null);
+  const [agentStatus, setAgentStatus] = useState<any>(null);
+  const [agentPolling, setAgentPolling] = useState(false);
   const [activeTab, setActiveTab] = useState<'servers' | 'resources' | 'prompts'>('servers');
 
   useEffect(() => {
@@ -63,7 +66,9 @@ export default function Home() {
 
   const executeAgent = async () => {
     if (!instruction.trim()) return;
-    setResult({ status: 'loading' });
+    setResult(null);
+    setAgentStatus({ state: 'queued', message: 'Submitting task to agent…' });
+    setAgentPolling(false);
     try {
       const res = await fetch('/api/agent', {
         method: 'POST',
@@ -71,11 +76,65 @@ export default function Home() {
         body: JSON.stringify({ instruction })
       });
       const data = await res.json();
-      setResult(data);
+      if (!res.ok) {
+        setAgentStatus({ state: 'error', error: data.error || 'Agent request failed' });
+        return;
+      }
+
+      setAgentJobId(data.jobId);
+      setAgentStatus({
+        state: 'submitted',
+        message: data.message || 'Agent task submitted',
+        pollUrl: data.pollUrl
+      });
+      setAgentPolling(true);
     } catch (error: any) {
-      setResult({ error: error.message });
+      setAgentStatus({ state: 'error', error: error.message });
     }
   };
+
+  // Poll agent status while agentPolling is true and we have a jobId
+  useEffect(() => {
+    if (!agentPolling || !agentJobId) return;
+
+    let cancelled = false;
+    const interval = setInterval(async () => {
+      try {
+        const res = await fetch(`/api/agent/status/${agentJobId}`);
+        const data = await res.json();
+
+        if (cancelled) return;
+
+        if (!res.ok) {
+          setAgentStatus({ state: 'error', error: data.error || 'Failed to fetch agent status' });
+          setAgentPolling(false);
+          return;
+        }
+
+        setAgentStatus({
+          state: data.state,
+          progress: data.progress,
+          summary: data.result?.summary,
+          raw: data
+        });
+
+        if (data.state === 'completed' || data.state === 'failed') {
+          setAgentPolling(false);
+          setResult(data.result || data);
+        }
+      } catch (error: any) {
+        if (!cancelled) {
+          setAgentStatus({ state: 'error', error: error.message });
+          setAgentPolling(false);
+        }
+      }
+    }, 3000);
+
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
+  }, [agentPolling, agentJobId]);
 
   const tabStyle = (tab: string) => ({
     padding: '0.75rem 1.5rem',
@@ -124,8 +183,39 @@ export default function Home() {
         <div style={{ background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)', borderRadius: '1rem', padding: '1.5rem', marginBottom: '2rem', border: '1px solid rgba(255,255,255,0.2)' }}>
           <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>Agentic Execution</h2>
           <textarea value={instruction} onChange={(e) => setInstruction(e.target.value)} placeholder="Enter your instruction for the AI agent..." style={{ width: '100%', minHeight: '100px', padding: '1rem', borderRadius: '0.5rem', border: '1px solid rgba(255,255,255,0.3)', background: 'rgba(255,255,255,0.1)', color: '#fff', fontSize: '1rem', fontFamily: 'inherit', resize: 'vertical', marginBottom: '1rem' }} />
-          <button onClick={executeAgent} disabled={!instruction.trim()} style={{ padding: '0.75rem 2rem', borderRadius: '0.5rem', border: 'none', background: instruction.trim() ? '#fff' : 'rgba(255,255,255,0.3)', color: instruction.trim() ? '#667eea' : '#fff', fontSize: '1rem', fontWeight: 'bold', cursor: instruction.trim() ? 'pointer' : 'not-allowed' }}>Execute Agent</button>
-          {result && <div style={{ marginTop: '1rem', padding: '1rem', background: 'rgba(0,0,0,0.2)', borderRadius: '0.5rem', fontFamily: 'monospace', fontSize: '0.875rem' }}><pre style={{ margin: 0, whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{JSON.stringify(result, null, 2)}</pre></div>}
+          <button
+            onClick={executeAgent}
+            disabled={!instruction.trim()}
+            style={{
+              padding: '0.75rem 2rem',
+              borderRadius: '0.5rem',
+              border: 'none',
+              background: instruction.trim() ? '#fff' : 'rgba(255,255,255,0.3)',
+              color: instruction.trim() ? '#667eea' : '#fff',
+              fontSize: '1rem',
+              fontWeight: 'bold',
+              cursor: instruction.trim() ? 'pointer' : 'not-allowed',
+              marginRight: '0.75rem'
+            }}
+          >
+            Execute Agent
+          </button>
+          {agentStatus && (
+            <span style={{ fontSize: '0.875rem', opacity: 0.9 }}>
+              {agentStatus.state === 'error'
+                ? `Error: ${agentStatus.error}`
+                : agentStatus.summary ||
+                  agentStatus.message ||
+                  `State: ${agentStatus.state} ${agentStatus.progress != null ? `(${agentStatus.progress}%)` : ''}`}
+            </span>
+          )}
+          {(result || agentStatus?.raw) && (
+            <div style={{ marginTop: '1rem', padding: '1rem', background: 'rgba(0,0,0,0.2)', borderRadius: '0.5rem', fontFamily: 'monospace', fontSize: '0.875rem' }}>
+              <pre style={{ margin: 0, whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
+                {JSON.stringify(result || agentStatus?.raw, null, 2)}
+              </pre>
+            </div>
+          )}
         </div>
 
         <div style={{ background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)', borderRadius: '1rem', padding: '1.5rem', border: '1px solid rgba(255,255,255,0.2)' }}>

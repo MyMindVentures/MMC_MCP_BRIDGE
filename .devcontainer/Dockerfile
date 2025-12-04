@@ -9,6 +9,8 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     ca-certificates \
     vim \
     nano \
+    redis-tools \
+    postgresql-client \
     && apt-get clean -y && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
