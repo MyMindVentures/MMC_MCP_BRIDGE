@@ -32,10 +32,15 @@
         },
         "mcp": {
           "mcpServers": {
+            "MMC-MCP-Bridge-Local": {
+              "type": "sse",
+              "url": "http://localhost:3000/api/sse",
+              "description": "Local MCP Bridge on App Container - ALL 26 servers (Hot Reload)"
+            },
             "MMC-MCP-Bridge-Railway": {
               "type": "sse",
               "url": "https://mmcmcphttpbridge-production.up.railway.app/api/sse",
-              "description": "Production MCP Bridge on Railway - ALL 26 servers"
+              "description": "Production MCP Bridge on Railway - ALL 26 servers (Fallback)"
             }
           }
         }
@@ -76,7 +81,7 @@
   },
 
   "postCreateCommand": "bash -c 'cd /workspaces/MMC_MCP_BRIDGE && mkdir -p /workspaces/.devcontainer-persist 2>/dev/null || true && if [ -f package-lock.json ]; then npm ci; else npm install; fi && /usr/local/bin/persist-settings.sh restore && /usr/local/bin/install-extensions.sh && /usr/local/bin/auto-git-workflow.sh ensure-branch'",
-  "postStartCommand": "bash -c 'mkdir -p /workspaces/.devcontainer-persist 2>/dev/null || true && /usr/local/bin/persist-settings.sh restore && /usr/local/bin/install-extensions.sh && /usr/local/bin/feature-tracker.sh update && /usr/local/bin/start-dev.sh && /usr/local/bin/sync-todos.sh & /usr/local/bin/git-watcher.sh &'",
+  "postStartCommand": "bash -c 'mkdir -p /workspaces/.devcontainer-persist 2>/dev/null || true && /usr/local/bin/persist-settings.sh restore && /usr/local/bin/install-extensions.sh && /usr/local/bin/feature-tracker.sh update && /usr/local/bin/build-app-container.sh && /usr/local/bin/sync-todos.sh & /usr/local/bin/git-watcher.sh &'",
   "postAttachCommand": "bash -c 'mkdir -p /workspaces/.devcontainer-persist 2>/dev/null || true && /usr/local/bin/persist-settings.sh restore && /usr/local/bin/auto-git-workflow.sh ensure-branch'",
 
   "forwardPorts": [3000],
@@ -89,7 +94,8 @@
   },
 
   "mounts": [
-    "source=mmc-devcontainer-persist,target=/workspaces/.devcontainer-persist,type=volume"
+    "source=mmc-devcontainer-persist,target=/workspaces/.devcontainer-persist,type=volume",
+    "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
   ],
 
   "remoteUser": "node"

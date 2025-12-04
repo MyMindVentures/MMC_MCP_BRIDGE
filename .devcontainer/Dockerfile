@@ -1,6 +1,6 @@
 FROM mcr.microsoft.com/devcontainers/typescript-node:1-20-bullseye
 
-# Install additional tools
+# Install additional tools (including lsb-release for Docker installation)
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get -y install --no-install-recommends \
     git \
@@ -12,6 +12,7 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     redis-tools \
     postgresql-client \
     gnupg \
+    lsb-release \
     && apt-get clean -y && rm -rf /var/lib/apt/lists/*
 
 # Install PowerShell Core (pwsh) for Linux
@@ -19,6 +20,13 @@ RUN curl -sSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor 
     && echo "deb [arch=amd64,arm64,armhf signed-by=/usr/share/keyrings/microsoft-prod.gpg] https://packages.microsoft.com/repos/microsoft-debian-bullseye-prod bullseye main" > /etc/apt/sources.list.d/microsoft-prod.list \
     && apt-get update \
     && apt-get -y install --no-install-recommends powershell \
+    && apt-get clean -y && rm -rf /var/lib/apt/lists/*
+
+# Install Docker CLI (to connect to Docker Desktop on host)
+RUN curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg \
+    && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list \
+    && apt-get update \
+    && apt-get -y install --no-install-recommends docker-ce-cli docker-compose-plugin \
     && apt-get clean -y && rm -rf /var/lib/apt/lists/*
 
 # Copy extension installation script
@@ -48,6 +56,10 @@ RUN chmod +x /usr/local/bin/git-watcher.sh
 # Copy feature tracker script
 COPY .devcontainer/feature-tracker.sh /usr/local/bin/feature-tracker.sh
 RUN chmod +x /usr/local/bin/feature-tracker.sh
+
+# Copy app container build script
+COPY .devcontainer/build-app-container.sh /usr/local/bin/build-app-container.sh
+RUN chmod +x /usr/local/bin/build-app-container.sh
 
 # Install jq for JSON parsing in scripts
 RUN apt-get update && apt-get install -y jq && rm -rf /var/lib/apt/lists/*

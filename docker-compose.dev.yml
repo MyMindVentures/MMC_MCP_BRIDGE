@@ -10,7 +10,7 @@ services:
         - mmc-mcp-bridge-dev:latest
     container_name: mmc-mcp-bridge-dev
     ports:
-      - "3000:3000"
+      - "3000:3000"  # Next.js dev server + MCP Bridge endpoint (/api/sse)
     volumes:
       - .:/workspaces/MMC_MCP_BRIDGE
       - mcp-bridge-node-modules:/workspaces/MMC_MCP_BRIDGE/node_modules
