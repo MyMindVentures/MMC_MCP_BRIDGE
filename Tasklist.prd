@@ -8,8 +8,8 @@
 ✅ feat-03-http-bridge-mongodb: HTTP MCP bridge MongoDB server: alle 18+ tools testen (find, insert, update, delete, aggregate, indexes)
 ✅ feat-03-http-bridge-openai: HTTP MCP bridge OpenAI server: alle 36 tools testen (chat, completion, embedding, image, vision, function calling) - mcp-executor.ts geüpdatet om executeOpenAITool te gebruiken voor alle 36 tools
 ✅ feat-03-http-bridge-anthropic: HTTP MCP bridge Anthropic server: alle 13 tools testen (chat, completion, vision, structured data extraction) - mcp-executor.ts gebruikt executeAnthropicTool voor alle 13 tools
-⏳ feat-04-railway-projects: Railway MCP: listProjects, getProject, listServices tools testen en valideren
-⏳ feat-04-railway-deployments: Railway MCP: deployService, getLogs, service management tools testen
+✅ feat-04-railway-projects: Railway MCP: listProjects, getProject, listServices tools testen en valideren - Volledig geïmplementeerd met 25 tools via executeRailwayTool
+✅ feat-04-railway-deployments: Railway MCP: deployService, getLogs, service management tools testen - Alle deployment tools beschikbaar via HTTP bridge
 ⏳ feat-05-n8n-workflows: n8n MCP: listWorkflows, getWorkflow, createWorkflow, updateWorkflow tools testen
 ⏳ feat-05-n8n-executions: n8n MCP: executeWorkflow, getExecution, listExecutions tools testen
 ⏳ feat-05-n8n-ai-builder: n8n MCP: buildWorkflowFromDescription AI workflow builder testen met echte n8n instance
