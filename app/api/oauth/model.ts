@@ -17,8 +17,75 @@ export function getPgPool(): Pool {
       idleTimeoutMillis: 30000,
       connectionTimeoutMillis: 2000,
     });
+    
+    // Initialize OAuth2 tables on first connection
+    initializeOAuth2Tables().catch(err => {
+      console.error('Failed to initialize OAuth2 tables:', err);
+    });
   }
   return pgPool;
+}
+
+// Initialize OAuth2 database tables
+async function initializeOAuth2Tables(): Promise<void> {
+  const pool = getPgPool();
+  
+  try {
+    // Create oauth2_clients table
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS oauth2_clients (
+        client_id VARCHAR(255) PRIMARY KEY,
+        client_secret VARCHAR(255) NOT NULL,
+        name VARCHAR(255) NOT NULL,
+        redirect_uris TEXT[] NOT NULL,
+        grants TEXT[] NOT NULL,
+        scopes TEXT[] NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    // Create oauth2_tokens table
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS oauth2_tokens (
+        access_token VARCHAR(255) PRIMARY KEY,
+        access_token_expires_at TIMESTAMP NOT NULL,
+        refresh_token VARCHAR(255) UNIQUE,
+        refresh_token_expires_at TIMESTAMP,
+        client_id VARCHAR(255) NOT NULL REFERENCES oauth2_clients(client_id) ON DELETE CASCADE,
+        user_id VARCHAR(255),
+        scopes TEXT[] NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    // Create oauth2_authorization_codes table
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS oauth2_authorization_codes (
+        code VARCHAR(255) PRIMARY KEY,
+        expires_at TIMESTAMP NOT NULL,
+        redirect_uri TEXT NOT NULL,
+        client_id VARCHAR(255) NOT NULL REFERENCES oauth2_clients(client_id) ON DELETE CASCADE,
+        user_id VARCHAR(255),
+        scopes TEXT[] NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    // Create indexes
+    await pool.query(`
+      CREATE INDEX IF NOT EXISTS idx_oauth2_tokens_client_id ON oauth2_tokens(client_id);
+      CREATE INDEX IF NOT EXISTS idx_oauth2_tokens_refresh_token ON oauth2_tokens(refresh_token);
+      CREATE INDEX IF NOT EXISTS idx_oauth2_tokens_expires_at ON oauth2_tokens(access_token_expires_at);
+      CREATE INDEX IF NOT EXISTS idx_oauth2_codes_client_id ON oauth2_authorization_codes(client_id);
+      CREATE INDEX IF NOT EXISTS idx_oauth2_codes_expires_at ON oauth2_authorization_codes(expires_at);
+    `);
+
+    console.log('✅ OAuth2 database tables initialized');
+  } catch (error) {
+    console.error('❌ Failed to initialize OAuth2 tables:', error);
+    throw error;
+  }
 }
 
 // Redis connection (reuse existing)
