@@ -142,61 +142,6 @@ export interface OAuth2AuthorizationCode {
   user: OAuth2User;
 }
 
-// Initialize database tables
-export async function initializeOAuth2Tables() {
-  const pool = getPgPool();
-  
-  await pool.query(`
-    CREATE TABLE IF NOT EXISTS oauth2_clients (
-      id SERIAL PRIMARY KEY,
-      client_id VARCHAR(255) UNIQUE NOT NULL,
-      client_secret VARCHAR(255) NOT NULL,
-      redirect_uris TEXT[] NOT NULL,
-      grants TEXT[] NOT NULL,
-      scopes TEXT[] NOT NULL,
-      name VARCHAR(255) NOT NULL,
-      enabled BOOLEAN DEFAULT true,
-      created_at TIMESTAMP DEFAULT NOW(),
-      updated_at TIMESTAMP DEFAULT NOW()
-    );
-    
-    CREATE INDEX IF NOT EXISTS idx_oauth2_clients_client_id ON oauth2_clients(client_id);
-  `);
-  
-  await pool.query(`
-    CREATE TABLE IF NOT EXISTS oauth2_tokens (
-      id SERIAL PRIMARY KEY,
-      access_token VARCHAR(255) UNIQUE NOT NULL,
-      access_token_expires_at TIMESTAMP NOT NULL,
-      refresh_token VARCHAR(255) UNIQUE,
-      refresh_token_expires_at TIMESTAMP,
-      scope TEXT,
-      client_id VARCHAR(255) NOT NULL,
-      user_id VARCHAR(255) NOT NULL,
-      created_at TIMESTAMP DEFAULT NOW()
-    );
-    
-    CREATE INDEX IF NOT EXISTS idx_oauth2_tokens_access_token ON oauth2_tokens(access_token);
-    CREATE INDEX IF NOT EXISTS idx_oauth2_tokens_refresh_token ON oauth2_tokens(refresh_token);
-  `);
-  
-  await pool.query(`
-    CREATE TABLE IF NOT EXISTS oauth2_authorization_codes (
-      id SERIAL PRIMARY KEY,
-      authorization_code VARCHAR(255) UNIQUE NOT NULL,
-      expires_at TIMESTAMP NOT NULL,
-      redirect_uri TEXT NOT NULL,
-      scope TEXT,
-      client_id VARCHAR(255) NOT NULL,
-      user_id VARCHAR(255) NOT NULL,
-      created_at TIMESTAMP DEFAULT NOW()
-    );
-    
-    CREATE INDEX IF NOT EXISTS idx_oauth2_codes_code ON oauth2_authorization_codes(authorization_code);
-  `);
-  
-  console.log('[OAuth2] Database tables initialized');
-}
 
 // Get client by clientId
 export async function getClient(clientId: string, clientSecret?: string): Promise<OAuth2Client | null> {
