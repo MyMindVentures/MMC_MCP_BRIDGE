@@ -517,3 +517,4 @@ This is a private project. For questions or suggestions, contact the development
 **Version:** 1.0.0  
 **Status:** Active Development
 
+Inspired by MyMindVentures.io 🤙
