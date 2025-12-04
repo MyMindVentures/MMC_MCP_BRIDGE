@@ -1,6 +1,6 @@
 {
-  "name": "MMC MCP Bridge DevContainer",
-  "image": "mmc-mcp-bridge-devcontainer:2.0.0",
+  "name": "MMC_MCP_Bridge_DevContainer",
+  "image": "mymindventures/mmc-mcp-bridge-devcontainer:2.0.0",
   "build": {
     "dockerfile": "Dockerfile",
     "context": ".."

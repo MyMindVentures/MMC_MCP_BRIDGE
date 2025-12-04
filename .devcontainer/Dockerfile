@@ -7,9 +7,11 @@ LABEL maintainer="MyMind Ventures <hello@mymindventures.io>"
 LABEL com.mmc.project="mmc-mcp-bridge"
 LABEL com.mmc.component="devcontainer"
 LABEL com.mmc.version="2.0.0"
+LABEL com.mmc.name="MMC_MCP_Bridge_DevContainer"
 LABEL com.mmc.description="MMC MCP Bridge Development Container - Full development environment with Docker CLI"
+LABEL com.mmc.image="mymindventures/mmc-mcp-bridge-devcontainer:2.0.0"
 LABEL org.opencontainers.image.source="https://github.com/mymindventures/mmc-mcp-bridge"
-LABEL org.opencontainers.image.title="MMC MCP Bridge DevContainer"
+LABEL org.opencontainers.image.title="MMC_MCP_Bridge_DevContainer"
 LABEL org.opencontainers.image.version="2.0.0"
 
 # Install additional tools (including lsb-release for Docker installation)

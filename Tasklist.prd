@@ -56,6 +56,7 @@
 ✅ feat-docker-best-practices: Docker configuratie volgens officiële best practices: correcte naming (lowercase), labels, metadata, healthchecks, networks, volumes - beide containers volledig geconfigureerd
 ✅ feat-app-container-build: App container gebouwd en gestart: mmc_mcp_bridge_app draait op port 3000 met hot reload, MCP Bridge endpoint beschikbaar op /api/sse
 ✅ feat-e2e-dagger-container: E2E Dagger container geconfigureerd: volledige CI/CD pipeline met Dagger, Docker Hub registratie voor alle 3 containers (DevContainer, App, E2E), GitHub Actions workflow voor automatische builds
+✅ feat-docker-naming-consistency: Docker naming consistentie: alle container names, image names, labels en metadata perfect zichtbaar in Docker Desktop UI (MMC_MCP_Bridge_App, MMC_MCP_Bridge_DevContainer, MMC_MCP_Bridge_E2E)
 ⏳ feat-prd-notion-sync: PRD.md automatische sync met Notion Portfolio via MCP: PRD.md generator + Notion MCP integration
 ⏳ feat-doppler-mcp-full: Doppler MCP volledig integreren: alle 38 tools implementeren en testen volgens doppler-mcp repo
 ✅ feat-prd-creation: PRD.md uitgebreide documentatie: volledige project vision, n8n bidirectionele integratie, agentic AI architectuur, OpenWebUI integratie, roadmap

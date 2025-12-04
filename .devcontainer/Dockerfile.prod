@@ -7,9 +7,12 @@ LABEL maintainer="MyMind Ventures <hello@mymindventures.io>"
 LABEL com.mmc.project="mmc-mcp-bridge"
 LABEL com.mmc.component="app"
 LABEL com.mmc.version="2.0.0"
+LABEL com.mmc.name="MMC_MCP_Bridge_App"
 LABEL com.mmc.description="MMC MCP Bridge Production Application Container"
+LABEL com.mmc.image="mymindventures/mmc-mcp-bridge-app:2.0.0"
+LABEL com.mmc.container="MMC_MCP_Bridge_App"
 LABEL org.opencontainers.image.source="https://github.com/mymindventures/mmc-mcp-bridge"
-LABEL org.opencontainers.image.title="MMC MCP Bridge App"
+LABEL org.opencontainers.image.title="MMC_MCP_Bridge_App"
 LABEL org.opencontainers.image.version="2.0.0"
 
 # Install production dependencies only
