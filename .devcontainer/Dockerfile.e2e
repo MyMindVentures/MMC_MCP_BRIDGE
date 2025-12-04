@@ -1,0 +1,52 @@
+# MMC MCP Bridge E2E Testing Container
+# Base: Microsoft DevContainer TypeScript Node.js 20 + Dagger
+# Docker Hub: mymindventures/mmc-mcp-bridge-e2e:2.0.0
+FROM mcr.microsoft.com/devcontainers/typescript-node:1-20-bullseye
+
+LABEL maintainer="MyMind Ventures <hello@mymindventures.io>"
+LABEL com.mmc.project="mmc-mcp-bridge"
+LABEL com.mmc.component="e2e"
+LABEL com.mmc.version="2.0.0"
+LABEL com.mmc.description="MMC MCP Bridge E2E Testing Container - Dagger Pipeline Runner"
+LABEL org.opencontainers.image.source="https://github.com/mymindventures/mmc-mcp-bridge"
+LABEL org.opencontainers.image.title="MMC MCP Bridge E2E"
+LABEL org.opencontainers.image.version="2.0.0"
+
+# Install additional tools
+RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
+    && apt-get -y install --no-install-recommends \
+    git \
+    curl \
+    wget \
+    ca-certificates \
+    vim \
+    nano \
+    lsb-release \
+    docker.io \
+    && apt-get clean -y && rm -rf /var/lib/apt/lists/*
+
+# Install Docker CLI and Buildx
+RUN curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg \
+    && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list \
+    && apt-get update \
+    && apt-get -y install --no-install-recommends docker-ce-cli docker-compose-plugin docker-buildx-plugin \
+    && apt-get clean -y && rm -rf /var/lib/apt/lists/*
+
+# Install Dagger CLI
+RUN curl -L https://dl.dagger.io/dagger/install.sh | sh && \
+    mv /root/.local/bin/dagger /usr/local/bin/dagger && \
+    chmod +x /usr/local/bin/dagger
+
+# Copy source code
+COPY --chown=node:node . /workspaces/MMC_MCP_BRIDGE/
+
+# Install dependencies
+WORKDIR /workspaces/MMC_MCP_BRIDGE
+RUN npm ci
+
+# Set working directory
+WORKDIR /workspaces/MMC_MCP_BRIDGE
+
+# Set user
+USER node
+

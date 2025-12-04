@@ -1,5 +1,6 @@
 # MMC MCP Bridge DevContainer Image
 # Base: Microsoft DevContainer TypeScript Node.js 20
+# Docker Hub: mymindventures/mmc-mcp-bridge-devcontainer:2.0.0
 FROM mcr.microsoft.com/devcontainers/typescript-node:1-20-bullseye
 
 LABEL maintainer="MyMind Ventures <hello@mymindventures.io>"
@@ -7,6 +8,9 @@ LABEL com.mmc.project="mmc-mcp-bridge"
 LABEL com.mmc.component="devcontainer"
 LABEL com.mmc.version="2.0.0"
 LABEL com.mmc.description="MMC MCP Bridge Development Container - Full development environment with Docker CLI"
+LABEL org.opencontainers.image.source="https://github.com/mymindventures/mmc-mcp-bridge"
+LABEL org.opencontainers.image.title="MMC MCP Bridge DevContainer"
+LABEL org.opencontainers.image.version="2.0.0"
 
 # Install additional tools (including lsb-release for Docker installation)
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \

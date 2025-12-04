@@ -17,7 +17,12 @@
     "docker:dev:logs": "docker compose -f docker-compose.dev.yml logs -f",
     "docker:dev:stop": "docker compose -f docker-compose.dev.yml stop",
     "docker:dev:down": "docker compose -f docker-compose.dev.yml down",
-    "docker:dev:restart": "docker compose -f docker-compose.dev.yml restart"
+    "docker:dev:restart": "docker compose -f docker-compose.dev.yml restart",
+    "docker:build:all": "docker compose -f docker-compose.dev.yml build && docker compose -f docker-compose.e2e.yml build",
+    "docker:push:all": "docker push mymindventures/mmc-mcp-bridge-devcontainer:latest && docker push mymindventures/mmc-mcp-bridge-app:latest && docker push mymindventures/mmc-mcp-bridge-e2e:latest",
+    "dagger:pipeline": "dagger run ./.dagger/pipeline.ts",
+    "dagger:build": "dagger build",
+    "dagger:test": "dagger test"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.27.0",

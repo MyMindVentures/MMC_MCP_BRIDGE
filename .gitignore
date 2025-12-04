@@ -34,6 +34,7 @@ Thumbs.db
 
 # Local development files (never commit)
 docker-compose.dev.yml
+docker-compose.e2e.yml
 *.local.md
 doc/
 *.log
