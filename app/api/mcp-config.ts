@@ -69,10 +69,10 @@ async function gql(
   return res.data;
 }
 
-// Connection pools (singleton pattern)
-let mongoClient: MongoClient | null = null;
-let pgPool: Pool | null = null;
-let sqliteDb: Database.Database | null = null;
+// Connection pools moved to individual tool files:
+// - postgres-tools.ts (pgPool)
+// - sqlite-tools.ts (sqliteDb)
+// - mongodb-tools.ts (mongoClient)
 
 // ALL 25 MCP SERVERS - FULLY IMPLEMENTED
 export const MCP_SERVERS: Record<string, MCPServer> = {
@@ -1034,34 +1034,9 @@ export const MCP_SERVERS: Record<string, MCPServer> = {
       },
     ],
     execute: async (tool, params) => {
-      if (!process.env.MONGODB_CONNECTION_STRING)
-        throw new Error("MONGODB_CONNECTION_STRING not configured");
-      if (!mongoClient) {
-        mongoClient = new MongoClient(process.env.MONGODB_CONNECTION_STRING);
-        await mongoClient.connect();
-      }
-      const db = mongoClient.db(params.database);
-      const collection = db.collection(params.collection);
-
-      switch (tool) {
-        case "find":
-          return await collection
-            .find(params.query || {})
-            .limit(params.limit || 100)
-            .toArray();
-        case "insert":
-          return await collection.insertOne(params.document);
-        case "update":
-          return await collection.updateMany(params.query, {
-            $set: params.update,
-          });
-        case "delete":
-          return await collection.deleteMany(params.query);
-        case "aggregate":
-          return await collection.aggregate(params.pipeline).toArray();
-        default:
-          throw new Error(`Unknown mongodb tool: ${tool}`);
-      }
+      // Import the full mongodb tools implementation
+      const { executeMongoDBTool } = await import("./mongodb-tools");
+      return await executeMongoDBTool(tool, params);
     },
   },
 
@@ -2152,17 +2127,9 @@ export const MCP_SERVERS: Record<string, MCPServer> = {
       },
     ],
     execute: async (tool, params) => {
-      if (!process.env.SQLITE_DB_PATH)
-        throw new Error("SQLITE_DB_PATH not configured");
-      if (!sqliteDb) {
-        sqliteDb = new Database(process.env.SQLITE_DB_PATH);
-      }
-
-      if (tool === "query") {
-        const stmt = sqliteDb.prepare(params.sql);
-        return stmt.all();
-      }
-      throw new Error(`Unknown sqlite tool: ${tool}`);
+      // Import the full sqlite tools implementation
+      const { executeSqliteTool } = await import("./sqlite-tools");
+      return executeSqliteTool(tool, params);
     },
   },
 
