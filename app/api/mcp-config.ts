@@ -1339,7 +1339,7 @@ export const MCP_SERVERS: Record<string, MCPServer> = {
     },
   },
 
-  // 7. RAILWAY - GraphQL API
+  // 7. RAILWAY - GraphQL API (FULLY UPGRADED: 22+ tools!)
   railway: {
     name: "railway",
     category: "infrastructure",
@@ -1349,94 +1349,61 @@ export const MCP_SERVERS: Record<string, MCPServer> = {
       headers: { Authorization: `Bearer ${process.env.RAILWAY_TOKEN || ""}` },
     },
     tools: [
-      {
-        name: "listProjects",
-        description: "List Railway projects",
-        inputSchema: { type: "object", properties: {} },
-      },
-      {
-        name: "getProject",
-        description: "Get Railway project",
-        inputSchema: {
-          type: "object",
-          properties: { projectId: { type: "string" } },
-          required: ["projectId"],
-        },
-      },
-      {
-        name: "listServices",
-        description: "List services",
-        inputSchema: {
-          type: "object",
-          properties: { projectId: { type: "string" } },
-          required: ["projectId"],
-        },
-      },
-      {
-        name: "deployService",
-        description: "Deploy service",
-        inputSchema: {
-          type: "object",
-          properties: { serviceId: { type: "string" } },
-          required: ["serviceId"],
-        },
-      },
-      {
-        name: "getLogs",
-        description: "Get service logs",
-        inputSchema: {
-          type: "object",
-          properties: {
-            serviceId: { type: "string" },
-            limit: { type: "number" },
-          },
-          required: ["serviceId"],
-        },
-      },
+      // Projects (4 tools)
+      { name: "listProjects", description: "List Railway projects", inputSchema: { type: "object", properties: {} } },
+      { name: "getProject", description: "Get project details", inputSchema: { type: "object", properties: { projectId: { type: "string" } }, required: ["projectId"] } },
+      { name: "createProject", description: "Create project", inputSchema: { type: "object", properties: { name: { type: "string" }, description: { type: "string" } }, required: ["name"] } },
+      { name: "deleteProject", description: "Delete project", inputSchema: { type: "object", properties: { projectId: { type: "string" } }, required: ["projectId"] } },
+      
+      // Services (4 tools)
+      { name: "listServices", description: "List services", inputSchema: { type: "object", properties: { projectId: { type: "string" } }, required: ["projectId"] } },
+      { name: "getService", description: "Get service details", inputSchema: { type: "object", properties: { serviceId: { type: "string" } }, required: ["serviceId"] } },
+      { name: "createService", description: "Create service", inputSchema: { type: "object", properties: { projectId: { type: "string" }, name: { type: "string" }, source: { type: "object" } }, required: ["projectId", "name"] } },
+      { name: "deleteService", description: "Delete service", inputSchema: { type: "object", properties: { serviceId: { type: "string" } }, required: ["serviceId"] } },
+      
+      // Deployments (4 tools)
+      { name: "deployService", description: "Deploy service", inputSchema: { type: "object", properties: { serviceId: { type: "string" } }, required: ["serviceId"] } },
+      { name: "listDeployments", description: "List deployments", inputSchema: { type: "object", properties: { serviceId: { type: "string" } }, required: ["serviceId"] } },
+      { name: "getDeployment", description: "Get deployment details", inputSchema: { type: "object", properties: { deploymentId: { type: "string" } }, required: ["deploymentId"] } },
+      { name: "rollbackDeployment", description: "Rollback deployment", inputSchema: { type: "object", properties: { deploymentId: { type: "string" } }, required: ["deploymentId"] } },
+      
+      // Environment Variables (3 tools)
+      { name: "listVariables", description: "List environment variables", inputSchema: { type: "object", properties: { serviceId: { type: "string" }, environmentId: { type: "string" } }, required: ["serviceId", "environmentId"] } },
+      { name: "setVariable", description: "Set environment variable", inputSchema: { type: "object", properties: { serviceId: { type: "string" }, environmentId: { type: "string" }, name: { type: "string" }, value: { type: "string" } }, required: ["serviceId", "environmentId", "name", "value"] } },
+      { name: "deleteVariable", description: "Delete environment variable", inputSchema: { type: "object", properties: { variableId: { type: "string" } }, required: ["variableId"] } },
+      
+      // Volumes (3 tools)
+      { name: "listVolumes", description: "List volumes", inputSchema: { type: "object", properties: { serviceId: { type: "string" } }, required: ["serviceId"] } },
+      { name: "createVolume", description: "Create volume", inputSchema: { type: "object", properties: { serviceId: { type: "string" }, name: { type: "string" }, mountPath: { type: "string" } }, required: ["serviceId", "name", "mountPath"] } },
+      { name: "deleteVolume", description: "Delete volume", inputSchema: { type: "object", properties: { volumeId: { type: "string" } }, required: ["volumeId"] } },
+      
+      // Domains (3 tools)
+      { name: "listDomains", description: "List custom domains", inputSchema: { type: "object", properties: { serviceId: { type: "string" } }, required: ["serviceId"] } },
+      { name: "createDomain", description: "Create custom domain", inputSchema: { type: "object", properties: { serviceId: { type: "string" }, domain: { type: "string" } }, required: ["serviceId", "domain"] } },
+      { name: "deleteDomain", description: "Delete custom domain", inputSchema: { type: "object", properties: { domainId: { type: "string" } }, required: ["domainId"] } },
+      
+      // Logs & Metrics (2 tools)
+      { name: "getLogs", description: "Get deployment logs", inputSchema: { type: "object", properties: { deploymentId: { type: "string" }, limit: { type: "number" } }, required: ["deploymentId"] } },
+      { name: "getMetrics", description: "Get service metrics", inputSchema: { type: "object", properties: { serviceId: { type: "string" }, measurementName: { type: "string" } }, required: ["serviceId"] } },
+      
+      // Environments (2 tools)
+      { name: "listEnvironments", description: "List environments", inputSchema: { type: "object", properties: { projectId: { type: "string" } }, required: ["projectId"] } },
+      { name: "createEnvironment", description: "Create environment", inputSchema: { type: "object", properties: { projectId: { type: "string" }, name: { type: "string" } }, required: ["projectId", "name"] } },
     ],
     resources: [
-      {
-        uri: "railway://projects",
-        name: "Projects",
-        description: "All Railway projects",
-      },
-      {
-        uri: "railway://deployments",
-        name: "Deployments",
-        description: "Recent deployments",
-      },
+      { uri: "railway://projects", name: "Projects", description: "All Railway projects" },
+      { uri: "railway://deployments", name: "Deployments", description: "Recent deployments" },
+      { uri: "railway://services", name: "Services", description: "All services" },
+      { uri: "railway://metrics", name: "Metrics", description: "Service metrics" },
     ],
     prompts: [
-      {
-        name: "deploy_app",
-        description: "Help deploy to Railway",
-        arguments: [
-          { name: "repo", description: "GitHub repo URL", required: true },
-        ],
-      },
+      { name: "deploy_app", description: "Help deploy to Railway", arguments: [{ name: "repo", description: "GitHub repo URL", required: true }] },
+      { name: "manage_env", description: "Manage environment variables", arguments: [{ name: "service", description: "Service name", required: true }] },
+      { name: "troubleshoot", description: "Troubleshoot deployment", arguments: [{ name: "issue", description: "Issue description", required: true }] },
     ],
     execute: async (tool, params) => {
-      if (!process.env.RAILWAY_TOKEN)
-        throw new Error("RAILWAY_TOKEN not configured");
-      const endpoint = "https://backboard.railway.com/graphql/v2";
-      const headers = {
-        Authorization: `Bearer ${process.env.RAILWAY_TOKEN}`,
-        "Content-Type": "application/json",
-      };
-
-      const queries: Record<string, string> = {
-        listProjects: "query { projects { edges { node { id name } } } }",
-        getProject:
-          "query($id: String!) { project(id: $id) { id name services { edges { node { id name } } } } }",
-        listServices:
-          "query($projectId: String!) { project(id: $projectId) { services { edges { node { id name } } } } }",
-        deployService:
-          "mutation($serviceId: String!) { serviceDeploy(serviceId: $serviceId) { id } }",
-        getLogs:
-          "query($serviceId: String!, $limit: Int) { serviceLogs(serviceId: $serviceId, limit: $limit) { logs } }",
-      };
-
-      return await gql(endpoint, queries[tool], params, headers);
+      const { executeRailwayTool } = await import("./railway-tools");
+      return await executeRailwayTool(tool, params);
     },
   },
 
