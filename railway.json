@@ -7,6 +7,12 @@
   "deploy": {
     "startCommand": "npm run start",
     "healthcheckPath": "/api/health",
-    "restartPolicyType": "ALWAYS"
+    "restartPolicyType": "ALWAYS",
+    "predeployCommand": "npm run build"
+  },
+  "github": {
+    "deployOnPush": true,
+    "deployOnPullRequest": true,
+    "deployOnMerge": true
   }
 }

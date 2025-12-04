@@ -274,6 +274,30 @@ AVOID: Use GitHub MCP for GitHub-specific features (issues, PRs, workflows). Use
           throw new Error(`Unknown filesystem tool: ${tool}`);
       }
     },
+    agentBriefing: `FILESYSTEM MCP - Use for ALL file and directory operations.
+
+WHEN TO USE:
+- Reading/writing files, creating/deleting directories
+- Listing directory contents, checking file info
+- File manipulation tasks, configuration file management
+- Any task involving local file system operations
+
+KEY TOOLS:
+- readFile: Read file contents (supports encoding)
+- writeFile: Write/create files
+- listDir: List directory contents
+- deleteFile: Remove files
+- createDir: Create directories (recursive support)
+- fileInfo: Get file stats (size, permissions, etc.)
+
+USE CASES:
+- "Read the package.json file"
+- "Create a new directory structure"
+- "List all files in the app directory"
+- "Write configuration to .env file"
+- "Delete temporary files"
+
+AVOID: Use Git MCP for version-controlled file operations. Use Filesystem MCP for direct file system access.`,
   },
 
   // 3. PLAYWRIGHT - Playwright SDK (FULLY UPGRADED: 24+ tools!)
@@ -345,6 +369,32 @@ AVOID: Use GitHub MCP for GitHub-specific features (issues, PRs, workflows). Use
       const { executePlaywrightTool } = await import("./playwright-tools");
       return await executePlaywrightTool(tool, params);
     },
+    agentBriefing: `PLAYWRIGHT MCP - Use for ALL browser automation and web scraping.
+
+WHEN TO USE:
+- Web scraping, automated testing, browser automation
+- Taking screenshots, generating PDFs, recording videos
+- Form filling, clicking buttons, navigating pages
+- JavaScript execution in browser context
+- Network interception, cookie management
+
+KEY TOOLS:
+- navigate: Go to URL, wait for page load
+- screenshot/screenshotElement: Capture page or element
+- scrape/scrapeMultiple: Extract data from pages
+- click/fill/type/select: Interact with page elements
+- evaluate: Run JavaScript in page context
+- generatePDF: Convert page to PDF
+- recordVideo: Record browser session
+
+USE CASES:
+- "Take a screenshot of this website"
+- "Scrape product prices from this page"
+- "Fill out and submit this form"
+- "Click the login button and wait for dashboard"
+- "Extract all links from this page"
+
+AVOID: Use Puppeteer MCP for similar tasks (they overlap). Playwright is more modern and feature-rich.`,
   },
 
   // 4. N8N - @leonardsellem/n8n-mcp-server (BEST IN THE WORLD! 🌍)
@@ -374,6 +424,27 @@ AVOID: Use GitHub MCP for GitHub-specific features (issues, PRs, workflows). Use
         arguments: [],
       },
     ],
+    agentBriefing: `N8N MCP - Use for workflow automation and integration orchestration.
+
+WHEN TO USE:
+- Creating, managing, and executing n8n workflows
+- Building automation workflows from descriptions
+- Triggering workflows, checking execution status
+- Integrating multiple services via n8n workflows
+- Complex multi-step automation tasks
+
+KEY TOOLS:
+- dynamic: Access all n8n community tools dynamically
+- n8n_help prompt: Get help with n8n workflows
+
+USE CASES:
+- "Create a workflow that sends Slack notification when GitHub issue is created"
+- "Execute the data sync workflow"
+- "List all active workflows"
+- "Check status of workflow execution"
+- "Build a workflow that syncs Notion pages to Airtable"
+
+AVOID: Use individual MCP servers (Slack, GitHub, etc.) for simple single-service tasks. Use n8n for complex multi-service workflows.`,
   },
 
   // 5. MONGODB - MongoDB SDK
@@ -668,6 +739,32 @@ AVOID: Use GitHub MCP for GitHub-specific features (issues, PRs, workflows). Use
       const { executeMongoDBTool } = await import("./mongodb-tools");
       return await executeMongoDBTool(tool, params);
     },
+    agentBriefing: `MONGODB MCP - Use for ALL MongoDB database operations.
+
+WHEN TO USE:
+- NoSQL database operations, document storage/retrieval
+- Collection management, document CRUD operations
+- Aggregation pipelines, complex queries
+- Index management, performance optimization
+- MongoDB-specific operations (distinct, count, etc.)
+
+KEY TOOLS:
+- listDatabases/listCollections: Discover database structure
+- find/findOne: Query documents
+- insert/insertMany: Create documents
+- update/updateOne: Modify documents
+- delete/deleteOne: Remove documents
+- aggregate: Complex data processing pipelines
+- createIndex/dropIndex: Performance optimization
+
+USE CASES:
+- "Find all users with status 'active'"
+- "Insert a new document into the 'products' collection"
+- "Run an aggregation to calculate total sales by month"
+- "Create an index on the 'email' field"
+- "Update user document with new profile data"
+
+AVOID: Use Postgres/SQLite MCP for relational data. Use MongoDB MCP for document-based, schema-flexible data.`,
   },
 
   // 6. LINEAR - @linear/sdk (FULLY UPGRADED: 30+ tools!)
@@ -1031,6 +1128,31 @@ AVOID: Use GitHub MCP for GitHub-specific features (issues, PRs, workflows). Use
       const { executeLinearTool } = await import("./linear-tools");
       return await executeLinearTool(tool, params);
     },
+    agentBriefing: `LINEAR MCP - Use for ALL project management and issue tracking.
+
+WHEN TO USE:
+- Creating, updating, searching issues
+- Managing projects, cycles, labels
+- Team collaboration, issue comments
+- Project planning, sprint management
+- Issue lifecycle management
+
+KEY TOOLS:
+- listIssues/createIssue/updateIssue: Issue management
+- searchIssues: Find issues by query
+- listProjects/createProject: Project management
+- listCycles/createCycle: Sprint/cycle planning
+- createComment/listComments: Team collaboration
+- bulkUpdateIssues: Batch operations
+
+USE CASES:
+- "Create an issue for the authentication bug"
+- "List all issues assigned to me"
+- "Update issue status to 'In Progress'"
+- "Create a new project for Q1 features"
+- "Search for issues with label 'bug'"
+
+AVOID: Use GitHub MCP for code-related issues/PRs. Use Linear MCP for project management and team coordination.`,
   },
 
   // 7. RAILWAY - GraphQL API (FULLY UPGRADED: 22+ tools!)
@@ -1099,6 +1221,31 @@ AVOID: Use GitHub MCP for GitHub-specific features (issues, PRs, workflows). Use
       const { executeRailwayTool } = await import("./railway-tools");
       return await executeRailwayTool(tool, params);
     },
+    agentBriefing: `RAILWAY MCP - Use for ALL Railway deployment and infrastructure management.
+
+WHEN TO USE:
+- Managing Railway projects, services, deployments
+- Viewing logs, metrics, deployment status
+- Managing domains, volumes, environment variables
+- Infrastructure as code operations
+- Deployment automation
+
+KEY TOOLS:
+- listProjects/getProject: Project management
+- listServices/getService: Service management
+- deployService: Trigger deployments
+- getLogs: View service logs
+- listDomains/createDomain: Custom domain management
+- listVolumes/createVolume: Persistent storage
+
+USE CASES:
+- "List all Railway projects"
+- "Deploy the latest code to production"
+- "Get logs from the API service"
+- "Create a custom domain for the service"
+- "Check deployment status"
+
+AVOID: Use other MCPs for application logic. Use Railway MCP for infrastructure and deployment operations.`,
   },
 
   // 8. GITHUB - Octokit SDK (FULLY UPGRADED: 35+ tools!)
@@ -1177,6 +1324,31 @@ AVOID: Use GitHub MCP for GitHub-specific features (issues, PRs, workflows). Use
       const { executeGitHubTool } = await import("./github-tools");
       return await executeGitHubTool(tool, params);
     },
+    agentBriefing: `GITHUB MCP - Use for ALL GitHub repository and collaboration operations.
+
+WHEN TO USE:
+- Repository management (create, clone, manage branches)
+- Issue and Pull Request operations
+- Code search, file management
+- GitHub Actions workflows
+- Release management, team collaboration
+
+KEY TOOLS:
+- listRepos/createRepo: Repository management
+- createIssue/updateIssue: Issue tracking
+- createPR/reviewPR/mergePR: Pull request workflow
+- searchCode: Code search across repositories
+- listWorkflows/triggerWorkflow: GitHub Actions
+- listReleases/createRelease: Release management
+
+USE CASES:
+- "Create a new repository for the project"
+- "Open a pull request for feature branch"
+- "Search for all uses of this function"
+- "Create an issue for the bug"
+- "Trigger the deployment workflow"
+
+AVOID: Use Git MCP for local git operations. Use GitHub MCP for GitHub platform features (issues, PRs, workflows, releases).`,
   },
 
   // 9. OPENAI - OpenAI SDK with Sampling (FULLY UPGRADED: 30+ tools!)
@@ -1256,6 +1428,32 @@ AVOID: Use GitHub MCP for GitHub-specific features (issues, PRs, workflows). Use
       const { executeOpenAITool } = await import("./openai-tools");
       return await executeOpenAITool(tool, params);
     },
+    agentBriefing: `OPENAI MCP - Use for ALL OpenAI API operations (GPT, embeddings, images, assistants).
+
+WHEN TO USE:
+- Chat completions, text generation, conversations
+- Embeddings for semantic search, similarity
+- Image generation (DALL-E), image editing
+- Vision API (image analysis)
+- Assistants API (persistent AI agents)
+- Function calling, structured outputs
+
+KEY TOOLS:
+- chat: GPT chat completions with function calling
+- completion: Legacy completion API
+- embedding: Text embeddings for search/similarity
+- generateImage/editImage: DALL-E image operations
+- vision: Analyze images with GPT-4 Vision
+- createAssistant/runAssistant: Persistent AI agents
+
+USE CASES:
+- "Generate a blog post about AI"
+- "Create embeddings for semantic search"
+- "Generate an image of a sunset"
+- "Analyze this screenshot and describe what you see"
+- "Create an AI assistant for customer support"
+
+AVOID: Use Anthropic MCP for Claude models. Use OpenAI MCP for GPT models and OpenAI-specific features.`,
   },
 
   // 10. ANTHROPIC - Anthropic SDK with Sampling (FULLY UPGRADED: 14+ tools!)
@@ -1303,6 +1501,30 @@ AVOID: Use GitHub MCP for GitHub-specific features (issues, PRs, workflows). Use
       const { executeAnthropicTool } = await import("./anthropic-tools");
       return await executeAnthropicTool(tool, params);
     },
+    agentBriefing: `ANTHROPIC MCP - Use for ALL Claude AI operations (chat, vision, structured data).
+
+WHEN TO USE:
+- Chat completions with Claude models
+- Vision API (image analysis with Claude)
+- Structured data extraction
+- Long context conversations
+- Prompt caching for cost optimization
+
+KEY TOOLS:
+- chat: Claude chat completions
+- chatWithVision: Analyze images with Claude
+- chatWithCaching: Use prompt caching for efficiency
+- completion: Legacy completion API
+- batchMessages: Process multiple messages
+
+USE CASES:
+- "Have a conversation with Claude about AI"
+- "Analyze this image and describe what you see"
+- "Extract structured data from this document"
+- "Generate a long-form article"
+- "Process multiple messages in batch"
+
+AVOID: Use OpenAI MCP for GPT models. Use Anthropic MCP for Claude models and Anthropic-specific features.`,
   },
 
   // 11. POSTGRES - pg SDK (FULLY UPGRADED: 20+ tools!)

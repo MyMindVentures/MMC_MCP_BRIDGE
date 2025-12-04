@@ -169,16 +169,40 @@ N8N_INSTANCE_APIKEY=...
   "deploy": {
     "startCommand": "npm run start",
     "healthcheckPath": "/api/health",
-    "restartPolicyType": "ALWAYS"
+    "restartPolicyType": "ALWAYS",
+    "predeployCommand": "npm run build"
+  },
+  "github": {
+    "deployOnPush": true,
+    "deployOnPullRequest": true,
+    "deployOnMerge": true
   }
 }
 ```
 
+**Railway Dashboard Setup (REQUIRED):**
+1. **Connect GitHub Repository:**
+   - Go to Railway Dashboard → Project → Settings → GitHub
+   - Connect your GitHub repository
+   - Enable "Deploy on Push" ✅
+   - Enable "Deploy on Pull Request" ✅ (for preview deployments)
+
+2. **Service Settings:**
+   - Go to Service → Settings → Source
+   - Ensure "Auto Deploy" is enabled ✅
+   - Set branch to `main` for production
+   - Enable "PR Deployments" for preview branches
+
+3. **Environment Variables:**
+   - Add all required env vars in Railway Dashboard
+   - Use Railway's secret management (not `.env` files)
+
 **Railway auto-enables:**
-- ✅ PR deployments (preview per branch)
+- ✅ PR deployments (preview per branch) - **Requires dashboard setup**
 - ✅ Build checks (blocks merge if build fails)
 - ✅ Health checks (`/api/health`)
 - ✅ Auto-cleanup (deletes preview after merge)
+- ✅ Predeploy checks (runs `npm run build` before deploy)
 
 ---
 
