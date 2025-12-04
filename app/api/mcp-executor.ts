@@ -22,6 +22,7 @@ import axios from 'axios';
 import { executeN8NCommunityTool } from './n8n-community/proxy';
 import { executePostgresTool } from './postgres-tools';
 import { executeSQLiteTool } from './sqlite-tools';
+import { executeMongoDBTool } from './mongodb-tools';
 
 // Connection pools (singleton pattern)
 let mongoClient: MongoClient | null = null;
@@ -277,17 +278,9 @@ Return ONLY valid JSON with this structure:
         mongoClient = new MongoClient(process.env.MONGODB_CONNECTION_STRING);
         await mongoClient.connect();
       }
-      const db = mongoClient.db(params.database);
-      const collection = db.collection(params.collection);
       
-      switch (toolName) {
-        case 'find': return await collection.find(params.query || {}).limit(params.limit || 100).toArray();
-        case 'insert': return await collection.insertOne(params.document);
-        case 'update': return await collection.updateMany(params.query, { $set: params.update });
-        case 'delete': return await collection.deleteMany(params.query);
-        case 'aggregate': return await collection.aggregate(params.pipeline).toArray();
-        default: throw new Error(`Unknown mongodb tool: ${toolName}`);
-      }
+      // Use new comprehensive MongoDB tools (18+ tools!)
+      return await executeMongoDBTool(mongoClient, toolName, params);
     }
 
     case 'linear': {

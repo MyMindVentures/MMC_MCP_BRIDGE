@@ -263,20 +263,45 @@ export const MCP_SERVERS: Record<string, MCPServer> = {
   },
 
   // 5. MONGODB - MongoDB SDK
+  // 5. MONGODB - mongodb SDK (FULLY UPGRADED: 17+ tools!)
   mongodb: {
     name: 'mongodb', category: 'database', enabled: true,
     tools: [
-      { name: 'find', description: 'Find MongoDB documents', inputSchema: { type: 'object', properties: { database: { type: 'string' }, collection: { type: 'string' }, query: { type: 'object' }, limit: { type: 'number' } }, required: ['database', 'collection'] } },
-      { name: 'insert', description: 'Insert MongoDB document', inputSchema: { type: 'object', properties: { database: { type: 'string' }, collection: { type: 'string' }, document: { type: 'object' } }, required: ['database', 'collection', 'document'] } },
-      { name: 'update', description: 'Update MongoDB documents', inputSchema: { type: 'object', properties: { database: { type: 'string' }, collection: { type: 'string' }, query: { type: 'object' }, update: { type: 'object' } }, required: ['database', 'collection', 'query', 'update'] } },
-      { name: 'delete', description: 'Delete MongoDB documents', inputSchema: { type: 'object', properties: { database: { type: 'string' }, collection: { type: 'string' }, query: { type: 'object' } }, required: ['database', 'collection', 'query'] } },
-      { name: 'aggregate', description: 'MongoDB aggregation', inputSchema: { type: 'object', properties: { database: { type: 'string' }, collection: { type: 'string' }, pipeline: { type: 'array' } }, required: ['database', 'collection', 'pipeline'] } }
+      // Collection Operations
+      { name: 'listCollections', description: 'List all collections', inputSchema: { type: 'object', properties: { database: { type: 'string' } }, required: ['database'] } },
+      { name: 'createCollection', description: 'Create collection', inputSchema: { type: 'object', properties: { database: { type: 'string' }, collection: { type: 'string' }, options: { type: 'object' } }, required: ['database', 'collection'] } },
+      { name: 'dropCollection', description: 'Drop collection', inputSchema: { type: 'object', properties: { database: { type: 'string' }, collection: { type: 'string' } }, required: ['database', 'collection'] } },
+      { name: 'collectionStats', description: 'Get collection statistics', inputSchema: { type: 'object', properties: { database: { type: 'string' }, collection: { type: 'string' } }, required: ['database', 'collection'] } },
+      
+      // Document Operations
+      { name: 'find', description: 'Find documents', inputSchema: { type: 'object', properties: { database: { type: 'string' }, collection: { type: 'string' }, query: { type: 'object' }, limit: { type: 'number' }, sort: { type: 'object' } }, required: ['database', 'collection'] } },
+      { name: 'findOne', description: 'Find one document', inputSchema: { type: 'object', properties: { database: { type: 'string' }, collection: { type: 'string' }, query: { type: 'object' } }, required: ['database', 'collection'] } },
+      { name: 'insert', description: 'Insert document', inputSchema: { type: 'object', properties: { database: { type: 'string' }, collection: { type: 'string' }, document: { type: 'object' } }, required: ['database', 'collection', 'document'] } },
+      { name: 'insertMany', description: 'Insert multiple documents', inputSchema: { type: 'object', properties: { database: { type: 'string' }, collection: { type: 'string' }, documents: { type: 'array' } }, required: ['database', 'collection', 'documents'] } },
+      { name: 'update', description: 'Update documents', inputSchema: { type: 'object', properties: { database: { type: 'string' }, collection: { type: 'string' }, query: { type: 'object' }, update: { type: 'object' }, upsert: { type: 'boolean' } }, required: ['database', 'collection', 'query', 'update'] } },
+      { name: 'updateOne', description: 'Update one document', inputSchema: { type: 'object', properties: { database: { type: 'string' }, collection: { type: 'string' }, query: { type: 'object' }, update: { type: 'object' }, upsert: { type: 'boolean' } }, required: ['database', 'collection', 'query', 'update'] } },
+      { name: 'delete', description: 'Delete documents', inputSchema: { type: 'object', properties: { database: { type: 'string' }, collection: { type: 'string' }, query: { type: 'object' } }, required: ['database', 'collection', 'query'] } },
+      { name: 'deleteOne', description: 'Delete one document', inputSchema: { type: 'object', properties: { database: { type: 'string' }, collection: { type: 'string' }, query: { type: 'object' } }, required: ['database', 'collection', 'query'] } },
+      { name: 'countDocuments', description: 'Count documents', inputSchema: { type: 'object', properties: { database: { type: 'string' }, collection: { type: 'string' }, query: { type: 'object' } }, required: ['database', 'collection'] } },
+      
+      // Aggregation & Advanced
+      { name: 'aggregate', description: 'Aggregation pipeline', inputSchema: { type: 'object', properties: { database: { type: 'string' }, collection: { type: 'string' }, pipeline: { type: 'array' } }, required: ['database', 'collection', 'pipeline'] } },
+      { name: 'distinct', description: 'Get distinct values', inputSchema: { type: 'object', properties: { database: { type: 'string' }, collection: { type: 'string' }, field: { type: 'string' }, query: { type: 'object' } }, required: ['database', 'collection', 'field'] } },
+      
+      // Index Management
+      { name: 'listIndexes', description: 'List indexes', inputSchema: { type: 'object', properties: { database: { type: 'string' }, collection: { type: 'string' } }, required: ['database', 'collection'] } },
+      { name: 'createIndex', description: 'Create index', inputSchema: { type: 'object', properties: { database: { type: 'string' }, collection: { type: 'string' }, keys: { type: 'object' }, options: { type: 'object' } }, required: ['database', 'collection', 'keys'] } },
+      { name: 'dropIndex', description: 'Drop index', inputSchema: { type: 'object', properties: { database: { type: 'string' }, collection: { type: 'string' }, indexName: { type: 'string' } }, required: ['database', 'collection', 'indexName'] } }
     ],
     resources: [
       { uri: 'mongodb://databases', name: 'Databases', description: 'List all databases' },
-      { uri: 'mongodb://collections', name: 'Collections', description: 'List all collections' }
+      { uri: 'mongodb://collections', name: 'Collections', description: 'List all collections' },
+      { uri: 'mongodb://indexes', name: 'Indexes', description: 'List all indexes' }
     ],
-    prompts: [{ name: 'query_builder', description: 'Help build MongoDB queries', arguments: [{ name: 'description', description: 'What to query', required: true }] }],
+    prompts: [
+      { name: 'query_builder', description: 'AI-powered MongoDB query builder', arguments: [{ name: 'description', description: 'What to query', required: true }] },
+      { name: 'aggregation_builder', description: 'AI-powered aggregation pipeline builder', arguments: [{ name: 'description', description: 'What to aggregate', required: true }] }
+    ],
     execute: async (tool, params) => {
       if (!process.env.MONGODB_CONNECTION_STRING) throw new Error('MONGODB_CONNECTION_STRING not configured');
       if (!mongoClient) {
