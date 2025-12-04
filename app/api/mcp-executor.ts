@@ -20,6 +20,7 @@ import * as Sentry from '@sentry/node';
 import Stripe from 'stripe';
 import axios from 'axios';
 import { executeN8NCommunityTool } from './n8n-community/proxy';
+import { executePostgresTool } from './postgres-tools';
 
 // Connection pools (singleton pattern)
 let mongoClient: MongoClient | null = null;
@@ -412,11 +413,8 @@ Return ONLY valid JSON with this structure:
         pgPool = new Pool({ connectionString: process.env.POSTGRES_CONNECTION_STRING });
       }
       
-      if (toolName === 'query') {
-        const result = await pgPool.query(params.sql, params.params || []);
-        return result.rows;
-      }
-      throw new Error(`Unknown postgres tool: ${toolName}`);
+      // Use new comprehensive Postgres tools (25+ tools!)
+      return await executePostgresTool(pgPool, toolName, params);
     }
 
     case 'sqlite': {

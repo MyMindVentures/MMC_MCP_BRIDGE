@@ -490,14 +490,56 @@ export const MCP_SERVERS: Record<string, MCPServer> = {
     }
   },
 
-  // 11. POSTGRES - pg SDK
+  // 11. POSTGRES - pg SDK (FULLY UPGRADED: 20+ tools!)
   postgres: {
     name: 'postgres', category: 'database', enabled: true,
     tools: [
-      { name: 'query', description: 'SQL query', inputSchema: { type: 'object', properties: { sql: { type: 'string' }, params: { type: 'array' } }, required: ['sql'] } }
+      // Schema Discovery
+      { name: 'listDatabases', description: 'List all databases', inputSchema: { type: 'object', properties: {} } },
+      { name: 'listSchemas', description: 'List all schemas', inputSchema: { type: 'object', properties: { database: { type: 'string' } } } },
+      { name: 'listTables', description: 'List all tables', inputSchema: { type: 'object', properties: { schema: { type: 'string', default: 'public' } } } },
+      { name: 'describeTable', description: 'Get table schema', inputSchema: { type: 'object', properties: { table: { type: 'string' }, schema: { type: 'string', default: 'public' } }, required: ['table'] } },
+      { name: 'listIndexes', description: 'List table indexes', inputSchema: { type: 'object', properties: { table: { type: 'string' }, schema: { type: 'string', default: 'public' } }, required: ['table'] } },
+      { name: 'listConstraints', description: 'List table constraints', inputSchema: { type: 'object', properties: { table: { type: 'string' }, schema: { type: 'string', default: 'public' } }, required: ['table'] } },
+      
+      // DDL Operations
+      { name: 'createTable', description: 'Create table', inputSchema: { type: 'object', properties: { table: { type: 'string' }, columns: { type: 'array' }, schema: { type: 'string', default: 'public' } }, required: ['table', 'columns'] } },
+      { name: 'alterTable', description: 'Alter table', inputSchema: { type: 'object', properties: { table: { type: 'string' }, action: { type: 'string' }, schema: { type: 'string', default: 'public' } }, required: ['table', 'action'] } },
+      { name: 'dropTable', description: 'Drop table', inputSchema: { type: 'object', properties: { table: { type: 'string' }, schema: { type: 'string', default: 'public' }, cascade: { type: 'boolean', default: false } }, required: ['table'] } },
+      { name: 'createIndex', description: 'Create index', inputSchema: { type: 'object', properties: { table: { type: 'string' }, columns: { type: 'array' }, indexName: { type: 'string' }, unique: { type: 'boolean', default: false } }, required: ['table', 'columns'] } },
+      { name: 'dropIndex', description: 'Drop index', inputSchema: { type: 'object', properties: { indexName: { type: 'string' }, schema: { type: 'string', default: 'public' } }, required: ['indexName'] } },
+      
+      // DML Operations  
+      { name: 'query', description: 'Execute SQL query', inputSchema: { type: 'object', properties: { sql: { type: 'string' }, params: { type: 'array' } }, required: ['sql'] } },
+      { name: 'select', description: 'SELECT query builder', inputSchema: { type: 'object', properties: { table: { type: 'string' }, columns: { type: 'array' }, where: { type: 'object' }, orderBy: { type: 'string' }, limit: { type: 'number' }, offset: { type: 'number' } }, required: ['table'] } },
+      { name: 'insert', description: 'INSERT data', inputSchema: { type: 'object', properties: { table: { type: 'string' }, data: { type: 'object' }, returning: { type: 'array' } }, required: ['table', 'data'] } },
+      { name: 'update', description: 'UPDATE data', inputSchema: { type: 'object', properties: { table: { type: 'string' }, data: { type: 'object' }, where: { type: 'object' }, returning: { type: 'array' } }, required: ['table', 'data'] } },
+      { name: 'delete', description: 'DELETE data', inputSchema: { type: 'object', properties: { table: { type: 'string' }, where: { type: 'object' }, returning: { type: 'array' } }, required: ['table'] } },
+      { name: 'upsert', description: 'INSERT or UPDATE (UPSERT)', inputSchema: { type: 'object', properties: { table: { type: 'string' }, data: { type: 'object' }, conflictColumns: { type: 'array' }, returning: { type: 'array' } }, required: ['table', 'data', 'conflictColumns'] } },
+      { name: 'bulkInsert', description: 'Bulk INSERT', inputSchema: { type: 'object', properties: { table: { type: 'string' }, data: { type: 'array' }, returning: { type: 'array' } }, required: ['table', 'data'] } },
+      
+      // Transactions
+      { name: 'beginTransaction', description: 'Begin transaction', inputSchema: { type: 'object', properties: { isolationLevel: { type: 'string' } } } },
+      { name: 'commit', description: 'Commit transaction', inputSchema: { type: 'object', properties: {} } },
+      { name: 'rollback', description: 'Rollback transaction', inputSchema: { type: 'object', properties: {} } },
+      
+      // Maintenance
+      { name: 'vacuum', description: 'VACUUM table', inputSchema: { type: 'object', properties: { table: { type: 'string' }, full: { type: 'boolean', default: false }, analyze: { type: 'boolean', default: true } } } },
+      { name: 'analyze', description: 'ANALYZE table', inputSchema: { type: 'object', properties: { table: { type: 'string' } } } },
+      { name: 'explain', description: 'EXPLAIN query plan', inputSchema: { type: 'object', properties: { sql: { type: 'string' }, analyze: { type: 'boolean', default: false } }, required: ['sql'] } },
+      { name: 'tableSize', description: 'Get table size', inputSchema: { type: 'object', properties: { table: { type: 'string' }, schema: { type: 'string', default: 'public' } }, required: ['table'] } }
     ],
-    resources: [{ uri: 'postgres://tables', name: 'Tables', description: 'All tables' }],
-    prompts: [],
+    resources: [
+      { uri: 'postgres://databases', name: 'Databases', description: 'All databases' },
+      { uri: 'postgres://schemas', name: 'Schemas', description: 'All schemas' },
+      { uri: 'postgres://tables', name: 'Tables', description: 'All tables' },
+      { uri: 'postgres://indexes', name: 'Indexes', description: 'All indexes' }
+    ],
+    prompts: [
+      { name: 'sql_builder', description: 'AI-powered SQL query builder', arguments: [{ name: 'description', description: 'What you want to query', required: true }] },
+      { name: 'schema_designer', description: 'AI-powered table schema design', arguments: [{ name: 'requirements', description: 'Table requirements', required: true }] },
+      { name: 'query_optimizer', description: 'AI-powered query optimization', arguments: [{ name: 'sql', description: 'SQL to optimize', required: true }] }
+    ],
     execute: async (tool, params) => {
       if (!process.env.POSTGRES_CONNECTION_STRING) throw new Error('POSTGRES_CONNECTION_STRING not configured');
       if (!pgPool) {
