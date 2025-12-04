@@ -68,11 +68,7 @@
   "cursor.ai.tasklistPath": "/workspaces/MMC_MCP_BRIDGE/Tasklist.prd",
   "cursor.ai.autoUpdateTasklist": true,
   "cursor.ai.tasklistFormat": "single-line",
-  
+
   // Workspace Files to Always Reference
-  "cursor.ai.workspaceFiles": [
-    "Tasklist.prd",
-    "README.md",
-    "package.json"
-  ]
+  "cursor.ai.workspaceFiles": ["Tasklist.prd", "README.md", "package.json"]
 }
