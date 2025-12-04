@@ -1,4 +1,13 @@
 {
   "doppler.autocomplete.enable": true,
-  "doppler.hover.enable": true
+  "doppler.hover.enable": true,
+  "mcp": {
+    "mcpServers": {
+      "MMC-MCP-Bridge-Railway": {
+        "type": "sse",
+        "url": "https://mmcmcphttpbridge-production.up.railway.app/api/sse",
+        "description": "Production MCP Bridge on Railway - ALL 26 MCP servers (git, filesystem, playwright, n8n, mongodb, linear, railway, github, openai, anthropic, postgres, sqlite, notion, slack, airtable, doppler, raindrop, postman, google-drive, ollama, brave-search, puppeteer, sentry, strapi, stripe)"
+      }
+    }
+  }
 }

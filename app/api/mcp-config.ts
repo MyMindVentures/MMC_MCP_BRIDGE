@@ -1908,19 +1908,9 @@ export const MCP_SERVERS: Record<string, MCPServer> = {
       },
     ],
     execute: async (tool, params) => {
-      if (!process.env.POSTGRES_CONNECTION_STRING)
-        throw new Error("POSTGRES_CONNECTION_STRING not configured");
-      if (!pgPool) {
-        pgPool = new Pool({
-          connectionString: process.env.POSTGRES_CONNECTION_STRING,
-        });
-      }
-
-      if (tool === "query") {
-        const result = await pgPool.query(params.sql, params.params || []);
-        return result.rows;
-      }
-      throw new Error(`Unknown postgres tool: ${tool}`);
+      // Import the full postgres tools implementation
+      const { executePostgresTool } = await import("./postgres-tools");
+      return await executePostgresTool(tool, params);
     },
   },
 
@@ -2510,53 +2500,373 @@ export const MCP_SERVERS: Record<string, MCPServer> = {
     enabled: true,
     tools: [
       // Message Operations
-      { name: "postMessage", description: "Post message", inputSchema: { type: "object", properties: { channel: { type: "string" }, text: { type: "string" }, blocks: { type: "array" }, thread_ts: { type: "string" }, attachments: { type: "array" } }, required: ["channel", "text"] } },
-      { name: "updateMessage", description: "Update message", inputSchema: { type: "object", properties: { channel: { type: "string" }, ts: { type: "string" }, text: { type: "string" }, blocks: { type: "array" } }, required: ["channel", "ts", "text"] } },
-      { name: "deleteMessage", description: "Delete message", inputSchema: { type: "object", properties: { channel: { type: "string" }, ts: { type: "string" } }, required: ["channel", "ts"] } },
-      { name: "postEphemeral", description: "Post ephemeral message", inputSchema: { type: "object", properties: { channel: { type: "string" }, user: { type: "string" }, text: { type: "string" }, blocks: { type: "array" } }, required: ["channel", "user", "text"] } },
-      { name: "scheduleMessage", description: "Schedule message", inputSchema: { type: "object", properties: { channel: { type: "string" }, text: { type: "string" }, post_at: { type: "number" }, blocks: { type: "array" } }, required: ["channel", "text", "post_at"] } },
-      { name: "postThreadReply", description: "Reply in thread", inputSchema: { type: "object", properties: { channel: { type: "string" }, thread_ts: { type: "string" }, text: { type: "string" }, blocks: { type: "array" } }, required: ["channel", "thread_ts", "text"] } },
-      { name: "getPermalink", description: "Get message permalink", inputSchema: { type: "object", properties: { channel: { type: "string" }, message_ts: { type: "string" } }, required: ["channel", "message_ts"] } },
-      
+      {
+        name: "postMessage",
+        description: "Post message",
+        inputSchema: {
+          type: "object",
+          properties: {
+            channel: { type: "string" },
+            text: { type: "string" },
+            blocks: { type: "array" },
+            thread_ts: { type: "string" },
+            attachments: { type: "array" },
+          },
+          required: ["channel", "text"],
+        },
+      },
+      {
+        name: "updateMessage",
+        description: "Update message",
+        inputSchema: {
+          type: "object",
+          properties: {
+            channel: { type: "string" },
+            ts: { type: "string" },
+            text: { type: "string" },
+            blocks: { type: "array" },
+          },
+          required: ["channel", "ts", "text"],
+        },
+      },
+      {
+        name: "deleteMessage",
+        description: "Delete message",
+        inputSchema: {
+          type: "object",
+          properties: { channel: { type: "string" }, ts: { type: "string" } },
+          required: ["channel", "ts"],
+        },
+      },
+      {
+        name: "postEphemeral",
+        description: "Post ephemeral message",
+        inputSchema: {
+          type: "object",
+          properties: {
+            channel: { type: "string" },
+            user: { type: "string" },
+            text: { type: "string" },
+            blocks: { type: "array" },
+          },
+          required: ["channel", "user", "text"],
+        },
+      },
+      {
+        name: "scheduleMessage",
+        description: "Schedule message",
+        inputSchema: {
+          type: "object",
+          properties: {
+            channel: { type: "string" },
+            text: { type: "string" },
+            post_at: { type: "number" },
+            blocks: { type: "array" },
+          },
+          required: ["channel", "text", "post_at"],
+        },
+      },
+      {
+        name: "postThreadReply",
+        description: "Reply in thread",
+        inputSchema: {
+          type: "object",
+          properties: {
+            channel: { type: "string" },
+            thread_ts: { type: "string" },
+            text: { type: "string" },
+            blocks: { type: "array" },
+          },
+          required: ["channel", "thread_ts", "text"],
+        },
+      },
+      {
+        name: "getPermalink",
+        description: "Get message permalink",
+        inputSchema: {
+          type: "object",
+          properties: {
+            channel: { type: "string" },
+            message_ts: { type: "string" },
+          },
+          required: ["channel", "message_ts"],
+        },
+      },
+
       // File Operations
-      { name: "uploadFile", description: "Upload file", inputSchema: { type: "object", properties: { channels: { type: "string" }, content: { type: "string" }, filename: { type: "string" }, filetype: { type: "string" }, title: { type: "string" }, initial_comment: { type: "string" } }, required: ["channels", "content"] } },
-      { name: "getFile", description: "Get file info", inputSchema: { type: "object", properties: { file: { type: "string" } }, required: ["file"] } },
-      { name: "deleteFile", description: "Delete file", inputSchema: { type: "object", properties: { file: { type: "string" } }, required: ["file"] } },
-      { name: "shareFile", description: "Share file publicly", inputSchema: { type: "object", properties: { file: { type: "string" }, channel: { type: "string" } }, required: ["file"] } },
-      { name: "listFiles", description: "List files", inputSchema: { type: "object", properties: { channel: { type: "string" }, user: { type: "string" }, count: { type: "number" } } } },
-      
+      {
+        name: "uploadFile",
+        description: "Upload file",
+        inputSchema: {
+          type: "object",
+          properties: {
+            channels: { type: "string" },
+            content: { type: "string" },
+            filename: { type: "string" },
+            filetype: { type: "string" },
+            title: { type: "string" },
+            initial_comment: { type: "string" },
+          },
+          required: ["channels", "content"],
+        },
+      },
+      {
+        name: "getFile",
+        description: "Get file info",
+        inputSchema: {
+          type: "object",
+          properties: { file: { type: "string" } },
+          required: ["file"],
+        },
+      },
+      {
+        name: "deleteFile",
+        description: "Delete file",
+        inputSchema: {
+          type: "object",
+          properties: { file: { type: "string" } },
+          required: ["file"],
+        },
+      },
+      {
+        name: "shareFile",
+        description: "Share file publicly",
+        inputSchema: {
+          type: "object",
+          properties: { file: { type: "string" }, channel: { type: "string" } },
+          required: ["file"],
+        },
+      },
+      {
+        name: "listFiles",
+        description: "List files",
+        inputSchema: {
+          type: "object",
+          properties: {
+            channel: { type: "string" },
+            user: { type: "string" },
+            count: { type: "number" },
+          },
+        },
+      },
+
       // Reaction Operations
-      { name: "addReaction", description: "Add reaction", inputSchema: { type: "object", properties: { channel: { type: "string" }, name: { type: "string" }, timestamp: { type: "string" } }, required: ["channel", "name", "timestamp"] } },
-      { name: "removeReaction", description: "Remove reaction", inputSchema: { type: "object", properties: { channel: { type: "string" }, name: { type: "string" }, timestamp: { type: "string" } }, required: ["channel", "name", "timestamp"] } },
-      { name: "getReactions", description: "Get reactions", inputSchema: { type: "object", properties: { channel: { type: "string" }, timestamp: { type: "string" } }, required: ["channel", "timestamp"] } },
-      
+      {
+        name: "addReaction",
+        description: "Add reaction",
+        inputSchema: {
+          type: "object",
+          properties: {
+            channel: { type: "string" },
+            name: { type: "string" },
+            timestamp: { type: "string" },
+          },
+          required: ["channel", "name", "timestamp"],
+        },
+      },
+      {
+        name: "removeReaction",
+        description: "Remove reaction",
+        inputSchema: {
+          type: "object",
+          properties: {
+            channel: { type: "string" },
+            name: { type: "string" },
+            timestamp: { type: "string" },
+          },
+          required: ["channel", "name", "timestamp"],
+        },
+      },
+      {
+        name: "getReactions",
+        description: "Get reactions",
+        inputSchema: {
+          type: "object",
+          properties: {
+            channel: { type: "string" },
+            timestamp: { type: "string" },
+          },
+          required: ["channel", "timestamp"],
+        },
+      },
+
       // User Operations
-      { name: "listUsers", description: "List users", inputSchema: { type: "object", properties: { limit: { type: "number" }, cursor: { type: "string" } } } },
-      { name: "getUser", description: "Get user info", inputSchema: { type: "object", properties: { user: { type: "string" } }, required: ["user"] } },
-      { name: "getUserProfile", description: "Get user profile", inputSchema: { type: "object", properties: { user: { type: "string" } }, required: ["user"] } },
-      { name: "setUserPresence", description: "Set presence", inputSchema: { type: "object", properties: { presence: { type: "string" } }, required: ["presence"] } },
-      { name: "getUserPresence", description: "Get user presence", inputSchema: { type: "object", properties: { user: { type: "string" } }, required: ["user"] } },
-      
+      {
+        name: "listUsers",
+        description: "List users",
+        inputSchema: {
+          type: "object",
+          properties: { limit: { type: "number" }, cursor: { type: "string" } },
+        },
+      },
+      {
+        name: "getUser",
+        description: "Get user info",
+        inputSchema: {
+          type: "object",
+          properties: { user: { type: "string" } },
+          required: ["user"],
+        },
+      },
+      {
+        name: "getUserProfile",
+        description: "Get user profile",
+        inputSchema: {
+          type: "object",
+          properties: { user: { type: "string" } },
+          required: ["user"],
+        },
+      },
+      {
+        name: "setUserPresence",
+        description: "Set presence",
+        inputSchema: {
+          type: "object",
+          properties: { presence: { type: "string" } },
+          required: ["presence"],
+        },
+      },
+      {
+        name: "getUserPresence",
+        description: "Get user presence",
+        inputSchema: {
+          type: "object",
+          properties: { user: { type: "string" } },
+          required: ["user"],
+        },
+      },
+
       // Channel Operations
-      { name: "listChannels", description: "List channels", inputSchema: { type: "object", properties: { limit: { type: "number" }, cursor: { type: "string" }, exclude_archived: { type: "boolean" } } } },
-      { name: "createChannel", description: "Create channel", inputSchema: { type: "object", properties: { name: { type: "string" }, is_private: { type: "boolean" } }, required: ["name"] } },
-      { name: "archiveChannel", description: "Archive channel", inputSchema: { type: "object", properties: { channel: { type: "string" } }, required: ["channel"] } },
-      { name: "unarchiveChannel", description: "Unarchive channel", inputSchema: { type: "object", properties: { channel: { type: "string" } }, required: ["channel"] } },
-      { name: "inviteToChannel", description: "Invite users to channel", inputSchema: { type: "object", properties: { channel: { type: "string" }, users: { type: "string" } }, required: ["channel", "users"] } },
-      { name: "kickFromChannel", description: "Remove user from channel", inputSchema: { type: "object", properties: { channel: { type: "string" }, user: { type: "string" } }, required: ["channel", "user"] } },
-      { name: "setChannelTopic", description: "Set channel topic", inputSchema: { type: "object", properties: { channel: { type: "string" }, topic: { type: "string" } }, required: ["channel", "topic"] } },
-      { name: "setChannelPurpose", description: "Set channel purpose", inputSchema: { type: "object", properties: { channel: { type: "string" }, purpose: { type: "string" } }, required: ["channel", "purpose"] } },
-      { name: "getChannelHistory", description: "Get channel history", inputSchema: { type: "object", properties: { channel: { type: "string" }, limit: { type: "number" }, cursor: { type: "string" } }, required: ["channel"] } }
+      {
+        name: "listChannels",
+        description: "List channels",
+        inputSchema: {
+          type: "object",
+          properties: {
+            limit: { type: "number" },
+            cursor: { type: "string" },
+            exclude_archived: { type: "boolean" },
+          },
+        },
+      },
+      {
+        name: "createChannel",
+        description: "Create channel",
+        inputSchema: {
+          type: "object",
+          properties: {
+            name: { type: "string" },
+            is_private: { type: "boolean" },
+          },
+          required: ["name"],
+        },
+      },
+      {
+        name: "archiveChannel",
+        description: "Archive channel",
+        inputSchema: {
+          type: "object",
+          properties: { channel: { type: "string" } },
+          required: ["channel"],
+        },
+      },
+      {
+        name: "unarchiveChannel",
+        description: "Unarchive channel",
+        inputSchema: {
+          type: "object",
+          properties: { channel: { type: "string" } },
+          required: ["channel"],
+        },
+      },
+      {
+        name: "inviteToChannel",
+        description: "Invite users to channel",
+        inputSchema: {
+          type: "object",
+          properties: {
+            channel: { type: "string" },
+            users: { type: "string" },
+          },
+          required: ["channel", "users"],
+        },
+      },
+      {
+        name: "kickFromChannel",
+        description: "Remove user from channel",
+        inputSchema: {
+          type: "object",
+          properties: { channel: { type: "string" }, user: { type: "string" } },
+          required: ["channel", "user"],
+        },
+      },
+      {
+        name: "setChannelTopic",
+        description: "Set channel topic",
+        inputSchema: {
+          type: "object",
+          properties: {
+            channel: { type: "string" },
+            topic: { type: "string" },
+          },
+          required: ["channel", "topic"],
+        },
+      },
+      {
+        name: "setChannelPurpose",
+        description: "Set channel purpose",
+        inputSchema: {
+          type: "object",
+          properties: {
+            channel: { type: "string" },
+            purpose: { type: "string" },
+          },
+          required: ["channel", "purpose"],
+        },
+      },
+      {
+        name: "getChannelHistory",
+        description: "Get channel history",
+        inputSchema: {
+          type: "object",
+          properties: {
+            channel: { type: "string" },
+            limit: { type: "number" },
+            cursor: { type: "string" },
+          },
+          required: ["channel"],
+        },
+      },
     ],
     resources: [
-      { uri: "slack://channels", name: "Channels", description: "All channels" },
+      {
+        uri: "slack://channels",
+        name: "Channels",
+        description: "All channels",
+      },
       { uri: "slack://users", name: "Users", description: "All users" },
       { uri: "slack://files", name: "Files", description: "All files" },
-      { uri: "slack://messages", name: "Messages", description: "Recent messages" }
+      {
+        uri: "slack://messages",
+        name: "Messages",
+        description: "Recent messages",
+      },
     ],
     prompts: [
-      { name: "compose_message", description: "Help compose Slack message", arguments: [{ name: "context", description: "Message context", required: true }] },
-      { name: "channel_management", description: "Help manage channels", arguments: [{ name: "action", description: "What to do", required: true }] }
+      {
+        name: "compose_message",
+        description: "Help compose Slack message",
+        arguments: [
+          { name: "context", description: "Message context", required: true },
+        ],
+      },
+      {
+        name: "channel_management",
+        description: "Help manage channels",
+        arguments: [
+          { name: "action", description: "What to do", required: true },
+        ],
+      },
     ],
     execute: async (tool, params) => {
       if (!process.env.SLACK_BOT_TOKEN)

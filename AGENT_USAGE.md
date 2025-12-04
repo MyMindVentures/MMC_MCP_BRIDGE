@@ -246,3 +246,5 @@ GET https://mmcmcphttpbridge-production.up.railway.app/api/health
 
 **Geen Cursor coding agent meer nodig - de Agentic Worker doet alles!** 🎯
 
+
+

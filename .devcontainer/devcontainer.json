@@ -10,7 +10,16 @@
       "settings": {
         "terminal.integrated.defaultProfile.linux": "bash",
         "editor.formatOnSave": true,
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "mcp": {
+          "mcpServers": {
+            "MMC-MCP-Bridge-Railway": {
+              "type": "sse",
+              "url": "https://mmcmcphttpbridge-production.up.railway.app/api/sse",
+              "description": "Production MCP Bridge on Railway - ALL 26 servers"
+            }
+          }
+        }
       },
       "extensions": [
         "dbaeumer.vscode-eslint",
