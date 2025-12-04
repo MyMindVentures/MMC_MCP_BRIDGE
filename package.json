@@ -9,7 +9,8 @@
     "build": "next build",
     "start": "next start -p $PORT",
     "type-check": "tsc --noEmit",
-    "validate": "npm run type-check && npm run build"
+    "prebuild": "npm run type-check",
+    "precommit": "npm run type-check && npm run build"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.27.0",

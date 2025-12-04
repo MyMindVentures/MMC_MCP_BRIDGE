@@ -126,7 +126,7 @@ export default function Home() {
         if (!cancelled) {
           setAgentStatus({ state: 'error', error: error.message });
           setAgentPolling(false);
-        }
+    }
       }
     }, 3000);
 
