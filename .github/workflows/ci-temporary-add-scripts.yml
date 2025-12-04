@@ -1,4 +1,4 @@
-name: "ci-temporary-add-scripts.yml"
+name: ci-temporary-add-scripts.yml
 
 on:
   workflow_dispatch:
