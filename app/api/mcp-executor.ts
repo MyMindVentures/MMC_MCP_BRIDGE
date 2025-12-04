@@ -19,7 +19,7 @@ import puppeteer from 'puppeteer';
 import * as Sentry from '@sentry/node';
 import Stripe from 'stripe';
 import axios from 'axios';
-import { executeN8NCommunityTool } from './n8n-community/proxy';
+import { executeN8NCommunityTool } from './n8n/proxy';
 import { executePostgresTool } from './postgres-tools';
 import { executeSQLiteTool } from './sqlite-tools';
 import { executeMongoDBTool } from './mongodb-tools';
@@ -39,8 +39,8 @@ async function gql(endpoint: string, query: string, vars: any, headers: Record<s
 
 export async function executeMCPTool(serverName: string, toolName: string, params: any): Promise<any> {
   switch (serverName) {
-    case 'n8n-community': {
-      // Use @leonardsellem/n8n-mcp-server community package
+    case 'n8n': {
+      // Use @leonardsellem/n8n-mcp-server (BEST IN THE WORLD! 🌍)
       const result = await executeN8NCommunityTool(toolName, params);
       return result.content || result;
     }
