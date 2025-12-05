@@ -7,16 +7,24 @@ services:
     build:
       context: .
       dockerfile: containers/dev/Dockerfile
+      args:
+        VERSION: ${VERSION:-2.0.0}
+        BUILD_DATE: ${BUILD_DATE:-}
+        VCS_REF: ${VCS_REF:-}
+    image: mmc-mcp-bridge-dev:latest
+    container_name: mmc-mcp-bridge-dev
     ports:
       - "3000:3000"
     volumes:
       - .:/workspaces/MMC_MCP_BRIDGE
       - /workspaces/MMC_MCP_BRIDGE/node_modules
       - /workspaces/MMC_MCP_BRIDGE/.next
+      - /var/run/docker.sock:/var/run/docker.sock:ro
     environment:
       - NODE_ENV=development
       - PORT=3000
       - NEXT_TELEMETRY_DISABLED=1
+      - DOCKER_HOST=unix:///var/run/docker.sock
     healthcheck:
       test:
         [
@@ -35,17 +43,25 @@ services:
       - default
     restart: "no"
 
-  # E2E Test Container - Voor testing, validatie en debugging
+  # E2E Test Container - Voor testing, validatie en debugging met Dagger
   e2e:
     build:
       context: .
       dockerfile: containers/e2e/Dockerfile
+      args:
+        VERSION: ${VERSION:-2.0.0}
+        BUILD_DATE: ${BUILD_DATE:-}
+        VCS_REF: ${VCS_REF:-}
+    image: mmc-mcp-bridge-e2e:latest
+    container_name: mmc-mcp-bridge-e2e
     volumes:
       - .:/workspaces/MMC_MCP_BRIDGE
       - /workspaces/MMC_MCP_BRIDGE/node_modules
+      - /var/run/docker.sock:/var/run/docker.sock:ro
     environment:
       - NODE_ENV=test
       - CI=true
+      - DOCKER_HOST=unix:///var/run/docker.sock
     networks:
       - default
     command: npm run test:e2e
@@ -56,6 +72,12 @@ services:
     build:
       context: .
       dockerfile: containers/app/Dockerfile
+      args:
+        VERSION: ${VERSION:-2.0.0}
+        BUILD_DATE: ${BUILD_DATE:-}
+        VCS_REF: ${VCS_REF:-}
+    image: mmc-mcp-bridge-app:latest
+    container_name: mmc-mcp-bridge-app
     ports:
       - "3001:3000"
     environment:
@@ -84,4 +106,3 @@ networks:
   default:
     name: mmc-mcp-bridge-network
     external: false
-

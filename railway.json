@@ -2,17 +2,32 @@
   "$schema": "https://railway.com/railway.schema.json",
   "build": {
     "builder": "RAILPACK",
-    "buildCommand": "npm ci && npm run build"
+    "buildCommand": "npm ci && npm run type-check && npm run build",
+    "watchPatterns": ["app/**", "package.json", "package-lock.json"]
   },
   "deploy": {
     "startCommand": "npm run start",
     "healthcheckPath": "/api/health",
-    "restartPolicyType": "ALWAYS",
-    "predeployCommand": "npm run build"
+    "healthcheckTimeout": 300,
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 10,
+    "predeployCommand": "npm run type-check && npm run build"
   },
   "github": {
-    "deployOnPush": true,
+    "deployOnPush": {
+      "branches": ["main"]
+    },
     "deployOnPullRequest": true,
-    "deployOnMerge": true
+    "deployOnMerge": {
+      "branches": ["main"]
+    }
+  },
+  "environments": {
+    "production": {
+      "variables": {
+        "NODE_ENV": "production",
+        "NEXT_TELEMETRY_DISABLED": "1"
+      }
+    }
   }
 }

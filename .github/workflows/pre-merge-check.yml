@@ -1,0 +1,174 @@
+# Pre-Merge Checks - Type Check, Build, Dagger Pipeline Validation
+# Runs on every PR to ensure code quality before merging to main
+
+name: Pre-Merge Checks
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  type-check:
+    name: TypeScript Type Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run TypeScript type-check
+        run: npm run type-check
+
+  build:
+    name: Build Validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: type-check
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build application
+        run: npm run build
+
+      - name: Verify build output
+        run: |
+          if [ ! -d ".next" ]; then
+            echo "❌ Build failed: .next directory not found"
+            exit 1
+          fi
+          echo "✅ Build successful: .next directory exists"
+
+  railway-config:
+    name: Railway Config Validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate railway.json
+        run: |
+          if [ ! -f "railway.json" ]; then
+            echo "❌ railway.json not found"
+            exit 1
+          fi
+
+          # Check if jq is available, if not install it
+          if ! command -v jq &> /dev/null; then
+            sudo apt-get update && sudo apt-get install -y jq
+          fi
+
+          # Validate JSON syntax
+          jq empty railway.json || (echo "❌ railway.json is invalid JSON" && exit 1)
+
+          # Validate required fields
+          if ! jq -e '.build.builder' railway.json > /dev/null; then
+            echo "❌ railway.json missing build.builder"
+            exit 1
+          fi
+
+          if ! jq -e '.deploy.startCommand' railway.json > /dev/null; then
+            echo "❌ railway.json missing deploy.startCommand"
+            exit 1
+          fi
+
+          if ! jq -e '.deploy.healthcheckPath' railway.json > /dev/null; then
+            echo "❌ railway.json missing deploy.healthcheckPath"
+            exit 1
+          fi
+
+          echo "✅ railway.json is valid"
+
+  dagger-pipeline:
+    name: Dagger Pipeline Validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: [type-check, build]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Dagger CLI
+        uses: dagger/dagger-for-github@v5
+        with:
+          version: latest
+
+      - name: Validate Dagger pipeline syntax
+        run: |
+          # Check if pipeline file exists
+          if [ ! -f ".dagger/pipeline.ts" ]; then
+            echo "❌ .dagger/pipeline.ts not found"
+            exit 1
+          fi
+
+          # Validate TypeScript syntax (basic check)
+          npx tsc --noEmit .dagger/pipeline.ts || (echo "❌ Dagger pipeline has TypeScript errors" && exit 1)
+
+          echo "✅ Dagger pipeline syntax is valid"
+
+          # Note: Full Dagger pipeline execution requires Docker Hub credentials
+          # This is a syntax validation only for pre-merge checks
+
+  summary:
+    name: Pre-Merge Check Summary
+    runs-on: ubuntu-latest
+    needs: [type-check, build, railway-config, dagger-pipeline]
+    if: always()
+
+    steps:
+      - name: Check all jobs
+        run: |
+          if [ "${{ needs.type-check.result }}" != "success" ] || \
+             [ "${{ needs.build.result }}" != "success" ] || \
+             [ "${{ needs.railway-config.result }}" != "success" ] || \
+             [ "${{ needs.dagger-pipeline.result }}" != "success" ]; then
+            echo "❌ One or more pre-merge checks failed"
+            echo "Type Check: ${{ needs.type-check.result }}"
+            echo "Build: ${{ needs.build.result }}"
+            echo "Railway Config: ${{ needs.railway-config.result }}"
+            echo "Dagger Pipeline: ${{ needs.dagger-pipeline.result }}"
+            exit 1
+          fi
+
+          echo "✅ All pre-merge checks passed!"
+          echo "Type Check: ✅"
+          echo "Build: ✅"
+          echo "Railway Config: ✅"
+          echo "Dagger Pipeline: ✅"

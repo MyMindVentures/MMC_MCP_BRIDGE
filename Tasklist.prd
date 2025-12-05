@@ -16,14 +16,15 @@
 ⏳ feat-06-databases-postgres-full: Postgres MCP: alle 25+ tools volledig testen (schema discovery, DDL, DML, transactions, migrations)
 ⏳ feat-06-databases-sqlite-full: SQLite MCP: alle 22+ tools volledig testen (schema, indexes, foreign keys, DDL operations)
 ⏳ feat-06-databases-mongodb-full: MongoDB MCP: alle 18+ tools volledig testen (collections, documents, aggregations, indexes)
-⏳ feat-07-linear-issues: Linear MCP: listIssues, createIssue, updateIssue, searchIssues tools testen
+🔄 feat-07-linear-issues: Linear MCP: listIssues, createIssue, updateIssue, searchIssues tools testen - Sync API route geïmplementeerd (/api/sync/linear) voor bidirectionele sync met Tasklist.prd
 ⏳ feat-07-github-repos: GitHub MCP: listRepos, createIssue, createPR, searchCode tools testen
 ⏳ feat-07-github-workflow: GitHub + Linear MCP: volledige dev workflow testen (issue creation, PR workflow, code search)
 ⏳ feat-08-notion-pages: Notion MCP: alle 25+ tools testen (createPage, updatePage, queryDatabase, search)
 ⏳ feat-08-slack-messages: Slack MCP: alle 30+ tools testen (postMessage, listChannels, getHistory, file uploads)
 ⏳ feat-08-collab-workflow: Notion + Slack MCP: volledige collaboration workflow testen (documentatie + notificaties)
 ⏳ feat-09-airtable-records: Airtable MCP: alle 18+ tools testen (listRecords, createRecord, updateRecord, bulk operations)
-⏳ feat-09-doppler-secrets: Doppler MCP: alle 38 tools testen (projects, configs, secrets, environments, service tokens, integrations)
+🔄 feat-09-doppler-secrets: Doppler MCP: alle 38 tools testen (projects, configs, secrets, environments, service tokens, integrations)
+🔄 feat-doppler-credentials-management: Doppler credentials management: CLI installatie, credentials audit, project setup, code migratie, Railway configuratie, OpenRouter optimalisatie
 ⏳ feat-10-brave-search: Brave Search MCP: alle 7 tools testen (webSearch, imageSearch, videoSearch, newsSearch, localSearch, suggest, spellcheck)
 ⏳ feat-10-ollama-chat: Ollama MCP: chat tool testen met lokale LLM models
 ⏳ feat-10-playwright-automation: Playwright MCP: alle 24+ tools testen (navigate, screenshot, scrape, click, interact, form filling)
@@ -42,7 +43,12 @@
 ⏳ feat-14-sentry-error-capture: Sentry MCP: captureError tool testen en integreren in alle error handlers
 ✅ feat-14-health-observability: Health endpoint: uitbreiden met connection status, MCP server health, Redis/Postgres/Mongo health checks
 ⏳ feat-15-cleanup-tsconfig: Cleanup: tsconfig.json en next-env.d.ts status valideren volgens aangepaste regels
-⏳ feat-16-branch-discipline: Branch discipline: documenteren van feature branch workflow + Railway preview testing voor elke feature
+✅ feat-16-branch-discipline: Branch discipline: documenteren van feature branch workflow + Railway preview testing voor elke feature - Git/GitHub Specialist workflow volledig gedocumenteerd (.cursor/rules/git-github-specialist.mdc), GIT_GITHUB_STATUS.md overzicht, pre-merge checks geconfigureerd, PR review process gedocumenteerd
+✅ feat-cicd-dagger-pipeline: CI/CD Dagger pipeline: moderne pipeline met caching, parallel execution, multi-stage builds, Railway deployment integration
+✅ feat-cicd-railway-config: CI/CD Railway config: Code as Config optimalisatie met environment variables, health checks, predeploy validatie
+✅ feat-cicd-pre-merge-checks: CI/CD pre-merge checks: GitHub Actions workflow voor type-check, build, Railway config en Dagger pipeline validatie
+✅ feat-cicd-local-docker: CI/CD local Docker testing: Docker Desktop integration, container validation, health check testing scripts
+✅ feat-cicd-docker-compose: CI/CD Docker Compose: Dagger integration, Docker socket mounts, test containers, development workflow optimalisatie
 ⏳ feat-17-powershell-mcp: PowerShell MCP server: nieuwe server toevoegen voor PowerShell script execution via MCP
 ⏳ feat-18-comprehensive-testing: Comprehensive testing: alle MCP servers end-to-end testen met echte data tegen Railway production
 ✅ feat-persistent-settings: Devcontainer persistent settings: Doppler, GitHub, git config, npm config, VS Code/Cursor settings behouden na rebuild
@@ -57,7 +63,8 @@
 ✅ feat-app-container-build: App container gebouwd en gestart: mmc_mcp_bridge_app draait op port 3000 met hot reload, MCP Bridge endpoint beschikbaar op /api/sse
 ✅ feat-e2e-dagger-container: E2E Dagger container geconfigureerd: volledige CI/CD pipeline met Dagger, Docker Hub registratie voor alle 3 containers (DevContainer, App, E2E), GitHub Actions workflow voor automatische builds
 ✅ feat-docker-naming-consistency: Docker naming consistentie: alle container names, image names, labels en metadata perfect zichtbaar in Docker Desktop UI (MMC_MCP_Bridge_App, MMC_MCP_Bridge_DevContainer, MMC_MCP_Bridge_E2E)
-⏳ feat-prd-notion-sync: PRD.md automatische sync met Notion Portfolio via MCP: PRD.md generator + Notion MCP integration
+✅ feat-docker-specialist-management: Docker specialist setup: alle 3 containers (dev, app, e2e) geoptimaliseerd met best practices, .dockerignore, build args, labels, Docker Hub en GHCR registratie scripts, cleanup scripts, validatie scripts
+🔄 feat-prd-notion-sync: PRD.md automatische sync met Notion Portfolio via MCP: PRD.md generator + Notion MCP integration - Sync API routes geïmplementeerd (/api/sync/notion en /api/sync/linear)
 ⏳ feat-doppler-mcp-full: Doppler MCP volledig integreren: alle 38 tools implementeren en testen volgens doppler-mcp repo
 ✅ feat-prd-creation: PRD.md uitgebreide documentatie: volledige project vision, n8n bidirectionele integratie, agentic AI architectuur, OpenWebUI integratie, roadmap
 ⏳ feat-n8n-bidirectional-schema: n8n bidirectionele integratie: Backend → n8n JSON Schema generator (automatische workflow creatie van MCP servers)

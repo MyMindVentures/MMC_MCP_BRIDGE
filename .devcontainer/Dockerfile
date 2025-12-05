@@ -50,6 +50,13 @@ RUN groupadd -f docker && usermod -aG docker node
 # Install jq for JSON parsing in scripts
 RUN apt-get update && apt-get install -y jq && rm -rf /var/lib/apt/lists/*
 
+# Install Doppler CLI (Official Doppler installation)
+RUN curl -sLf --retry 3 --tlsv1.2 --proto "=https" 'https://packages.doppler.com/public/cli/gpg.DE2A7741A397C129.key' | gpg --dearmor -o /usr/share/keyrings/doppler-archive-keyring.gpg \
+    && echo "deb [signed-by=/usr/share/keyrings/doppler-archive-keyring.gpg] https://packages.doppler.com/public/cli/deb/debian any-version main" | tee /etc/apt/sources.list.d/doppler-cli.list \
+    && apt-get update \
+    && apt-get install -y doppler \
+    && apt-get clean -y && rm -rf /var/lib/apt/lists/*
+
 # Copy consolidated devcontainer script
 # Build context is parent directory (..), so .devcontainer/ is correct
 COPY .devcontainer/devcontainer.sh /usr/local/bin/devcontainer.sh

@@ -3892,5 +3892,88 @@ BENEFITS:
 - Automatic artifact caching
 
 AVOID: Use Docker MCP for simple container operations. Use Dagger MCP for CI/CD pipelines and DevOps automation.`,
+
+  // 27. N8N - @leonardsellem/n8n-mcp-server (Dynamic tools from n8n instance)
+  n8n: {
+    name: "n8n",
+    category: "automation",
+    enabled: true,
+    // Tools are loaded dynamically from @leonardsellem/n8n-mcp-server
+    // Common tools: listWorkflows, getWorkflow, createWorkflow, updateWorkflow, 
+    // executeWorkflow, getExecution, listExecutions, buildWorkflowFromDescription
+    tools: [], // Will be populated dynamically via getN8NCommunityTools()
+    resources: [
+      { uri: "n8n://workflows", name: "Workflows", description: "All n8n workflows" },
+      { uri: "n8n://executions", name: "Executions", description: "Workflow executions" },
+      { uri: "n8n://nodes", name: "Nodes", description: "Available n8n nodes" },
+    ],
+    prompts: [
+      {
+        name: "build_workflow",
+        description: "Build n8n workflow from natural language description",
+        arguments: [
+          { name: "description", description: "Workflow description in natural language", required: true },
+        ],
+      },
+      {
+        name: "optimize_workflow",
+        description: "Optimize existing n8n workflow",
+        arguments: [
+          { name: "workflowId", description: "Workflow ID to optimize", required: true },
+        ],
+      },
+    ],
+    execute: async (tool, params) => {
+      // Use n8n-community MCP server proxy
+      const { executeN8NCommunityTool } = await import("./n8n/proxy");
+      return await executeN8NCommunityTool(tool, params);
+    },
+    agentBriefing: `N8N MCP - Use for ALL n8n workflow automation and orchestration.
+
+WHEN TO USE:
+- Creating, updating, or managing n8n workflows
+- Executing workflows programmatically
+- Building workflows from natural language descriptions
+- Monitoring workflow executions and results
+- Integrating n8n workflows with other MCP servers
+- Automating complex multi-step business processes
+- Building Main and Sub-Workflows for fullstack applications
+
+KEY TOOLS (dynamically loaded from @leonardsellem/n8n-mcp-server):
+- listWorkflows: Get all workflows from n8n instance
+- getWorkflow: Retrieve specific workflow details
+- createWorkflow: Create new workflow from JSON schema
+- updateWorkflow: Update existing workflow
+- executeWorkflow: Trigger workflow execution
+- getExecution: Get execution status and results
+- listExecutions: List all workflow executions
+- buildWorkflowFromDescription: AI-powered workflow builder from natural language
+
+USE CASES:
+- "List all n8n workflows"
+- "Create a workflow that sends Slack notification when GitHub issue is created"
+- "Execute the 'Daily Report' workflow"
+- "Build a workflow from description: 'When new user signs up, create Notion page and send welcome email'"
+- "Get execution status for workflow run ID 123"
+- "Update workflow to add Linear issue creation step"
+
+N8N WORKFLOW INTEGRATION:
+- Main Workflows: Primary automation flows
+- Sub-Workflows: Reusable workflow components
+- HTTP Nodes: Call MCP Bridge endpoints (/api/mcp/:server/:tool)
+- Agent Nodes: Embed agentic AI agents for multi-step MCP orchestration
+- Bidirectional Sync: Backend services → n8n workflows, n8n workflows → backend code
+
+BIDIRECTIONAL INTEGRATION:
+- Backend → n8n: MCP servers automatically generate n8n workflow JSON schemas
+- n8n → Backend: Workflows built in n8n generate corresponding API routes
+- Sync Engine: Keeps backend and n8n workflows in sync with conflict resolution
+
+CONFIGURATION:
+- Requires N8N_INSTANCE_APIKEY or N8N_API_KEY environment variable
+- N8N_BASE_URL defaults to https://mmc-n8n-instance.up.railway.app
+- Uses @leonardsellem/n8n-mcp-server (BEST IN THE WORLD! 🌍)
+
+AVOID: Don't use for simple HTTP requests (use axios directly). Use n8n MCP for workflow automation and orchestration.`,
   },
 };
