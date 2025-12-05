@@ -28,6 +28,21 @@ Cursor IDE / n8n
 
 ## 🎯 Quick Start
 
+### **🐳 Local Development (Docker)**
+
+**STANDALONE - GEWOON WERKEN:**
+
+```bash
+# Build and start all containers
+./build-all.sh
+
+# Or build individually:
+./build-app.sh    # App container (port 3000)
+./build-e2e.sh    # E2E testing container
+```
+
+Zie [DOCKER.md](./DOCKER.md) voor volledige Docker documentatie.
+
 ### **1. Deploy to Railway**
 
 ```bash
@@ -42,6 +57,7 @@ railway up
 ### **2. Configure Cursor IDE**
 
 `.cursor/settings.json`:
+
 ```json
 {
   "mcpServers": {
@@ -56,6 +72,7 @@ railway up
 ### **3. Use in n8n**
 
 **HTTP Request Node:**
+
 - URL: `https://your-bridge.railway.app/api/sse`
 - Method: POST
 - Body: `{"method":"tools/list"}`
@@ -93,6 +110,7 @@ INSERT INTO oauth2_clients (
 ```
 
 **2. Configure in n8n:**
+
 - Credential Type: OAuth2 API
 - Authorization URL: `https://your-bridge.railway.app/api/oauth/authorize`
 - Access Token URL: `https://your-bridge.railway.app/api/oauth/token`
@@ -162,6 +180,7 @@ N8N_INSTANCE_APIKEY=...
 ### **Configuration**
 
 `railway.json`:
+
 ```json
 {
   "build": {
@@ -183,13 +202,16 @@ N8N_INSTANCE_APIKEY=...
 ```
 
 **Railway Dashboard Setup (REQUIRED):**
+
 1. **Connect GitHub Repository:**
+
    - Go to Railway Dashboard → Project → Settings → GitHub
    - Connect your GitHub repository
    - Enable "Deploy on Push" ✅
    - Enable "Deploy on Pull Request" ✅ (for preview deployments)
 
 2. **Service Settings:**
+
    - Go to Service → Settings → Source
    - Ensure "Auto Deploy" is enabled ✅
    - Set branch to `main` for production
@@ -200,6 +222,7 @@ N8N_INSTANCE_APIKEY=...
    - Use Railway's secret management (not `.env` files)
 
 **Railway auto-enables:**
+
 - ✅ PR deployments (preview per branch) - **Requires dashboard setup**
 - ✅ Build checks (blocks merge if build fails)
 - ✅ Health checks (`/api/health`)
@@ -250,34 +273,41 @@ git push origin --delete feature/mcp-google-drive
 **18/26 Complete (69%)**
 
 ### **✅ Tier 1: Databases (3/3)**
+
 - ✅ Postgres (25 tools)
 - ✅ SQLite (22 tools)
 - ✅ MongoDB (17 tools)
 
 ### **✅ Tier 2: Productivity (3/3)**
+
 - ✅ Notion (25 tools)
 - ✅ Slack (20 tools)
 - ✅ Linear (30 tools)
 
 ### **✅ Tier 3: AI (2/2)**
+
 - ✅ OpenAI (36 tools)
 - ✅ Anthropic (14 tools)
 
 ### **✅ Tier 4: Dev Tools (2/2)**
+
 - ✅ GitHub (35 tools)
 - ✅ Git (17 tools)
 
 ### **✅ Tier 5: Infrastructure (3/3)**
+
 - ✅ Railway (22 tools)
 - ✅ Playwright (24 tools)
 - ✅ n8n (via @leonardsellem/n8n-mcp-server)
 
 ### **✅ Tier 6: Integration (3/3)**
+
 - ✅ Airtable (18 tools)
 - ✅ Doppler (38 tools)
 - ✅ Brave Search (7 tools)
 
 ### **⏳ Tier 7: Remaining (8/8)**
+
 - ⏳ Google Drive (1→20 tools)
 - ⏳ Stripe (1→25 tools)
 - ⏳ Raindrop (1→10 tools)
@@ -454,6 +484,7 @@ DELETE /api/oauth/clients?client_id=...
 ```
 
 **Available in Cursor:**
+
 - Query databases (Postgres, MongoDB, SQLite)
 - Manage GitHub repos (issues, PRs, workflows)
 - Deploy to Railway
@@ -557,6 +588,7 @@ hotfix/{critical}          # Critical production fixes
 ## 🎉 Credits
 
 Built with:
+
 - Next.js 15
 - Railway (deployment + CI/CD)
 - PostgreSQL (data + OAuth2)
@@ -565,4 +597,3 @@ Built with:
 - 26 MCP Servers
 
 **Powered by MyMind Ventures** 🚀
-

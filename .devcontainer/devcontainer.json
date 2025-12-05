@@ -80,9 +80,9 @@
     }
   },
 
-  "postCreateCommand": "bash -c 'cd /workspaces/MMC_MCP_BRIDGE && mkdir -p /workspaces/.devcontainer-persist 2>/dev/null || true && if [ -d .devcontainer ]; then cp .devcontainer/build-*.sh /usr/local/bin/ 2>/dev/null && chmod +x /usr/local/bin/build-*.sh 2>/dev/null || true; fi && if [ -f package-lock.json ]; then npm ci; else npm install; fi && /usr/local/bin/persist-settings.sh restore && /usr/local/bin/install-extensions.sh && /usr/local/bin/auto-git-workflow.sh ensure-branch'",
-  "postStartCommand": "bash -c 'mkdir -p /workspaces/.devcontainer-persist 2>/dev/null || true && /usr/local/bin/persist-settings.sh restore && /usr/local/bin/install-extensions.sh && /usr/local/bin/feature-tracker.sh update && /usr/local/bin/sync-todos.sh & /usr/local/bin/git-watcher.sh &'",
-  "postAttachCommand": "bash -c 'mkdir -p /workspaces/.devcontainer-persist 2>/dev/null || true && /usr/local/bin/persist-settings.sh restore && /usr/local/bin/auto-git-workflow.sh ensure-branch'",
+  "postCreateCommand": "bash -c 'cd /workspaces/MMC_MCP_BRIDGE && mkdir -p /workspaces/.devcontainer-persist 2>/dev/null || true && if [ -d .devcontainer ]; then cp .devcontainer/build-*.sh /usr/local/bin/ 2>/dev/null && chmod +x /usr/local/bin/build-*.sh 2>/dev/null || true; fi && if [ -S /var/run/docker.sock ]; then sudo chmod 666 /var/run/docker.sock 2>/dev/null || true; fi && if [ -f package-lock.json ]; then npm ci; else npm install; fi && /usr/local/bin/persist-settings.sh restore && /usr/local/bin/install-extensions.sh && /usr/local/bin/auto-git-workflow.sh ensure-branch'",
+  "postStartCommand": "bash -c 'mkdir -p /workspaces/.devcontainer-persist 2>/dev/null || true && if [ -S /var/run/docker.sock ]; then sudo chmod 666 /var/run/docker.sock 2>/dev/null || true; fi && /usr/local/bin/persist-settings.sh restore && /usr/local/bin/install-extensions.sh && /usr/local/bin/feature-tracker.sh update && /usr/local/bin/sync-todos.sh & /usr/local/bin/git-watcher.sh &'",
+  "postAttachCommand": "bash -c 'mkdir -p /workspaces/.devcontainer-persist 2>/dev/null || true && if [ -S /var/run/docker.sock ]; then sudo chmod 666 /var/run/docker.sock 2>/dev/null || true; fi && /usr/local/bin/persist-settings.sh restore && /usr/local/bin/auto-git-workflow.sh ensure-branch'",
 
   "forwardPorts": [3000],
 

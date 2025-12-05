@@ -38,6 +38,8 @@
     "axios": "^1.6.5",
     "better-sqlite3": "^9.3.0",
     "bullmq": "^5.1.5",
+    "cli": "^1.0.1",
+    "docker": "^1.0.0",
     "encoding": "^0.1.13",
     "googleapis": "^131.0.0",
     "ioredis": "^5.3.2",

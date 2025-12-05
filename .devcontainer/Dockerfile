@@ -44,6 +44,9 @@ RUN curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /
     && apt-get clean -y && rm -rf /var/lib/apt/lists/* \
     && docker buildx version || echo "Buildx will be available after Docker connection"
 
+# Create docker group and add node user (for Docker socket access)
+RUN groupadd -f docker && usermod -aG docker node
+
 # Install jq for JSON parsing in scripts
 RUN apt-get update && apt-get install -y jq && rm -rf /var/lib/apt/lists/*
 

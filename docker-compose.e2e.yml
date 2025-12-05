@@ -45,5 +45,3 @@ networks:
   mmc-mcp-bridge-network:
     name: mmc-mcp-bridge-network
     driver: bridge
-    external: true
-

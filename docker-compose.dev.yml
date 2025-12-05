@@ -3,7 +3,7 @@ services:
     image: mymindventures/mmc-mcp-bridge-app:2.0.0
     build:
       context: .
-      dockerfile: .devcontainer/Dockerfile.prod
+      dockerfile: .devcontainer/Dockerfile.dev
       tags:
         - mymindventures/mmc-mcp-bridge-app:latest
         - mymindventures/mmc-mcp-bridge-app:2.0.0
@@ -23,12 +23,15 @@ services:
         protocol: tcp
         mode: host
     volumes:
-      # Note: Bind mount werkt niet vanuit devcontainer naar Docker Desktop
-      # Source code wordt gemount via devcontainer volume, niet via Docker Desktop
-      # Voor hot reload: gebruik devcontainer's volume mount naar host
+      # Bind mount source code for hot reload
+      - type: bind
+        source: .
+        target: /workspaces/MMC_MCP_BRIDGE
+      # Volume for node_modules (performance)
       - type: volume
         source: mmc-mcp-bridge-node-modules
         target: /workspaces/MMC_MCP_BRIDGE/node_modules
+      # Volume for Next.js cache
       - type: volume
         source: mmc-mcp-bridge-next-cache
         target: /workspaces/MMC_MCP_BRIDGE/.next
