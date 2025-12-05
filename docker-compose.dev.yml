@@ -39,10 +39,15 @@ services:
       - NODE_ENV=development
       - PORT=3000
       - NEXT_TELEMETRY_DISABLED=1
+      # Doppler configuration (optional - falls back to .env.local if not set)
+      - DOPPLER_TOKEN=${DOPPLER_TOKEN:-}
+      - DOPPLER_PROJECT=${DOPPLER_PROJECT:-mmc-mcp-bridge}
+      - DOPPLER_CONFIG=${DOPPLER_CONFIG:-dev}
     env_file:
       - .env.local
     working_dir: /workspaces/MMC_MCP_BRIDGE
-    command: npm run dev:host
+    # Use Doppler if token is provided, otherwise use direct npm
+    command: sh -c "if [ -n \"$$DOPPLER_TOKEN\" ]; then doppler run -- npm run dev:host; else npm run dev:host; fi"
     restart: unless-stopped
     stop_grace_period: 10s
     healthcheck:

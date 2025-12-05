@@ -15,8 +15,13 @@ LABEL org.opencontainers.image.source="https://github.com/mymindventures/mmc-mcp
 LABEL org.opencontainers.image.title="MMC_MCP_Bridge_App"
 LABEL org.opencontainers.image.version="2.0.0"
 
-# Install wget for healthcheck
-RUN apt-get update && apt-get install -y wget && rm -rf /var/lib/apt/lists/*
+# Install wget for healthcheck and Doppler CLI
+RUN apt-get update && apt-get install -y wget gnupg && rm -rf /var/lib/apt/lists/*
+
+# Install Doppler CLI
+RUN wget -q -O - https://cli.doppler.com/public/cli/gpg.DE2A7741A397C129.key | apt-key add - && \
+    echo "deb https://cli.doppler.com/public/cli/deb/debian any-version main" | tee /etc/apt/sources.list.d/doppler-cli.list && \
+    apt-get update && apt-get install -y doppler && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
 WORKDIR /workspaces/MMC_MCP_BRIDGE

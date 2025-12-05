@@ -30,18 +30,17 @@ Cursor IDE / n8n
 
 ### **🐳 Local Development (Docker)**
 
-**STANDALONE - GEWOON WERKEN:**
-
 ```bash
-# Build and start all containers
-./build-all.sh
+# App container (port 3000)
+docker compose -f docker-compose.dev.yml build
+docker compose -f docker-compose.dev.yml up -d
 
-# Or build individually:
-./build-app.sh    # App container (port 3000)
-./build-e2e.sh    # E2E testing container
+# E2E container
+docker compose -f docker-compose.e2e.yml build
+docker compose -f docker-compose.e2e.yml up -d
 ```
 
-Zie [DOCKER.md](./DOCKER.md) voor volledige Docker documentatie.
+**🔐 Secrets:** Doppler geïntegreerd - set `DOPPLER_TOKEN` environment variable, anders gebruikt `.env.local`
 
 ### **1. Deploy to Railway**
 

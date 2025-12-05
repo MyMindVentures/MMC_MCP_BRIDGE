@@ -20,12 +20,18 @@ services:
     environment:
       - NODE_ENV=test
       - DAGGER_ENABLED=true
-      - RAILWAY_TOKEN=${RAILWAY_TOKEN}
-      - DOCKER_HUB_USERNAME=${DOCKER_HUB_USERNAME}
-      - DOCKER_HUB_PASSWORD=${DOCKER_HUB_PASSWORD}
+      # Doppler configuration (optional - falls back to .env.local if not set)
+      - DOPPLER_TOKEN=${DOPPLER_TOKEN:-}
+      - DOPPLER_PROJECT=${DOPPLER_PROJECT:-mmc-mcp-bridge}
+      - DOPPLER_CONFIG=${DOPPLER_CONFIG:-e2e}
+      # Legacy env vars (can be provided via Doppler or directly)
+      - RAILWAY_TOKEN=${RAILWAY_TOKEN:-}
+      - DOCKER_HUB_USERNAME=${DOCKER_HUB_USERNAME:-}
+      - DOCKER_HUB_PASSWORD=${DOCKER_HUB_PASSWORD:-}
     env_file:
       - .env.local
-    command: sh -c "cd /workspaces/MMC_MCP_BRIDGE && dagger run ./.dagger/pipeline.ts"
+    # Use Doppler if token is provided, otherwise use direct dagger
+    command: sh -c "cd /workspaces/MMC_MCP_BRIDGE && if [ -n \"$$DOPPLER_TOKEN\" ]; then doppler run -- dagger run ./.dagger/pipeline.ts; else dagger run ./.dagger/pipeline.ts; fi"
     restart: "no"
     networks:
       - mmc-mcp-bridge-network
