@@ -18,8 +18,23 @@ fi
 echo "✅ Devcontainer is running"
 echo ""
 
-# Step 2: Build and start E2E container
-echo "📋 Step 2/3: Building and starting E2E container..."
+# Step 2: Verify docker-compose files exist
+echo "📋 Step 2/3: Verifying docker-compose files..."
+if [ ! -f docker-compose.e2e.yml ]; then
+  echo "❌ docker-compose.e2e.yml not found!"
+  echo "   This file is required for building the E2E container."
+  exit 1
+fi
+if [ ! -f docker-compose.dev.yml ]; then
+  echo "❌ docker-compose.dev.yml not found!"
+  echo "   This file is required for building the App container."
+  exit 1
+fi
+echo "✅ All docker-compose files found"
+echo ""
+
+# Step 3: Build and start E2E container
+echo "📋 Step 3/4: Building and starting E2E container..."
 echo "⏳ This may take several minutes..."
 /usr/local/bin/build-e2e-container.sh
 
@@ -36,8 +51,8 @@ fi
 echo "✅ E2E container is running"
 echo ""
 
-# Step 3: Build and start App container
-echo "📋 Step 3/3: Building and starting App container..."
+# Step 4: Build and start App container
+echo "📋 Step 4/4: Building and starting App container..."
 echo "⏳ This may take several minutes..."
 /usr/local/bin/build-app-container.sh
 

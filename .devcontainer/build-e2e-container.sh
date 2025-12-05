@@ -27,7 +27,16 @@ if ! docker info > /dev/null 2>&1; then
   exit 1
 fi
 
+# Check if docker-compose.e2e.yml exists
+if [ ! -f docker-compose.e2e.yml ]; then
+  echo "❌ docker-compose.e2e.yml not found!"
+  echo "   This file is required for building the E2E container."
+  echo "   Please ensure the file exists in the project root."
+  exit 1
+fi
+
 echo "✅ Docker is available"
+echo "✅ docker-compose.e2e.yml found"
 
 # Check if E2E container is already running
 if docker ps --format '{{.Names}}' | grep -q "^MMC_MCP_Bridge_E2E$"; then
@@ -65,4 +74,3 @@ else
   docker compose -f docker-compose.e2e.yml logs
   exit 1
 fi
-
