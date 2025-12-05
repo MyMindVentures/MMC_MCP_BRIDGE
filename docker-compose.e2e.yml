@@ -1,53 +1,23 @@
 services:
   mcp-bridge-e2e:
-    image: mymindventures/mmc-mcp-bridge-e2e:2.0.0
     build:
       context: .
       dockerfile: .devcontainer/Dockerfile.e2e
-      tags:
-        - mymindventures/mmc-mcp-bridge-e2e:latest
-        - mymindventures/mmc-mcp-bridge-e2e:2.0.0
-      cache_from:
-        - mymindventures/mmc-mcp-bridge-e2e:latest
-      labels:
-        - "com.mmc.project=mmc-mcp-bridge"
-        - "com.mmc.component=e2e"
-        - "com.mmc.version=2.0.0"
-        - "com.mmc.name=MMC_MCP_Bridge_E2E"
-        - "com.mmc.description=MMC MCP Bridge E2E Testing Container"
     container_name: MMC_MCP_Bridge_E2E
-    hostname: mmc-mcp-bridge-e2e
     environment:
       - NODE_ENV=test
       - DAGGER_ENABLED=true
-      # Doppler configuration (optional - falls back to .env.local if not set)
       - DOPPLER_TOKEN=${DOPPLER_TOKEN:-}
       - DOPPLER_PROJECT=${DOPPLER_PROJECT:-mmc-mcp-bridge}
       - DOPPLER_CONFIG=${DOPPLER_CONFIG:-e2e}
-      # Legacy env vars (can be provided via Doppler or directly)
       - RAILWAY_TOKEN=${RAILWAY_TOKEN:-}
       - DOCKER_HUB_USERNAME=${DOCKER_HUB_USERNAME:-}
       - DOCKER_HUB_PASSWORD=${DOCKER_HUB_PASSWORD:-}
     env_file:
       - .env.local
-    # Use Doppler if token is provided, otherwise use direct dagger
     command: sh -c "cd /workspaces/MMC_MCP_BRIDGE && if [ -n \"$$DOPPLER_TOKEN\" ]; then doppler run -- dagger run ./.dagger/pipeline.ts; else dagger run ./.dagger/pipeline.ts; fi"
     restart: "no"
-    networks:
-      - mmc-mcp-bridge-network
-    labels:
-      - "com.mmc.project=mmc-mcp-bridge"
-      - "com.mmc.component=e2e"
-      - "com.mmc.version=2.0.0"
-      - "com.mmc.name=MMC_MCP_Bridge_E2E"
-      - "com.mmc.environment=e2e-testing"
-      - "com.mmc.description=MMC MCP Bridge E2E Testing Container - Dagger Pipeline Runner"
-      - "com.mmc.image=mymindventures/mmc-mcp-bridge-e2e:2.0.0"
-      - "com.mmc.container=MMC_MCP_Bridge_E2E"
-      - "com.docker.compose.project=mmc-mcp-bridge"
-      - "com.docker.compose.service=mcp-bridge-e2e"
 
 networks:
-  mmc-mcp-bridge-network:
+  default:
     name: mmc-mcp-bridge-network
-    driver: bridge

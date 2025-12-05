@@ -1,55 +1,26 @@
 services:
   mcp-bridge-app:
-    image: mymindventures/mmc-mcp-bridge-app:2.0.0
     build:
       context: .
       dockerfile: .devcontainer/Dockerfile.dev
-      tags:
-        - mymindventures/mmc-mcp-bridge-app:latest
-        - mymindventures/mmc-mcp-bridge-app:2.0.0
-      cache_from:
-        - mymindventures/mmc-mcp-bridge-app:latest
-      labels:
-        - "com.mmc.project=mmc-mcp-bridge"
-        - "com.mmc.component=app"
-        - "com.mmc.version=2.0.0"
-        - "com.mmc.name=MMC_MCP_Bridge_App"
-        - "com.mmc.description=MMC MCP Bridge Application Container"
     container_name: MMC_MCP_Bridge_App
-    hostname: mmc-mcp-bridge-app
     ports:
-      - target: 3000
-        published: 3000
-        protocol: tcp
-        mode: host
+      - "3000:3000"
     volumes:
-      # Bind mount source code for hot reload
-      - type: bind
-        source: .
-        target: /workspaces/MMC_MCP_BRIDGE
-      # Volume for node_modules (performance)
-      - type: volume
-        source: mmc-mcp-bridge-node-modules
-        target: /workspaces/MMC_MCP_BRIDGE/node_modules
-      # Volume for Next.js cache
-      - type: volume
-        source: mmc-mcp-bridge-next-cache
-        target: /workspaces/MMC_MCP_BRIDGE/.next
+      - .:/workspaces/MMC_MCP_BRIDGE
+      - mmc-mcp-bridge-node-modules:/workspaces/MMC_MCP_BRIDGE/node_modules
+      - mmc-mcp-bridge-next-cache:/workspaces/MMC_MCP_BRIDGE/.next
     environment:
       - NODE_ENV=development
       - PORT=3000
       - NEXT_TELEMETRY_DISABLED=1
-      # Doppler configuration (optional - falls back to .env.local if not set)
       - DOPPLER_TOKEN=${DOPPLER_TOKEN:-}
       - DOPPLER_PROJECT=${DOPPLER_PROJECT:-mmc-mcp-bridge}
       - DOPPLER_CONFIG=${DOPPLER_CONFIG:-dev}
     env_file:
       - .env.local
-    working_dir: /workspaces/MMC_MCP_BRIDGE
-    # Use Doppler if token is provided, otherwise use direct npm
     command: sh -c "if [ -n \"$$DOPPLER_TOKEN\" ]; then doppler run -- npm run dev:host; else npm run dev:host; fi"
     restart: unless-stopped
-    stop_grace_period: 10s
     healthcheck:
       test:
         [
@@ -60,38 +31,11 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
-    networks:
-      - mmc-mcp-bridge-network
-    labels:
-      - "com.mmc.project=mmc-mcp-bridge"
-      - "com.mmc.component=app"
-      - "com.mmc.version=2.0.0"
-      - "com.mmc.name=MMC_MCP_Bridge_App"
-      - "com.mmc.environment=development"
-      - "com.mmc.description=MMC MCP Bridge Application Container - Next.js Dev Server with Hot Reload"
-      - "com.mmc.image=mymindventures/mmc-mcp-bridge-app:2.0.0"
-      - "com.mmc.container=MMC_MCP_Bridge_App"
-      - "com.docker.compose.project=mmc-mcp-bridge"
-      - "com.docker.compose.service=mcp-bridge-app"
 
 volumes:
   mmc-mcp-bridge-node-modules:
-    name: mmc-mcp-bridge-node-modules
-    driver: local
-    labels:
-      - "com.mmc.project=mmc-mcp-bridge"
-      - "com.mmc.purpose=node-modules-cache"
   mmc-mcp-bridge-next-cache:
-    name: mmc-mcp-bridge-next-cache
-    driver: local
-    labels:
-      - "com.mmc.project=mmc-mcp-bridge"
-      - "com.mmc.purpose=nextjs-build-cache"
 
 networks:
-  mmc-mcp-bridge-network:
+  default:
     name: mmc-mcp-bridge-network
-    driver: bridge
-    labels:
-      - "com.mmc.project=mmc-mcp-bridge"
-      - "com.mmc.purpose=development-network"

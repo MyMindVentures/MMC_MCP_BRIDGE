@@ -1,31 +1,20 @@
 # MMC MCP Bridge Production App Container
-# Optimized for production deployment to Railway
-# Docker Hub: mymindventures/mmc-mcp-bridge-app:2.0.0
 FROM node:20-alpine
 
-LABEL maintainer="MyMind Ventures <hello@mymindventures.io>"
 LABEL com.mmc.project="mmc-mcp-bridge"
 LABEL com.mmc.component="app"
 LABEL com.mmc.version="2.0.0"
-LABEL com.mmc.name="MMC_MCP_Bridge_App"
-LABEL com.mmc.description="MMC MCP Bridge Production Application Container"
-LABEL com.mmc.image="mymindventures/mmc-mcp-bridge-app:2.0.0"
-LABEL com.mmc.container="MMC_MCP_Bridge_App"
-LABEL org.opencontainers.image.source="https://github.com/mymindventures/mmc-mcp-bridge"
-LABEL org.opencontainers.image.title="MMC_MCP_Bridge_App"
-LABEL org.opencontainers.image.version="2.0.0"
 
-# Install dependencies (Alpine uses apk instead of apt)
+# Install dependencies
 RUN apk add --no-cache wget
 
-# Install production dependencies only
 WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
 
 # Install production dependencies
-RUN npm ci --only=production && npm cache clean --force
+RUN npm ci --omit=dev && npm cache clean --force
 
 # Copy source code
 COPY --chown=node:node . .
@@ -33,21 +22,15 @@ COPY --chown=node:node . .
 # Build application
 RUN npm run build
 
-# Expose port
 EXPOSE 3000
 
-# Set environment
 ENV NODE_ENV=production
 ENV PORT=3000
 ENV NEXT_TELEMETRY_DISABLED=1
 
-# Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1
 
-# Run as non-root user
 USER node
 
-# Start application
 CMD ["npm", "run", "start"]
-

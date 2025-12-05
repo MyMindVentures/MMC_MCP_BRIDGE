@@ -1,54 +1,37 @@
 # MMC MCP Bridge Development App Container
-# For local development with hot reload
-# Docker Hub: mymindventures/mmc-mcp-bridge-app:2.0.0
 FROM node:20-alpine
 
-LABEL maintainer="MyMind Ventures <hello@mymindventures.io>"
 LABEL com.mmc.project="mmc-mcp-bridge"
 LABEL com.mmc.component="app"
 LABEL com.mmc.version="2.0.0"
-LABEL com.mmc.name="MMC_MCP_Bridge_App"
-LABEL com.mmc.description="MMC MCP Bridge Development Application Container - Next.js Dev Server"
-LABEL com.mmc.image="mymindventures/mmc-mcp-bridge-app:2.0.0"
-LABEL com.mmc.container="MMC_MCP_Bridge_App"
-LABEL org.opencontainers.image.source="https://github.com/mymindventures/mmc-mcp-bridge"
-LABEL org.opencontainers.image.title="MMC_MCP_Bridge_App"
-LABEL org.opencontainers.image.version="2.0.0"
 
-# Install dependencies (Alpine uses apk instead of apt)
-RUN apk add --no-cache wget curl
+# Install dependencies
+RUN apk add --no-cache wget curl bash
 
-# Install Doppler CLI using official install script
-RUN (curl -Ls --tlsv1.2 --proto "=https" --retry 3 https://cli.doppler.com/install.sh | sh) && \
-    mv /root/.local/bin/doppler /usr/local/bin/doppler && \
-    chmod +x /usr/local/bin/doppler
+# Install Doppler CLI
+RUN curl -Ls --tlsv1.2 --proto "=https" --retry 3 https://cli.doppler.com/install.sh | sh && \
+    mv /root/.local/bin/doppler /usr/local/bin/doppler 2>/dev/null || true
 
-# Set working directory
 WORKDIR /workspaces/MMC_MCP_BRIDGE
 
 # Copy package files
 COPY package*.json ./
 
-# Install ALL dependencies (including dev) for development
+# Install dependencies
 RUN npm ci
 
 # Copy source code
 COPY --chown=node:node . .
 
-# Expose port
 EXPOSE 3000
 
-# Set environment
 ENV NODE_ENV=development
 ENV PORT=3000
 ENV NEXT_TELEMETRY_DISABLED=1
 
-# Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1
 
-# Run as non-root user
 USER node
 
-# Start development server
 CMD ["npm", "run", "dev:host"]
