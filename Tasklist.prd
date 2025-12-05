@@ -16,7 +16,7 @@
 ⏳ feat-06-databases-postgres-full: Postgres MCP: alle 25+ tools volledig testen (schema discovery, DDL, DML, transactions, migrations)
 ⏳ feat-06-databases-sqlite-full: SQLite MCP: alle 22+ tools volledig testen (schema, indexes, foreign keys, DDL operations)
 ⏳ feat-06-databases-mongodb-full: MongoDB MCP: alle 18+ tools volledig testen (collections, documents, aggregations, indexes)
-✅ feat-07-linear-issues: Linear MCP: listIssues, createIssue, updateIssue, searchIssues tools testen - Sync API route geïmplementeerd (/api/sync/linear) voor bidirectionele sync met Tasklist.prd, scheduler en migration tool compleet
+🔄 feat-07-linear-issues: Linear MCP: listIssues, createIssue, updateIssue, searchIssues tools testen - Sync API route geïmplementeerd (/api/sync/linear) voor bidirectionele sync met Tasklist.prd
 ⏳ feat-07-github-repos: GitHub MCP: listRepos, createIssue, createPR, searchCode tools testen
 ⏳ feat-07-github-workflow: GitHub + Linear MCP: volledige dev workflow testen (issue creation, PR workflow, code search)
 ⏳ feat-08-notion-pages: Notion MCP: alle 25+ tools testen (createPage, updatePage, queryDatabase, search)
@@ -43,11 +43,12 @@
 ✅ feat-14-health-observability: Health endpoint: uitbreiden met connection status, MCP server health, Redis/Postgres/Mongo health checks
 ⏳ feat-15-cleanup-tsconfig: Cleanup: tsconfig.json en next-env.d.ts status valideren volgens aangepaste regels
 ✅ feat-16-branch-discipline: Branch discipline: documenteren van feature branch workflow + Railway preview testing voor elke feature - Git/GitHub Specialist workflow volledig gedocumenteerd (.cursor/rules/git-github-specialist.mdc), GIT_GITHUB_STATUS.md overzicht, pre-merge checks geconfigureerd, PR review process gedocumenteerd
-✅ feat-cicd-dagger-pipeline: CI/CD Dagger pipeline: moderne pipeline met caching, parallel execution, multi-stage builds, Railway deployment integration
-✅ feat-cicd-railway-config: CI/CD Railway config: Code as Config optimalisatie met environment variables, health checks, predeploy validatie
-✅ feat-cicd-pre-merge-checks: CI/CD pre-merge checks: GitHub Actions workflow voor type-check, build, Railway config en Dagger pipeline validatie
-✅ feat-cicd-local-docker: CI/CD local Docker testing: Docker Desktop integration, container validation, health check testing scripts
-✅ feat-cicd-docker-compose: CI/CD Docker Compose: Dagger integration, Docker socket mounts, test containers, development workflow optimalisatie
+✅ feat-cicd-dagger-pipeline: CI/CD Dagger pipeline: moderne pipeline met caching, parallel execution, multi-stage builds, Railway deployment integration - .dagger/pipeline.ts volledig geoptimaliseerd
+✅ feat-cicd-railway-config: CI/CD Railway config: Code as Config optimalisatie met environment variables, health checks, predeploy validatie - railway.json geoptimaliseerd met watch patterns en restart policies
+✅ feat-cicd-pre-merge-checks: CI/CD pre-merge checks: GitHub Actions workflow voor type-check, build, Railway config en Dagger pipeline validatie - .github/workflows/pre-merge-check.yml geconfigureerd
+✅ feat-cicd-local-docker: CI/CD local Docker testing: Docker Desktop integration, container validation, health check testing scripts - npm scripts toegevoegd voor local testing
+✅ feat-cicd-docker-compose: CI/CD Docker Compose: Dagger integration, Docker socket mounts, test containers, development workflow optimalisatie - docker-compose.yml geoptimaliseerd
+✅ feat-cicd-documentation: CI/CD documentatie: Role Description Template gemaakt, README updates met Dagger en local testing, package.json duplicate scripts gefixed
 ⏳ feat-17-powershell-mcp: PowerShell MCP server: nieuwe server toevoegen voor PowerShell script execution via MCP
 ⏳ feat-18-comprehensive-testing: Comprehensive testing: alle MCP servers end-to-end testen met echte data tegen Railway production
 ✅ feat-persistent-settings: Devcontainer persistent settings: Doppler, GitHub, git config, npm config, VS Code/Cursor settings behouden na rebuild
@@ -64,7 +65,7 @@
 ✅ feat-docker-naming-consistency: Docker naming consistentie: alle container names, image names, labels en metadata perfect zichtbaar in Docker Desktop UI (MMC_MCP_Bridge_App, MMC_MCP_Bridge_DevContainer, MMC_MCP_Bridge_E2E)
 ✅ feat-docker-specialist-management: Docker specialist setup: alle 3 containers (dev, app, e2e) geoptimaliseerd met best practices, .dockerignore, build args, labels, Docker Hub en GHCR registratie scripts, cleanup scripts, validatie scripts
 ✅ feat-docker-specialist-role-description: Docker Specialist role description: volledige role description document aangemaakt in Agent Suite directory met alle verantwoordelijkheden, scripts, best practices en container details
-✅ feat-prd-notion-sync: PRD.md automatische sync met Notion Portfolio via MCP: PRD.md generator + Notion MCP integration - Sync API routes geïmplementeerd (/api/sync/notion en /api/sync/linear), scheduler (/api/sync/scheduler) en migration tool (/api/sync/migrate)
+🔄 feat-prd-notion-sync: PRD.md automatische sync met Notion Portfolio via MCP: PRD.md generator + Notion MCP integration - Sync API routes geïmplementeerd (/api/sync/notion en /api/sync/linear)
 ⏳ feat-doppler-mcp-full: Doppler MCP volledig integreren: alle 38 tools implementeren en testen volgens doppler-mcp repo
 ✅ feat-prd-creation: PRD.md uitgebreide documentatie: volledige project vision, n8n bidirectionele integratie, agentic AI architectuur, OpenWebUI integratie, roadmap
 ⏳ feat-n8n-bidirectional-schema: n8n bidirectionele integratie: Backend → n8n JSON Schema generator (automatische workflow creatie van MCP servers)
@@ -73,7 +74,4 @@
 ⏳ feat-n8n-agent-embedding: n8n agent embedding: Agentic agent nodes in n8n workflows voor multi-step MCP orchestration
 ⏳ feat-openwebui-connector: OpenWebUI connector: visual workflow builder die bidirectioneel sync met backend en n8n
 ⏳ feat-agentic-frontend: Agentic frontend generator: n8n workflow analysis → React component generatie voor volledige fullstack app
-✅ feat-sync-scheduler: Automatische sync scheduler: periodieke sync tussen Tasklist.prd/PRD.md en Linear/Notion via /api/sync/scheduler met configurable intervals en force sync
-✅ feat-markdown-migration: Markdown migration tool: automatische migratie van .md files naar Linear issues en Notion pages via /api/sync/migrate
-✅ feat-improvements-analyzer: Project improvements analyzer: codebase analyse voor Agentic AI, n8n, Clean Codebase, Refactoring opportunities via /api/improvements/analyze
 

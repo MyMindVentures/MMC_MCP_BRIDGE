@@ -1,10 +1,11 @@
 // MCP Tool Execution endpoint
 // POST /api/mcp/:server/:tool
 
-import { NextResponse } from 'next/server';
-import { MCP_SERVERS } from '../../../mcp-config';
-import { executeMCPTool } from '../../../mcp-executor';
-import { verifyAuth, authErrorResponse } from '../../../middleware/auth';
+import { NextResponse } from "next/server";
+import { MCP_SERVERS } from "../../../mcp-config";
+import { executeMCPTool } from "../../../mcp-executor";
+import { verifyAuth, authErrorResponse } from "../../../middleware/auth";
+import { getN8NCommunityTools } from "../../../n8n/proxy";
 
 export async function POST(
   request: Request,
@@ -13,39 +14,63 @@ export async function POST(
   // 🔐 Authentication check
   const authResult = await verifyAuth(request);
   if (!authResult.allowed) {
-    return authErrorResponse(authResult.reason || 'Unauthorized', 401, authResult.rateLimit);
+    return authErrorResponse(
+      authResult.reason || "Unauthorized",
+      401,
+      authResult.rateLimit
+    );
   }
-  
+
   try {
     const { server: serverName, tool: toolName } = await context.params;
     const server = MCP_SERVERS[serverName];
 
     if (!server || !server.enabled) {
       return NextResponse.json(
-        { error: 'Server not found or disabled' },
+        { error: "Server not found or disabled" },
         { status: 404 }
       );
     }
 
-    const tool = server.tools.find(t => t.name === toolName);
-    if (!tool) {
-      return NextResponse.json(
-        { error: 'Tool not found' },
-        { status: 404 }
-      );
+    // For n8n, tools are loaded dynamically, so skip static tool validation
+    let tool: any = null;
+    if (serverName !== "n8n") {
+      tool = server.tools.find((t) => t.name === toolName);
+      if (!tool) {
+        return NextResponse.json({ error: "Tool not found" }, { status: 404 });
+      }
+    } else {
+      // For n8n, validate tool exists dynamically
+      try {
+        const n8nTools = await getN8NCommunityTools();
+        tool = n8nTools.find((t: any) => t.name === toolName);
+        if (!tool) {
+          return NextResponse.json(
+            { error: `Tool not found: ${toolName} in n8n server` },
+            { status: 404 }
+          );
+        }
+      } catch (error: any) {
+        return NextResponse.json(
+          { error: `Failed to validate n8n tool: ${error.message}` },
+          { status: 500 }
+        );
+      }
     }
 
     const body = await request.json();
 
     // Validate tool input schema if available
     if (tool.inputSchema && tool.inputSchema.required) {
-      const missing = tool.inputSchema.required.filter((field: string) => !(field in body));
+      const missing = tool.inputSchema.required.filter(
+        (field: string) => !(field in body)
+      );
       if (missing.length > 0) {
         return NextResponse.json(
-          { 
-            error: 'Missing required parameters',
+          {
+            error: "Missing required parameters",
             missing: missing,
-            schema: tool.inputSchema
+            schema: tool.inputSchema,
           },
           { status: 400 }
         );
@@ -58,33 +83,39 @@ export async function POST(
     // Add rate limit headers to response
     const headers: Record<string, string> = {};
     if (authResult.rateLimit) {
-      headers['X-RateLimit-Limit'] = authResult.rateLimit.limit.toString();
-      headers['X-RateLimit-Remaining'] = authResult.rateLimit.remaining.toString();
-      headers['X-RateLimit-Reset'] = authResult.rateLimit.reset.toString();
+      headers["X-RateLimit-Limit"] = authResult.rateLimit.limit.toString();
+      headers["X-RateLimit-Remaining"] =
+        authResult.rateLimit.remaining.toString();
+      headers["X-RateLimit-Reset"] = authResult.rateLimit.reset.toString();
     }
 
-    return NextResponse.json({ 
-      success: true, 
-      result,
-      server: serverName,
-      tool: toolName
-    }, { headers });
+    return NextResponse.json(
+      {
+        success: true,
+        result,
+        server: serverName,
+        tool: toolName,
+      },
+      { headers }
+    );
   } catch (error: any) {
     // Enhanced error handling
-    const statusCode = error.message?.includes('not configured') ? 503 
-                     : error.message?.includes('not found') ? 404
-                     : error.message?.includes('Invalid') ? 400
-                     : 500;
-    
+    const statusCode = error.message?.includes("not configured")
+      ? 503
+      : error.message?.includes("not found")
+      ? 404
+      : error.message?.includes("Invalid")
+      ? 400
+      : 500;
+
     return NextResponse.json(
-      { 
-        error: error.message || 'Internal server error',
+      {
+        error: error.message || "Internal server error",
         server: (await context.params).server,
         tool: (await context.params).tool,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       },
       { status: statusCode }
     );
   }
 }
-

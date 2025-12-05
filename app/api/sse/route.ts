@@ -298,16 +298,44 @@ export async function POST(request: Request) {
         });
       }
 
-      const tool = server.tools.find((t) => t.name === toolName);
-      if (!tool) {
-        return Response.json({
-          jsonrpc: "2.0",
-          id: requestId,
-          error: {
-            code: -32602,
-            message: `Tool not found: ${toolName} in server ${serverName}`,
-          },
-        });
+      // For n8n, tools are loaded dynamically, so skip static tool validation
+      if (serverName !== "n8n") {
+        const tool = server.tools.find((t) => t.name === toolName);
+        if (!tool) {
+          return Response.json({
+            jsonrpc: "2.0",
+            id: requestId,
+            error: {
+              code: -32602,
+              message: `Tool not found: ${toolName} in server ${serverName}`,
+            },
+          });
+        }
+      } else {
+        // For n8n, validate tool exists dynamically
+        try {
+          const n8nTools = await getN8NCommunityTools();
+          const toolExists = n8nTools.some((t: any) => t.name === toolName);
+          if (!toolExists) {
+            return Response.json({
+              jsonrpc: "2.0",
+              id: requestId,
+              error: {
+                code: -32602,
+                message: `Tool not found: ${toolName} in n8n server`,
+              },
+            });
+          }
+        } catch (error: any) {
+          return Response.json({
+            jsonrpc: "2.0",
+            id: requestId,
+            error: {
+              code: -32603,
+              message: `Failed to validate n8n tool: ${error.message}`,
+            },
+          });
+        }
       }
 
       // Use centralized executor with real SDK implementations
