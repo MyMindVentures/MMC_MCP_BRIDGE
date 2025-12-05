@@ -44,46 +44,24 @@ RUN curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /
     && apt-get clean -y && rm -rf /var/lib/apt/lists/* \
     && docker buildx version || echo "Buildx will be available after Docker connection"
 
-# Copy extension installation script
-COPY .devcontainer/install-extensions.sh /usr/local/bin/install-extensions.sh
-RUN chmod +x /usr/local/bin/install-extensions.sh
-
-# Copy dev server startup script
-COPY .devcontainer/start-dev.sh /usr/local/bin/start-dev.sh
-RUN chmod +x /usr/local/bin/start-dev.sh
-
-# Copy settings persistence script
-COPY .devcontainer/persist-settings.sh /usr/local/bin/persist-settings.sh
-RUN chmod +x /usr/local/bin/persist-settings.sh
-
-# Copy todo sync script
-COPY .devcontainer/sync-todos.sh /usr/local/bin/sync-todos.sh
-RUN chmod +x /usr/local/bin/sync-todos.sh
-
-# Copy auto git workflow script
-COPY .devcontainer/auto-git-workflow.sh /usr/local/bin/auto-git-workflow.sh
-RUN chmod +x /usr/local/bin/auto-git-workflow.sh
-
-# Copy git watcher script
-COPY .devcontainer/git-watcher.sh /usr/local/bin/git-watcher.sh
-RUN chmod +x /usr/local/bin/git-watcher.sh
-
-# Copy feature tracker script
-COPY .devcontainer/feature-tracker.sh /usr/local/bin/feature-tracker.sh
-RUN chmod +x /usr/local/bin/feature-tracker.sh
-
-# Copy app container build script
-COPY .devcontainer/build-app-container.sh /usr/local/bin/build-app-container.sh
-RUN chmod +x /usr/local/bin/build-app-container.sh
-
 # Install jq for JSON parsing in scripts
 RUN apt-get update && apt-get install -y jq && rm -rf /var/lib/apt/lists/*
 
-# Copy source code to container (for development)
-# Note: For hot reload, use bind mount from devcontainer to host
-COPY --chown=node:node . /workspaces/MMC_MCP_BRIDGE/
+# Copy scripts individually (only if they exist)
+# Using individual COPY commands is more reliable than glob patterns
+COPY .devcontainer/install-extensions.sh /usr/local/bin/install-extensions.sh
+COPY .devcontainer/start-dev.sh /usr/local/bin/start-dev.sh
+COPY .devcontainer/persist-settings.sh /usr/local/bin/persist-settings.sh
+COPY .devcontainer/sync-todos.sh /usr/local/bin/sync-todos.sh
+COPY .devcontainer/auto-git-workflow.sh /usr/local/bin/auto-git-workflow.sh
+COPY .devcontainer/git-watcher.sh /usr/local/bin/git-watcher.sh
+COPY .devcontainer/feature-tracker.sh /usr/local/bin/feature-tracker.sh
+COPY .devcontainer/build-app-container.sh /usr/local/bin/build-app-container.sh
+COPY .devcontainer/build-e2e-container.sh /usr/local/bin/build-e2e-container.sh
+COPY .devcontainer/build-sequential.sh /usr/local/bin/build-sequential.sh
+RUN chmod +x /usr/local/bin/*.sh
 
-# Set working directory
+# Set working directory (source code will be bind-mounted by devcontainer)
 WORKDIR /workspaces/MMC_MCP_BRIDGE
 
 # Set user
