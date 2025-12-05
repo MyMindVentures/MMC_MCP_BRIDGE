@@ -1,0 +1,38 @@
+# MMC MCP Bridge E2E Test Container
+FROM node:20.19.5-alpine
+
+LABEL com.mmc.project="mmc-mcp-bridge"
+LABEL com.mmc.component="e2e"
+LABEL com.mmc.version="2.0.0"
+
+# Install dependencies for Playwright
+RUN apk add --no-cache \
+    bash \
+    curl \
+    wget \
+    chromium \
+    nss \
+    freetype \
+    freetype-dev \
+    harfbuzz \
+    ca-certificates \
+    ttf-freefont
+
+# Set Playwright to use system Chromium
+ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
+ENV PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium-browser
+
+WORKDIR /workspaces/MMC_MCP_BRIDGE
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies
+RUN npm ci
+
+# Copy source code
+COPY --chown=node:node . .
+
+USER node
+
+CMD ["npm", "run", "test:e2e"]
