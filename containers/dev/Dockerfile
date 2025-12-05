@@ -1,12 +1,13 @@
-# MMC MCP Bridge Development App Container
-FROM node:20-alpine
+# MMC MCP Bridge - Development Container
+# Voor development van de app met hot-reload en debugging
+FROM node:22.3.0-alpine
 
 LABEL com.mmc.project="mmc-mcp-bridge"
-LABEL com.mmc.component="app"
+LABEL com.mmc.component="dev"
 LABEL com.mmc.version="2.0.0"
 
 # Install dependencies
-RUN apk add --no-cache wget curl bash
+RUN apk add --no-cache wget curl bash git
 
 # Install Doppler CLI
 RUN curl -Ls --tlsv1.2 --proto "=https" --retry 3 https://cli.doppler.com/install.sh | sh && \
@@ -35,3 +36,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
 USER node
 
 CMD ["npm", "run", "dev:host"]
+

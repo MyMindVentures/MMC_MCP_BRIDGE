@@ -1,4 +1,5 @@
-# MMC MCP Bridge E2E Test Container
+# MMC MCP Bridge - E2E Test Container
+# Voor end-to-end testing, validatie en debugging
 FROM node:22.3.0-alpine
 
 LABEL com.mmc.project="mmc-mcp-bridge"
@@ -10,6 +11,7 @@ RUN apk add --no-cache \
     bash \
     curl \
     wget \
+    git \
     chromium \
     nss \
     freetype \

@@ -9,7 +9,7 @@
       "MMC-MCP-Bridge-Local": {
         "type": "sse",
         "url": "http://localhost:3000/api/sse",
-        "description": "Local MCP Bridge on App Container - ALL 26 MCP servers (Hot Reload)"
+        "description": "Local MCP Bridge on Dev Container - ALL 26 MCP servers (Hot Reload). Start dev container: docker compose up -d dev"
       },
       "MMC-MCP-Bridge-Railway": {
         "type": "sse",

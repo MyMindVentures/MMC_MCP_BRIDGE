@@ -1,6 +1,12 @@
 # E2E Test Container
 
-End-to-end test container met Playwright voor MMC MCP Bridge.
+End-to-end test container met Playwright voor MMC MCP Bridge validatie en debugging.
+
+## Doel
+
+- **E2E Testing**: Volledige end-to-end test suite
+- **Validatie**: Validatie van functionaliteit
+- **Debugging**: Test debugging en troubleshooting
 
 ## Build & Start
 
@@ -33,3 +39,4 @@ docker compose stop e2e
 - **Browser**: Chromium (system)
 - **Test Command**: `npm run test:e2e`
 - **Independent**: Geen dependencies op andere containers
+- **CI Ready**: Geschikt voor CI/CD pipelines

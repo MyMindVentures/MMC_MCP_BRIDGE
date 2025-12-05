@@ -1,6 +1,12 @@
-# App Container
+# Full Stack App Container
 
-Next.js development server container voor de MMC MCP Bridge applicatie.
+Productie-ready container voor de volledige MMC MCP Bridge applicatie.
+
+## Doel
+
+- **Production**: Productie-ready deployment
+- **Full Stack**: Complete applicatie met alle features
+- **Optimized**: Geoptimaliseerd voor performance
 
 ## Build & Start
 
@@ -31,5 +37,7 @@ docker compose stop app
 ## Details
 
 - **Port**: 3000
+- **Mode**: Production
 - **Health Check**: http://localhost:3000/api/health
 - **MCP SSE Endpoint**: http://localhost:3000/api/sse
+- **Multi-stage Build**: Geoptimaliseerd voor productie
