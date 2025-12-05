@@ -1,5 +1,5 @@
 # MMC MCP Bridge Development App Container
-FROM node:20.19.5-alpine
+FROM node:22.3.0-alpine
 
 LABEL com.mmc.project="mmc-mcp-bridge"
 LABEL com.mmc.component="app"

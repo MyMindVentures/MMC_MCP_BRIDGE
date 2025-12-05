@@ -1,5 +1,5 @@
 # MMC MCP Bridge E2E Test Container
-FROM node:20.19.5-alpine
+FROM node:22.3.0-alpine
 
 LABEL com.mmc.project="mmc-mcp-bridge"
 LABEL com.mmc.component="e2e"
