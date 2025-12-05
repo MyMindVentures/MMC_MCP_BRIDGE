@@ -1,0 +1,89 @@
+services:
+  mcp-bridge-app:
+    image: mymindventures/mmc-mcp-bridge-app:2.0.0
+    build:
+      context: .
+      dockerfile: .devcontainer/Dockerfile.prod
+      tags:
+        - mymindventures/mmc-mcp-bridge-app:latest
+        - mymindventures/mmc-mcp-bridge-app:2.0.0
+      cache_from:
+        - mymindventures/mmc-mcp-bridge-app:latest
+      labels:
+        - "com.mmc.project=mmc-mcp-bridge"
+        - "com.mmc.component=app"
+        - "com.mmc.version=2.0.0"
+        - "com.mmc.name=MMC_MCP_Bridge_App"
+        - "com.mmc.description=MMC MCP Bridge Application Container"
+    container_name: MMC_MCP_Bridge_App
+    hostname: mmc-mcp-bridge-app
+    ports:
+      - target: 3000
+        published: 3000
+        protocol: tcp
+        mode: host
+    volumes:
+      # Note: Bind mount werkt niet vanuit devcontainer naar Docker Desktop
+      # Source code wordt gemount via devcontainer volume, niet via Docker Desktop
+      # Voor hot reload: gebruik devcontainer's volume mount naar host
+      - type: volume
+        source: mmc-mcp-bridge-node-modules
+        target: /workspaces/MMC_MCP_BRIDGE/node_modules
+      - type: volume
+        source: mmc-mcp-bridge-next-cache
+        target: /workspaces/MMC_MCP_BRIDGE/.next
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - NEXT_TELEMETRY_DISABLED=1
+    env_file:
+      - .env.local
+    working_dir: /workspaces/MMC_MCP_BRIDGE
+    command: npm run dev:host
+    restart: unless-stopped
+    stop_grace_period: 10s
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - mmc-mcp-bridge-network
+    labels:
+      - "com.mmc.project=mmc-mcp-bridge"
+      - "com.mmc.component=app"
+      - "com.mmc.version=2.0.0"
+      - "com.mmc.name=MMC_MCP_Bridge_App"
+      - "com.mmc.environment=development"
+      - "com.mmc.description=MMC MCP Bridge Application Container - Next.js Dev Server with Hot Reload"
+      - "com.mmc.image=mymindventures/mmc-mcp-bridge-app:2.0.0"
+      - "com.mmc.container=MMC_MCP_Bridge_App"
+      - "com.docker.compose.project=mmc-mcp-bridge"
+      - "com.docker.compose.service=mcp-bridge-app"
+
+volumes:
+  mmc-mcp-bridge-node-modules:
+    name: mmc-mcp-bridge-node-modules
+    driver: local
+    labels:
+      - "com.mmc.project=mmc-mcp-bridge"
+      - "com.mmc.purpose=node-modules-cache"
+  mmc-mcp-bridge-next-cache:
+    name: mmc-mcp-bridge-next-cache
+    driver: local
+    labels:
+      - "com.mmc.project=mmc-mcp-bridge"
+      - "com.mmc.purpose=nextjs-build-cache"
+
+networks:
+  mmc-mcp-bridge-network:
+    name: mmc-mcp-bridge-network
+    driver: bridge
+    labels:
+      - "com.mmc.project=mmc-mcp-bridge"
+      - "com.mmc.purpose=development-network"
