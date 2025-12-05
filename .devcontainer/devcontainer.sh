@@ -501,17 +501,22 @@ container_dev_start() {
   
   echo "🐳 Starting MCP Bridge dev container..."
   
-  if docker ps --format '{{.Names}}' | grep -q "mmc-mcp-bridge_dev"; then
+  # Docker Compose naming: project name "mmc-mcp-bridge" + service "dev" = "mmc-mcp-bridge-dev-1"
+  # Use pattern matching with hyphens (not underscores) to find containers
+  # Check if any container matching the pattern is running
+  if docker ps --format '{{.Names}}' | grep -qE "^mmc-mcp-bridge-dev"; then
     echo "✅ Container is already running"
     echo "💡 Code changes will hot reload automatically"
     return 0
   fi
   
-  if docker ps -a --format '{{.Names}}' | grep -q "mmc-mcp-bridge_dev"; then
+  # Check if container exists but is stopped
+  if docker ps -a --format '{{.Names}}' | grep -qE "^mmc-mcp-bridge-dev"; then
     echo "📦 Starting existing container..."
     docker compose start dev
   else
-    if docker images --format '{{.Repository}}:{{.Tag}}' | grep -q "mmc-mcp-bridge.*dev"; then
+    # Check if image exists (using docker compose to check service image)
+    if docker images --format '{{.Repository}}:{{.Tag}}' | grep -qE "mmc-mcp-bridge.*dev|.*dev.*latest"; then
       echo "🖼️  Reusing existing image..."
       docker compose up -d --no-build dev
     else
