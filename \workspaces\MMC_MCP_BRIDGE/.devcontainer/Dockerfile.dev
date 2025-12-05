@@ -1,0 +1,37 @@
+# MMC MCP Bridge Development App Container
+FROM node:20.15.1-alpine
+
+LABEL com.mmc.project="mmc-mcp-bridge"
+LABEL com.mmc.component="app"
+LABEL com.mmc.version="2.0.0"
+
+# Install dependencies
+RUN apk add --no-cache wget curl bash
+
+# Install Doppler CLI
+RUN curl -Ls --tlsv1.2 --proto "=https" --retry 3 https://cli.doppler.com/install.sh | sh && \
+    mv /root/.local/bin/doppler /usr/local/bin/doppler 2>/dev/null || true
+
+WORKDIR /workspaces/MMC_MCP_BRIDGE
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies
+RUN npm ci
+
+# Copy source code
+COPY --chown=node:node . .
+
+EXPOSE 3000
+
+ENV NODE_ENV=development
+ENV PORT=3000
+ENV NEXT_TELEMETRY_DISABLED=1
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1
+
+USER node
+
+CMD ["npm", "run", "dev:host"]
