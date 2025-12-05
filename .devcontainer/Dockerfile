@@ -47,30 +47,22 @@ RUN curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /
 # Install jq for JSON parsing in scripts
 RUN apt-get update && apt-get install -y jq && rm -rf /var/lib/apt/lists/*
 
-# Copy all scripts from .devcontainer directory
+# Copy only essential devcontainer scripts (not build scripts - those are mounted from host)
 # Build context is parent directory (..), so .devcontainer/ is correct
 COPY .devcontainer/install-extensions.sh /usr/local/bin/install-extensions.sh
-COPY .devcontainer/start-dev.sh /usr/local/bin/start-dev.sh
 COPY .devcontainer/persist-settings.sh /usr/local/bin/persist-settings.sh
 COPY .devcontainer/sync-todos.sh /usr/local/bin/sync-todos.sh
 COPY .devcontainer/auto-git-workflow.sh /usr/local/bin/auto-git-workflow.sh
 COPY .devcontainer/git-watcher.sh /usr/local/bin/git-watcher.sh
 COPY .devcontainer/feature-tracker.sh /usr/local/bin/feature-tracker.sh
-COPY .devcontainer/build-app-container.sh /usr/local/bin/build-app-container.sh
-COPY .devcontainer/build-e2e-container.sh /usr/local/bin/build-e2e-container.sh
-COPY .devcontainer/build-sequential.sh /usr/local/bin/build-sequential.sh
 
-# Make all scripts executable
+# Make scripts executable
 RUN chmod +x /usr/local/bin/install-extensions.sh \
-    && chmod +x /usr/local/bin/start-dev.sh \
     && chmod +x /usr/local/bin/persist-settings.sh \
     && chmod +x /usr/local/bin/sync-todos.sh \
     && chmod +x /usr/local/bin/auto-git-workflow.sh \
     && chmod +x /usr/local/bin/git-watcher.sh \
-    && chmod +x /usr/local/bin/feature-tracker.sh \
-    && chmod +x /usr/local/bin/build-app-container.sh \
-    && chmod +x /usr/local/bin/build-e2e-container.sh \
-    && chmod +x /usr/local/bin/build-sequential.sh
+    && chmod +x /usr/local/bin/feature-tracker.sh
 
 # Set working directory (source code will be bind-mounted by devcontainer)
 WORKDIR /workspaces/MMC_MCP_BRIDGE
