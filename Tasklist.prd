@@ -16,15 +16,14 @@
 ⏳ feat-06-databases-postgres-full: Postgres MCP: alle 25+ tools volledig testen (schema discovery, DDL, DML, transactions, migrations)
 ⏳ feat-06-databases-sqlite-full: SQLite MCP: alle 22+ tools volledig testen (schema, indexes, foreign keys, DDL operations)
 ⏳ feat-06-databases-mongodb-full: MongoDB MCP: alle 18+ tools volledig testen (collections, documents, aggregations, indexes)
-🔄 feat-07-linear-issues: Linear MCP: listIssues, createIssue, updateIssue, searchIssues tools testen - Sync API route geïmplementeerd (/api/sync/linear) voor bidirectionele sync met Tasklist.prd
+✅ feat-07-linear-issues: Linear MCP: listIssues, createIssue, updateIssue, searchIssues tools testen - Sync API route geïmplementeerd (/api/sync/linear) voor bidirectionele sync met Tasklist.prd, scheduler en migration tool compleet
 ⏳ feat-07-github-repos: GitHub MCP: listRepos, createIssue, createPR, searchCode tools testen
 ⏳ feat-07-github-workflow: GitHub + Linear MCP: volledige dev workflow testen (issue creation, PR workflow, code search)
 ⏳ feat-08-notion-pages: Notion MCP: alle 25+ tools testen (createPage, updatePage, queryDatabase, search)
 ⏳ feat-08-slack-messages: Slack MCP: alle 30+ tools testen (postMessage, listChannels, getHistory, file uploads)
 ⏳ feat-08-collab-workflow: Notion + Slack MCP: volledige collaboration workflow testen (documentatie + notificaties)
 ⏳ feat-09-airtable-records: Airtable MCP: alle 18+ tools testen (listRecords, createRecord, updateRecord, bulk operations)
-🔄 feat-09-doppler-secrets: Doppler MCP: alle 38 tools testen (projects, configs, secrets, environments, service tokens, integrations)
-🔄 feat-doppler-credentials-management: Doppler credentials management: CLI installatie, credentials audit, project setup, code migratie, Railway configuratie, OpenRouter optimalisatie
+⏳ feat-09-doppler-secrets: Doppler MCP: alle 38 tools testen (projects, configs, secrets, environments, service tokens, integrations)
 ⏳ feat-10-brave-search: Brave Search MCP: alle 7 tools testen (webSearch, imageSearch, videoSearch, newsSearch, localSearch, suggest, spellcheck)
 ⏳ feat-10-ollama-chat: Ollama MCP: chat tool testen met lokale LLM models
 ⏳ feat-10-playwright-automation: Playwright MCP: alle 24+ tools testen (navigate, screenshot, scrape, click, interact, form filling)
@@ -64,7 +63,8 @@
 ✅ feat-e2e-dagger-container: E2E Dagger container geconfigureerd: volledige CI/CD pipeline met Dagger, Docker Hub registratie voor alle 3 containers (DevContainer, App, E2E), GitHub Actions workflow voor automatische builds
 ✅ feat-docker-naming-consistency: Docker naming consistentie: alle container names, image names, labels en metadata perfect zichtbaar in Docker Desktop UI (MMC_MCP_Bridge_App, MMC_MCP_Bridge_DevContainer, MMC_MCP_Bridge_E2E)
 ✅ feat-docker-specialist-management: Docker specialist setup: alle 3 containers (dev, app, e2e) geoptimaliseerd met best practices, .dockerignore, build args, labels, Docker Hub en GHCR registratie scripts, cleanup scripts, validatie scripts
-🔄 feat-prd-notion-sync: PRD.md automatische sync met Notion Portfolio via MCP: PRD.md generator + Notion MCP integration - Sync API routes geïmplementeerd (/api/sync/notion en /api/sync/linear)
+✅ feat-docker-specialist-role-description: Docker Specialist role description: volledige role description document aangemaakt in Agent Suite directory met alle verantwoordelijkheden, scripts, best practices en container details
+✅ feat-prd-notion-sync: PRD.md automatische sync met Notion Portfolio via MCP: PRD.md generator + Notion MCP integration - Sync API routes geïmplementeerd (/api/sync/notion en /api/sync/linear), scheduler (/api/sync/scheduler) en migration tool (/api/sync/migrate)
 ⏳ feat-doppler-mcp-full: Doppler MCP volledig integreren: alle 38 tools implementeren en testen volgens doppler-mcp repo
 ✅ feat-prd-creation: PRD.md uitgebreide documentatie: volledige project vision, n8n bidirectionele integratie, agentic AI architectuur, OpenWebUI integratie, roadmap
 ⏳ feat-n8n-bidirectional-schema: n8n bidirectionele integratie: Backend → n8n JSON Schema generator (automatische workflow creatie van MCP servers)
@@ -73,4 +73,7 @@
 ⏳ feat-n8n-agent-embedding: n8n agent embedding: Agentic agent nodes in n8n workflows voor multi-step MCP orchestration
 ⏳ feat-openwebui-connector: OpenWebUI connector: visual workflow builder die bidirectioneel sync met backend en n8n
 ⏳ feat-agentic-frontend: Agentic frontend generator: n8n workflow analysis → React component generatie voor volledige fullstack app
+✅ feat-sync-scheduler: Automatische sync scheduler: periodieke sync tussen Tasklist.prd/PRD.md en Linear/Notion via /api/sync/scheduler met configurable intervals en force sync
+✅ feat-markdown-migration: Markdown migration tool: automatische migratie van .md files naar Linear issues en Notion pages via /api/sync/migrate
+✅ feat-improvements-analyzer: Project improvements analyzer: codebase analyse voor Agentic AI, n8n, Clean Codebase, Refactoring opportunities via /api/improvements/analyze
 

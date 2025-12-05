@@ -178,27 +178,52 @@ N8N_INSTANCE_APIKEY=...
 
 ### **Configuration**
 
-`railway.json`:
+`railway.json` (Code as Config):
 
 ```json
 {
+  "$schema": "https://railway.com/railway.schema.json",
   "build": {
     "builder": "RAILPACK",
-    "buildCommand": "npm ci && npm run build"
+    "buildCommand": "npm ci && npm run type-check && npm run build",
+    "watchPatterns": ["app/**", "package.json", "package-lock.json"]
   },
   "deploy": {
     "startCommand": "npm run start",
     "healthcheckPath": "/api/health",
-    "restartPolicyType": "ALWAYS",
-    "predeployCommand": "npm run build"
+    "healthcheckTimeout": 300,
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 10,
+    "predeployCommand": "npm run type-check && npm run build"
   },
   "github": {
-    "deployOnPush": true,
+    "deployOnPush": {
+      "branches": ["main"]
+    },
     "deployOnPullRequest": true,
-    "deployOnMerge": true
+    "deployOnMerge": {
+      "branches": ["main"]
+    }
   }
 }
 ```
+
+### **Dagger CI/CD Pipeline**
+
+Modern CI/CD met Dagger voor container builds en testing:
+
+```bash
+# Run Dagger pipeline lokaal
+npm run dagger:local
+
+# Pipeline features:
+# - Multi-stage builds met caching
+# - Parallel execution voor snellere builds
+# - Type-check, build validation, Railway config validation
+# - Docker Hub publishing met versioning
+```
+
+**Pipeline Location:** `.dagger/pipeline.ts`
 
 **Railway Dashboard Setup (REQUIRED):**
 
@@ -226,7 +251,24 @@ N8N_INSTANCE_APIKEY=...
 - ✅ Build checks (blocks merge if build fails)
 - ✅ Health checks (`/api/health`)
 - ✅ Auto-cleanup (deletes preview after merge)
-- ✅ Predeploy checks (runs `npm run build` before deploy)
+- ✅ Predeploy checks (runs `npm run type-check && npm run build` before deploy)
+
+### **Pre-Merge Checks (GitHub Actions)**
+
+Automatische validatie op elke PR:
+
+- ✅ **TypeScript type-check** - `npm run type-check`
+- ✅ **Build validation** - `npm run build`
+- ✅ **Railway config validation** - JSON syntax + required fields
+- ✅ **Dagger pipeline validation** - TypeScript syntax check
+
+**Workflow:** `.github/workflows/pre-merge-check.yml`
+
+**Rules:**
+
+- PR kan niet gemerged worden als checks falen
+- Alle checks moeten passen voordat merge mogelijk is
+- Railway preview deployment wordt automatisch getriggerd na push
 
 ---
 
@@ -338,11 +380,59 @@ npm run build
 npm start
 ```
 
+### **Local Docker Testing (Docker Desktop)**
+
+Test containers lokaal met Docker Desktop:
+
+```bash
+# Start dev container
+npm run docker:dev:up
+
+# Start app container (production)
+npm run docker:app:up
+
+# Start E2E test container
+npm run docker:e2e:up
+
+# Test all containers
+npm run docker:test:all
+
+# Validate Docker Compose config
+npm run docker:validate
+
+# Full CI/CD validation (type-check + build + Docker)
+npm run cicd:validate
+```
+
+**Docker Compose:** `docker-compose.yml` met 3 services (dev, app, e2e)
+
+### **Dagger Local Execution**
+
+Run Dagger pipeline lokaal voor container builds:
+
+```bash
+# Run full Dagger pipeline (builds all containers)
+npm run dagger:local
+
+# Pipeline outputs:
+# - DevContainer image
+# - App container image
+# - E2E container image
+# - Type-check validation
+# - Build validation
+# - Railway config validation
+```
+
+**Requirements:** Docker Desktop running, Dagger CLI installed
+
 ### **Testing**
 
 ```bash
-# Health check
+# Health check (local)
 curl http://localhost:3000/api/health
+
+# Health check (app container)
+curl http://localhost:3001/api/health
 
 # List all MCP servers
 curl http://localhost:3000/api/servers

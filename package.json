@@ -61,12 +61,6 @@
     "docker:test:app": "docker compose up -d app && sleep 15 && curl -f http://localhost:3001/api/health || exit 1",
     "docker:test:all": "npm run docker:test:dev && npm run docker:test:app",
     "docker:validate": "docker compose config --quiet && echo '✅ docker-compose.yml is valid'",
-    "cicd:validate": "npm run type-check && npm run build && npm run docker:validate && echo '✅ All CI/CD validations passed'",
-    "dagger:local": "dagger run ./.dagger/pipeline.ts --local",
-    "docker:test:dev": "docker compose up -d dev && sleep 10 && curl -f http://localhost:3000/api/health || exit 1",
-    "docker:test:app": "docker compose up -d app && sleep 15 && curl -f http://localhost:3001/api/health || exit 1",
-    "docker:test:all": "npm run docker:test:dev && npm run docker:test:app",
-    "docker:validate": "docker compose config --quiet && echo '✅ docker-compose.yml is valid'",
     "cicd:validate": "npm run type-check && npm run build && npm run docker:validate && echo '✅ All CI/CD validations passed'"
   },
   "dependencies": {

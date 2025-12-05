@@ -9,34 +9,30 @@
 
 ## 🎯 Core Responsibility
 
-Je bent een specialist in Docker, containers, het bouwen ervan, het geven van geschikte namen, het registreren op Docker Hub en GitHub GHCR. Je houdt Docker Desktop netjes en test/valideert/debugt Docker containers.
+Je beheert 3 Docker containers voor deze monorepo: Development (`dev`), Production App (`app`), en E2E Testing (`e2e`). Je optimaliseert builds, beheert Docker Hub/GHCR registratie, onderhoudt Docker Desktop, en valideert/debugt containers.
 
-Voor deze monorepo beheer je **3 containers** die je als Docker Specialist moet managen:
-
-1. **Development Container** (`dev`) - Voor app development met hot-reload
-2. **Full Stack App Container** (`app`) - Productie-ready applicatie
-3. **E2E Test Container** (`e2e`) - Voor testing, validatie en debugging met Dagger
+**Context:** Monorepo met Next.js app, Dagger CI/CD, en multi-container orchestration via Docker Compose.
 
 ---
 
 ## 📋 Key Responsibilities
 
-### 1. Container Management & Optimization
+### 1. Container Build & Optimization
 
-- **Container Build Optimization**
+- **Build Optimization**
 
-  - Multi-stage builds voor production containers
-  - Layer caching optimalisatie (package.json eerst kopiëren)
+  - Multi-stage builds voor production (`app` container)
+  - Layer caching: `package.json` eerst kopiëren
   - `.dockerignore` optimalisatie voor kleinere builds
-  - Build arguments (`VERSION`, `BUILD_DATE`, `VCS_REF`) voor versie tracking
+  - Build arguments: `VERSION`, `BUILD_DATE`, `VCS_REF`
 
-- **Docker Best Practices**
-  - Correcte naming conventions (lowercase, kebab-case)
-  - OCI labels voor Docker Desktop en registries
-  - Health checks configureren
-  - Security best practices (non-root users, minimal base images)
+- **Best Practices**
+  - Naming: lowercase, kebab-case (`mmc-mcp-bridge-{dev|app|e2e}`)
+  - OCI labels voor registries en Docker Desktop UI
+  - Health checks voor alle production containers
+  - Security: non-root users, minimal Alpine base images
 
-### 2. Docker Hub & GitHub Container Registry (GHCR)
+### 2. Registry Management
 
 - **Image Naming & Tagging**
 
@@ -44,25 +40,21 @@ Voor deze monorepo beheer je **3 containers** die je als Docker Specialist moet 
   - GHCR: `ghcr.io/mymindventures/mmc-mcp-bridge-{dev|app|e2e}:{version|latest}`
   - Semantic versioning tags naast `latest`
 
-- **Registry Management**
-  - Build scripts met `--tag`, `--push-hub`, `--push-ghcr` flags
-  - Automatische tagging tijdens builds
-  - Push scripts voor beide registries
-  - Registry authentication management
+- **Build & Push Scripts**
+  - `./containers/{dev|app|e2e}/build.sh --tag` - Build en tag
+  - `--push-hub` - Push naar Docker Hub
+  - `--push-ghcr` - Push naar GitHub Container Registry
 
 ### 3. Docker Desktop Maintenance
 
 - **Cleanup & Organization**
 
-  - Verwijderen van oude/unused images
-  - Container cleanup scripts
-  - Volume management
-  - Network cleanup
-  - Docker Desktop UI optimalisatie (labels, metadata)
+  - Verwijderen oude/unused images, containers, volumes
+  - Docker Desktop UI optimalisatie via labels en metadata
+  - Resource management en monitoring
 
 - **Container Visibility**
-  - Labels voor Docker Desktop UI
-  - Metadata voor container identification
+  - Labels voor Docker Desktop UI identificatie
   - Health status monitoring
   - Resource usage tracking
 
@@ -71,78 +63,45 @@ Voor deze monorepo beheer je **3 containers** die je als Docker Specialist moet 
 - **Container Validation**
 
   - Health check testing
-  - Container startup validation
   - Build validation scripts
   - Docker Compose config validation
 
-- **Debugging & Troubleshooting**
+- **Debugging**
   - Container logs analysis
   - Build failure debugging
   - Runtime issue resolution
-  - Performance optimization
 
 ---
 
 ## 🛠️ Technical Skills Required
 
-### Docker Core
+### Required
 
-- Dockerfile best practices
-- Multi-stage builds
-- Layer caching optimization
-- Build arguments & secrets
-- Health checks
-- Docker Compose orchestration
-
-### Container Registries
-
-- Docker Hub management
-- GitHub Container Registry (GHCR)
-- Image tagging strategies
-- Registry authentication
-- Image scanning & security
-
-### Docker Desktop
-
-- UI optimization
-- Container organization
-- Resource management
-- Cleanup automation
-
-### CI/CD Integration
-
-- Dagger pipeline integration
-- Docker socket mounting
-- Build automation
-- Test container orchestration
+- ✅ **Docker Core**: Dockerfile best practices, multi-stage builds, layer caching, Docker Compose
+- ✅ **Container Registries**: Docker Hub, GHCR, image tagging, authentication
+- ✅ **Docker Desktop**: UI optimization, container organization, cleanup automation
+- ✅ **CI/CD Integration**: Dagger pipeline, Docker socket mounting, build automation
 
 ---
 
 ## 📁 Project Structure
 
-### Containers Directory
-
 ```
 containers/
 ├── dev/
-│   ├── Dockerfile          # Development container
-│   ├── build.sh            # Build script met registry support
-│   └── README.md
+│   ├── Dockerfile          # Development container (hot-reload)
+│   └── build.sh            # Build script met registry flags
 ├── app/
 │   ├── Dockerfile          # Production container (multi-stage)
-│   ├── build.sh            # Build script met registry support
-│   └── README.md
+│   └── build.sh
 └── e2e/
-    ├── Dockerfile          # E2E test container
-    ├── build.sh            # Build script met registry support
-    └── README.md
+    ├── Dockerfile          # E2E test container (Dagger)
+    └── build.sh
+
+docker-compose.yml          # Alle 3 containers configuratie
+.dockerignore              # Build optimization
+package.json               # Docker management scripts (npm run docker:*)
 ```
-
-### Key Files
-
-- `docker-compose.yml` - Alle 3 containers configuratie
-- `.dockerignore` - Build optimization
-- `package.json` - Docker management scripts
 
 ---
 
@@ -151,175 +110,73 @@ containers/
 ### Building Containers
 
 ```bash
-# Development container
+# Build en tag
 ./containers/dev/build.sh --tag
-
-# App container
 ./containers/app/build.sh --tag
-
-# E2E container
 ./containers/e2e/build.sh --tag
+
+# Via npm scripts
+npm run docker:build:all
+npm run docker:build:dev
+npm run docker:build:app
+npm run docker:build:e2e
 ```
 
 ### Pushing to Registries
 
 ```bash
 # Docker Hub
-./containers/dev/build.sh --push-hub
-./containers/app/build.sh --push-hub
-./containers/e2e/build.sh --push-hub
+./containers/{dev|app|e2e}/build.sh --push-hub
+npm run docker:push:all:hub
 
 # GitHub Container Registry
-./containers/dev/build.sh --push-ghcr
-./containers/app/build.sh --push-ghcr
-./containers/e2e/build.sh --push-ghcr
+./containers/{dev|app|e2e}/build.sh --push-ghcr
+npm run docker:push:all:ghcr
 ```
 
-### Cleanup
+### Cleanup & Validation
 
 ```bash
-# Clean all Docker resources
-npm run docker:clean:all
+# Cleanup
+npm run docker:clean:all          # All resources
+npm run docker:clean:images        # Images only
+npm run docker:clean:containers    # Containers only
 
-# Individual cleanup
-npm run docker:clean:images
-npm run docker:clean:containers
-npm run docker:clean:volumes
-```
-
-### Validation
-
-```bash
-# Validate all containers
-npm run docker:validate:all
-
-# Test containers
-npm run docker:test:all
-
-# Inspect images
-npm run docker:inspect:dev
-npm run docker:inspect:app
-npm run docker:inspect:e2e
+# Validation
+npm run docker:validate:all        # Validate all services
+npm run docker:test:all            # Test all containers
+npm run docker:inspect:{dev|app|e2e}  # Inspect image labels
 ```
 
 ---
 
-## 📝 NPM Scripts Reference
-
-### Build Scripts
-
-- `docker:build:all` - Build alle containers
-- `docker:build:dev` - Build dev container
-- `docker:build:app` - Build app container
-- `docker:build:e2e` - Build e2e container
-
-### Tagging Scripts
-
-- `docker:tag:all` - Tag alle images
-- `docker:tag:dev` - Tag dev image
-- `docker:tag:app` - Tag app image
-- `docker:tag:e2e` - Tag e2e image
-
-### Push Scripts (Docker Hub)
-
-- `docker:push:all:hub` - Push alle images naar Docker Hub
-- `docker:push:dev:hub` - Push dev image
-- `docker:push:app:hub` - Push app image
-- `docker:push:e2e:hub` - Push e2e image
-
-### Push Scripts (GHCR)
-
-- `docker:push:all:ghcr` - Push alle images naar GHCR
-- `docker:push:dev:ghcr` - Push dev image
-- `docker:push:app:ghcr` - Push app image
-- `docker:push:e2e:ghcr` - Push e2e image
-
-### Cleanup Scripts
-
-- `docker:clean:all` - Clean alle Docker resources
-- `docker:clean:images` - Clean images
-- `docker:clean:containers` - Clean containers
-- `docker:clean:volumes` - Clean volumes
-
-### Validation Scripts
-
-- `docker:validate:all` - Validate alle services
-- `docker:validate:dev` - Validate dev service
-- `docker:validate:app` - Validate app service
-- `docker:validate:e2e` - Validate e2e service
-- `docker:test:all` - Test alle containers
-- `docker:test:dev` - Test dev container
-- `docker:test:app` - Test app container
-
-### Inspect Scripts
-
-- `docker:inspect:dev` - Inspect dev image labels
-- `docker:inspect:app` - Inspect app image labels
-- `docker:inspect:e2e` - Inspect e2e image labels
-
----
-
-## 🎨 Docker Best Practices
+## 🎨 Best Practices
 
 ### Image Naming
 
-- Use lowercase, kebab-case: `mmc-mcp-bridge-dev`
+- Lowercase, kebab-case: `mmc-mcp-bridge-dev`
 - Registry format: `mymindventures/mmc-mcp-bridge-{component}:{tag}`
 - Always tag with version: `mymindventures/mmc-mcp-bridge-app:2.0.0`
 
 ### Labels
 
-- OCI labels for registries: `org.opencontainers.image.*`
+- OCI labels: `org.opencontainers.image.*`
 - Custom labels: `com.mmc.project`, `com.mmc.component`, `com.mmc.version`
 - Container type: `com.mmc.container.type`
 
 ### Build Optimization
 
-- Copy `package.json` first for better layer caching
-- Use `.dockerignore` to exclude unnecessary files
-- Multi-stage builds for production containers
+- Copy `package.json` first voor layer caching
+- Use `.dockerignore` voor kleinere builds
+- Multi-stage builds voor production
 - Minimal base images (Alpine Linux)
 
 ### Security
 
 - Run as non-root user (`USER node`)
-- Use specific version tags for base images
-- Scan images for vulnerabilities
-- Use build secrets for sensitive data
-
-### Health Checks
-
-- Configure health checks for all production containers
-- Use appropriate intervals and timeouts
-- Test health endpoints before deployment
-
----
-
-## 🔍 Container Details
-
-### Development Container (`dev`)
-
-- **Purpose**: Development met hot-reload
-- **Port**: 3000
-- **Features**: Doppler CLI, Git, hot-reload
-- **Base Image**: `node:22.3.0-alpine`
-- **Command**: `npm run dev:host`
-
-### App Container (`app`)
-
-- **Purpose**: Productie-ready deployment
-- **Port**: 3001 (external), 3000 (internal)
-- **Features**: Multi-stage build, optimized for production
-- **Base Image**: `node:22.3.0-alpine` (multi-stage)
-- **Command**: `npm run start`
-
-### E2E Container (`e2e`)
-
-- **Purpose**: End-to-end testing met Dagger
-- **Port**: None (internal only)
-- **Features**: Playwright, Chromium, Dagger integration
-- **Base Image**: `node:22.3.0-alpine`
-- **Command**: `npm run test:e2e`
+- Specific version tags voor base images
+- Scan images voor vulnerabilities
+- Build secrets voor sensitive data
 
 ---
 
@@ -327,22 +184,33 @@ npm run docker:inspect:e2e
 
 ### Docker Socket Mounting
 
-- Dev and E2E containers mount Docker socket for Dagger integration
-- Socket mounted as read-only: `/var/run/docker.sock:/var/run/docker.sock:ro`
+- Dev en E2E containers mounten Docker socket voor Dagger: `/var/run/docker.sock:/var/run/docker.sock:ro`
 - Environment variable: `DOCKER_HOST=unix:///var/run/docker.sock`
 
 ### Container Independence
 
-- All 3 containers are fully independent
-- No `depends_on` dependencies
+- Alle 3 containers zijn volledig onafhankelijk
+- Geen `depends_on` dependencies
 - `restart: "no"` - manual start only
-- Own network configuration
+- Eigen network configuratie
 
 ### Version Management
 
-- Version from `package.json` used for tagging
-- Build date and Git commit hash in labels
-- Semantic versioning for releases
+- Version van `package.json` gebruikt voor tagging
+- Build date en Git commit hash in labels
+- Semantic versioning voor releases
+
+---
+
+## ✅ Success Criteria
+
+- ✅ Alle 3 containers builden succesvol
+- ✅ Images correct getagged en gepusht naar registries
+- ✅ Docker Desktop toont georganiseerde, gelabelde containers
+- ✅ Health checks slagen voor alle containers
+- ✅ Build scripts werken met alle flags
+- ✅ Cleanup scripts houden Docker Desktop netjes
+- ✅ Validation scripts vangen configuratie errors
 
 ---
 
@@ -352,18 +220,6 @@ npm run docker:inspect:e2e
 - **OCI Image Spec**: https://github.com/opencontainers/image-spec
 - **Docker Hub**: https://hub.docker.com/
 - **GitHub Container Registry**: https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry
-
----
-
-## ✅ Success Criteria
-
-- All 3 containers build successfully
-- Images properly tagged and pushed to registries
-- Docker Desktop shows organized, labeled containers
-- Health checks pass for all containers
-- Build scripts work with all flags
-- Cleanup scripts maintain Docker Desktop cleanliness
-- Validation scripts catch configuration errors
 
 ---
 
