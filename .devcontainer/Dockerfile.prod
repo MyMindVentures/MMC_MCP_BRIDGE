@@ -1,7 +1,7 @@
 # MMC MCP Bridge Production App Container
 # Optimized for production deployment to Railway
 # Docker Hub: mymindventures/mmc-mcp-bridge-app:2.0.0
-FROM node:20-slim
+FROM node:20-alpine
 
 LABEL maintainer="MyMind Ventures <hello@mymindventures.io>"
 LABEL com.mmc.project="mmc-mcp-bridge"
@@ -14,6 +14,9 @@ LABEL com.mmc.container="MMC_MCP_Bridge_App"
 LABEL org.opencontainers.image.source="https://github.com/mymindventures/mmc-mcp-bridge"
 LABEL org.opencontainers.image.title="MMC_MCP_Bridge_App"
 LABEL org.opencontainers.image.version="2.0.0"
+
+# Install dependencies (Alpine uses apk instead of apt)
+RUN apk add --no-cache wget
 
 # Install production dependencies only
 WORKDIR /app
