@@ -14,6 +14,59 @@ import {
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+// Cache for n8n dynamic data (tools, resources, prompts)
+// TTL: 5 minutes (300000ms) to balance freshness and performance
+const N8N_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+interface N8NCache {
+  tools: any[];
+  resources: any[];
+  prompts: any[];
+  timestamp: number;
+}
+
+let n8nCache: N8NCache | null = null;
+
+// Get cached or fresh n8n data
+async function getCachedN8NData() {
+  const now = Date.now();
+
+  // Return cached data if still valid
+  if (n8nCache && now - n8nCache.timestamp < N8N_CACHE_TTL) {
+    return n8nCache;
+  }
+
+  // Fetch fresh data
+  try {
+    const [tools, resources, prompts] = await Promise.all([
+      getN8NCommunityTools(),
+      getN8NCommunityResources(),
+      getN8NCommunityPrompts(),
+    ]);
+
+    n8nCache = {
+      tools,
+      resources,
+      prompts,
+      timestamp: now,
+    };
+
+    return n8nCache;
+  } catch (error) {
+    console.error("[sse] Failed to fetch n8n data:", error);
+    // Return stale cache if available, otherwise empty arrays
+    if (n8nCache) {
+      return n8nCache;
+    }
+    return {
+      tools: [],
+      resources: [],
+      prompts: [],
+      timestamp: now,
+    };
+  }
+}
+
 export async function GET(request: Request) {
   // Optional authentication (if API keys configured)
   const authResult = await verifyAuth(request);
@@ -44,20 +97,17 @@ export async function GET(request: Request) {
         (s) => s.enabled
       );
 
-      // Get n8n tools dynamically
+      // Get n8n tools dynamically (using cache)
       const n8nServer = enabledServers.find((s) => s.name === "n8n");
       let n8nTools: any[] = [];
       let n8nResources: any[] = [];
       let n8nPrompts: any[] = [];
 
       if (n8nServer) {
-        try {
-          n8nTools = await getN8NCommunityTools();
-          n8nResources = await getN8NCommunityResources();
-          n8nPrompts = await getN8NCommunityPrompts();
-        } catch (error) {
-          console.error("[sse] Failed to load n8n tools:", error);
-        }
+        const cachedData = await getCachedN8NData();
+        n8nTools = cachedData.tools;
+        n8nResources = cachedData.resources;
+        n8nPrompts = cachedData.prompts;
       }
 
       // Calculate totals including dynamic n8n tools
@@ -312,27 +362,18 @@ export async function POST(request: Request) {
           });
         }
       } else {
-        // For n8n, validate tool exists dynamically
-        try {
-          const n8nTools = await getN8NCommunityTools();
-          const toolExists = n8nTools.some((t: any) => t.name === toolName);
-          if (!toolExists) {
-            return Response.json({
-              jsonrpc: "2.0",
-              id: requestId,
-              error: {
-                code: -32602,
-                message: `Tool not found: ${toolName} in n8n server`,
-              },
-            });
-          }
-        } catch (error: any) {
+        // For n8n, validate tool exists dynamically (using cache)
+        const cachedData = await getCachedN8NData();
+        const toolExists = cachedData.tools.some(
+          (t: any) => t.name === toolName
+        );
+        if (!toolExists) {
           return Response.json({
             jsonrpc: "2.0",
             id: requestId,
             error: {
-              code: -32603,
-              message: `Failed to validate n8n tool: ${error.message}`,
+              code: -32602,
+              message: `Tool not found: ${toolName} in n8n server`,
             },
           });
         }

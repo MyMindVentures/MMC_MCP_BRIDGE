@@ -268,6 +268,7 @@ async function validateRailwayConfig(source: Directory): Promise<string> {
 
 // Main pipeline entrypoint with parallel execution
 export default async function pipeline() {
+  const startTime = Date.now();
   const source = dag.host().directory(".", {
     exclude: [
       "node_modules",
@@ -281,37 +282,62 @@ export default async function pipeline() {
   console.log("🚀 Starting MMC MCP Bridge CI/CD Pipeline");
   console.log(`📦 Version: ${VERSION}`);
   console.log(`🐳 Docker Hub: ${DOCKER_HUB_USERNAME}/${PROJECT_NAME}`);
+  console.log(`⏱️  Started at: ${new Date().toISOString()}`);
 
   // Phase 1: Validation (parallel)
   console.log("\n📋 Phase 1: Validation");
+  const validationStart = Date.now();
+
   const [typeCheckOutput, buildOutput, railwayValidation] = await Promise.all([
-    runTypeCheck(source).catch((e) => `❌ Type check failed: ${e}`),
-    runBuildValidation(source).catch((e) => `❌ Build failed: ${e}`),
-    validateRailwayConfig(source).catch(
-      (e) => `❌ Railway config invalid: ${e}`
-    ),
+    runTypeCheck(source).catch((e) => {
+      console.error("❌ Type check failed:", e);
+      throw new Error(`Type check failed: ${e}`);
+    }),
+    runBuildValidation(source).catch((e) => {
+      console.error("❌ Build failed:", e);
+      throw new Error(`Build failed: ${e}`);
+    }),
+    validateRailwayConfig(source).catch((e) => {
+      console.error("❌ Railway config invalid:", e);
+      throw new Error(`Railway config invalid: ${e}`);
+    }),
   ]);
 
-  console.log("✅ Type Check:", typeCheckOutput);
-  console.log("✅ Build Validation:", buildOutput);
-  console.log("✅ Railway Config:", railwayValidation);
+  const validationTime = ((Date.now() - validationStart) / 1000).toFixed(2);
+  console.log(`✅ Type Check: ${typeCheckOutput.split("\n")[0]}`);
+  console.log(`✅ Build Validation: ${buildOutput.split("\n")[0]}`);
+  console.log(`✅ Railway Config: ${railwayValidation.split("\n")[0]}`);
+  console.log(`⏱️  Validation completed in ${validationTime}s`);
 
   // Phase 2: Build containers (parallel)
   console.log("\n🔨 Phase 2: Building Containers (Parallel)");
+  const buildStart = Date.now();
+
   const [devcontainerRef, appRef, e2eRef] = await Promise.all([
-    buildDevContainer(source).catch(
-      (e) => `❌ DevContainer build failed: ${e}`
-    ),
-    buildAppContainer(source).catch((e) => `❌ App build failed: ${e}`),
-    buildE2EContainer(source).catch((e) => `❌ E2E build failed: ${e}`),
+    buildDevContainer(source).catch((e) => {
+      console.error("❌ DevContainer build failed:", e);
+      throw new Error(`DevContainer build failed: ${e}`);
+    }),
+    buildAppContainer(source).catch((e) => {
+      console.error("❌ App build failed:", e);
+      throw new Error(`App build failed: ${e}`);
+    }),
+    buildE2EContainer(source).catch((e) => {
+      console.error("❌ E2E build failed:", e);
+      throw new Error(`E2E build failed: ${e}`);
+    }),
   ]);
 
+  const buildTime = ((Date.now() - buildStart) / 1000).toFixed(2);
   console.log(`✅ DevContainer: ${devcontainerRef}`);
   console.log(`✅ App Container: ${appRef}`);
   console.log(`✅ E2E Container: ${e2eRef}`);
+  console.log(`⏱️  Builds completed in ${buildTime}s`);
 
   // Phase 3: Summary
+  const totalTime = ((Date.now() - startTime) / 1000).toFixed(2);
   console.log("\n✅ Pipeline completed successfully!");
+  console.log(`⏱️  Total time: ${totalTime}s`);
   console.log("\n📦 Published Images:");
   console.log(`  - ${devcontainerRef}`);
   console.log(`  - ${appRef}`);
@@ -320,4 +346,8 @@ export default async function pipeline() {
   console.log("  - Auto-deploy on push to main");
   console.log("  - PR preview deployments enabled");
   console.log("  - Health check: /api/health");
+  console.log("\n📊 Performance Metrics:");
+  console.log(`  - Validation: ${validationTime}s`);
+  console.log(`  - Builds: ${buildTime}s`);
+  console.log(`  - Total: ${totalTime}s`);
 }

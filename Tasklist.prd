@@ -10,7 +10,7 @@
 ✅ feat-03-http-bridge-anthropic: HTTP MCP bridge Anthropic server: alle 13 tools testen (chat, completion, vision, structured data extraction) - mcp-executor.ts gebruikt executeAnthropicTool voor alle 13 tools
 ✅ feat-04-railway-projects: Railway MCP: listProjects, getProject, listServices tools testen en valideren - Volledig geïmplementeerd met 25 tools via executeRailwayTool
 ✅ feat-04-railway-deployments: Railway MCP: deployService, getLogs, service management tools testen - Alle deployment tools beschikbaar via HTTP bridge
-⏳ feat-05-n8n-workflows: n8n MCP: listWorkflows, getWorkflow, createWorkflow, updateWorkflow tools testen
+🔄 feat-05-n8n-workflows: n8n MCP: listWorkflows, getWorkflow, createWorkflow, updateWorkflow tools testen - n8n server configuratie toegevoegd aan mcp-config.ts met dynamische tool loading
 ⏳ feat-05-n8n-executions: n8n MCP: executeWorkflow, getExecution, listExecutions tools testen
 ⏳ feat-05-n8n-ai-builder: n8n MCP: buildWorkflowFromDescription AI workflow builder testen met echte n8n instance
 ⏳ feat-06-databases-postgres-full: Postgres MCP: alle 25+ tools volledig testen (schema discovery, DDL, DML, transactions, migrations)
@@ -49,6 +49,8 @@
 ✅ feat-cicd-local-docker: CI/CD local Docker testing: Docker Desktop integration, container validation, health check testing scripts - npm scripts toegevoegd voor local testing
 ✅ feat-cicd-docker-compose: CI/CD Docker Compose: Dagger integration, Docker socket mounts, test containers, development workflow optimalisatie - docker-compose.yml geoptimaliseerd
 ✅ feat-cicd-documentation: CI/CD documentatie: Role Description Template gemaakt, README updates met Dagger en local testing, package.json duplicate scripts gefixed
+✅ feat-cicd-role-description: CI/CD Specialist role description: Volledige role description gemaakt volgens nieuwe template structuur in Agent Suite/CI-CD Specialist.md
+✅ feat-cicd-pipeline-improvements: Dagger pipeline verbeteringen: Error handling, performance logging, timing metrics toegevoegd voor betere debugging en monitoring
 ⏳ feat-17-powershell-mcp: PowerShell MCP server: nieuwe server toevoegen voor PowerShell script execution via MCP
 ⏳ feat-18-comprehensive-testing: Comprehensive testing: alle MCP servers end-to-end testen met echte data tegen Railway production
 ✅ feat-persistent-settings: Devcontainer persistent settings: Doppler, GitHub, git config, npm config, VS Code/Cursor settings behouden na rebuild

@@ -64,10 +64,14 @@ ENV NODE_ENV=production
 ENV PORT=3000
 ENV NEXT_TELEMETRY_DISABLED=1
 
+# Copy package.json for npm start command
+COPY --from=builder --chown=node:node /workspaces/MMC_MCP_BRIDGE/package.json ./package.json
+
+# Install only production dependencies
+RUN npm ci --only=production && npm cache clean --force
+
 # Copy built application from builder
 COPY --from=builder --chown=node:node /workspaces/MMC_MCP_BRIDGE/.next ./.next
-COPY --from=builder --chown=node:node /workspaces/MMC_MCP_BRIDGE/node_modules ./node_modules
-COPY --from=builder --chown=node:node /workspaces/MMC_MCP_BRIDGE/package.json ./package.json
 COPY --from=builder --chown=node:node /workspaces/MMC_MCP_BRIDGE/app ./app
 COPY --from=builder --chown=node:node /workspaces/MMC_MCP_BRIDGE/public ./public
 
