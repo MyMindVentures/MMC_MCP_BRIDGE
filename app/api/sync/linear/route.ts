@@ -85,6 +85,30 @@ async function getLinearTeamId(): Promise<string | null> {
   }
 }
 
+// Get Linear state ID by state name (workaround: use state name in updateIssue)
+// Note: Linear SDK updateIssue accepts stateId or state name, but we'll use the existing state from the issue
+async function getStateIdForState(
+  teamId: string,
+  stateName: string
+): Promise<string | null> {
+  try {
+    // Get issues to find state IDs (workaround)
+    const issues = await executeLinearTool("listIssues", {
+      filter: { team: { id: { eq: teamId } } },
+    });
+
+    // Find an issue with the target state to get the state ID
+    const issueWithState = issues.find(
+      (issue: any) => issue.state?.name === stateName
+    );
+
+    return issueWithState?.state?.id || null;
+  } catch (error) {
+    console.error("[Linear Sync] Failed to get state ID:", error);
+    return null;
+  }
+}
+
 // Sync Tasklist.prd → Linear (create/update issues)
 export async function POST(request: NextRequest) {
   try {
@@ -140,16 +164,27 @@ export async function POST(request: NextRequest) {
 
         if (existingIssue) {
           // Update existing issue
-          if (
-            existingIssue.state?.name !== linearState ||
-            existingIssue.title !== title
-          ) {
+          const currentStateName = existingIssue.state?.name || "";
+          const needsUpdate =
+            currentStateName !== linearState || existingIssue.title !== title;
+
+          if (needsUpdate) {
+            // Get state ID for the target state
+            const stateId = await getStateIdForState(teamId, linearState);
+
+            const updateData: any = { title };
+            if (stateId) {
+              updateData.stateId = stateId;
+            } else {
+              // Fallback: try using state name (some Linear SDK versions support this)
+              console.warn(
+                `[Linear Sync] State ID not found for "${linearState}", using state name`
+              );
+            }
+
             await executeLinearTool("updateIssue", {
               issueId: existingIssue.id,
-              data: {
-                title,
-                stateId: linearState, // Note: This might need state ID lookup
-              },
+              data: updateData,
             });
             results.updated++;
           } else {

@@ -1,0 +1,56 @@
+{
+  "common": {
+    "loading": "Загрузка...",
+    "error": "Ошибка",
+    "success": "Успех",
+    "cancel": "Отмена",
+    "save": "Сохранить",
+    "delete": "Удалить",
+    "edit": "Редактировать",
+    "close": "Закрыть",
+    "search": "Поиск",
+    "filter": "Фильтр",
+    "refresh": "Обновить"
+  },
+  "app": {
+    "title": "MMC MCP Bridge",
+    "subtitle": "Платформа Оркестрации MCP Enterprise",
+    "description": "Полный Протокол MCP: Tools • Resources • Prompts • Sampling • GraphQL • SSE"
+  },
+  "health": {
+    "title": "Состояние Системы",
+    "status": "Статус",
+    "version": "Версия",
+    "servers": "Серверы",
+    "mcpProtocol": "Протокол MCP"
+  },
+  "agent": {
+    "title": "Выполнение Агента",
+    "placeholder": "Введите инструкцию для агента ИИ...",
+    "execute": "Выполнить Агента",
+    "state": "Состояние",
+    "progress": "Прогресс",
+    "queued": "В Очереди",
+    "submitted": "Отправлено",
+    "completed": "Завершено",
+    "failed": "Ошибка",
+    "error": "Ошибка"
+  },
+  "tabs": {
+    "servers": "Серверы",
+    "resources": "Ресурсы",
+    "prompts": "Prompts"
+  },
+  "servers": {
+    "title": "Серверы MCP",
+    "noServers": "Нет включенных серверов. Настройте переменные окружения для включения серверов MCP.",
+    "tools": "инструменты",
+    "resources": "ресурсы",
+    "prompts": "prompts",
+    "graphql": "GraphQL",
+    "sampling": "Sampling"
+  },
+  "resources": { "title": "Ресурсы MCP", "server": "Сервер" },
+  "prompts": { "title": "Prompts MCP", "args": "Args", "server": "Сервер" },
+  "cursor": { "title": "Config Cursor IDE", "config": "Config Cursor IDE:" }
+}

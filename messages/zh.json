@@ -1,0 +1,52 @@
+{
+  "common": {
+    "loading": "加载中...",
+    "error": "错误",
+    "success": "成功",
+    "cancel": "取消",
+    "save": "保存",
+    "delete": "删除",
+    "edit": "编辑",
+    "close": "关闭",
+    "search": "搜索",
+    "filter": "筛选",
+    "refresh": "刷新"
+  },
+  "app": {
+    "title": "MMC MCP Bridge",
+    "subtitle": "企业级 MCP 编排平台",
+    "description": "完整 MCP 协议: Tools • Resources • Prompts • Sampling • GraphQL • SSE"
+  },
+  "health": {
+    "title": "系统状态",
+    "status": "状态",
+    "version": "版本",
+    "servers": "服务器",
+    "mcpProtocol": "MCP 协议"
+  },
+  "agent": {
+    "title": "代理执行",
+    "placeholder": "输入您的 AI 代理指令...",
+    "execute": "执行代理",
+    "state": "状态",
+    "progress": "进度",
+    "queued": "排队中",
+    "submitted": "已提交",
+    "completed": "已完成",
+    "failed": "失败",
+    "error": "错误"
+  },
+  "tabs": { "servers": "服务器", "resources": "资源", "prompts": "提示" },
+  "servers": {
+    "title": "MCP 服务器",
+    "noServers": "未启用服务器。配置环境变量以启用 MCP 服务器。",
+    "tools": "工具",
+    "resources": "资源",
+    "prompts": "提示",
+    "graphql": "GraphQL",
+    "sampling": "采样"
+  },
+  "resources": { "title": "MCP 资源", "server": "服务器" },
+  "prompts": { "title": "MCP 提示", "args": "参数", "server": "服务器" },
+  "cursor": { "title": "Cursor IDE 配置", "config": "Cursor IDE 配置:" }
+}

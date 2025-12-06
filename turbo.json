@@ -1,0 +1,33 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "pipeline": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": [".next/**", "!.next/cache/**"],
+      "env": ["NODE_ENV", "NEXT_TELEMETRY_DISABLED"]
+    },
+    "type-check": {
+      "dependsOn": ["^type-check"],
+      "outputs": [],
+      "cache": true
+    },
+    "prebuild": {
+      "dependsOn": ["type-check"],
+      "outputs": []
+    },
+    "precommit": {
+      "dependsOn": ["type-check", "build"],
+      "outputs": []
+    },
+    "cicd:validate": {
+      "dependsOn": ["type-check", "build"],
+      "outputs": []
+    }
+  },
+  "globalDependencies": [
+    "package.json",
+    "package-lock.json",
+    "tsconfig.json",
+    "turbo.json"
+  ]
+}

@@ -2,7 +2,7 @@
   "$schema": "https://railway.com/railway.schema.json",
   "build": {
     "builder": "RAILPACK",
-    "buildCommand": "npm ci && npm run type-check && npm run build",
+    "buildCommand": "npm ci && turbo build",
     "watchPatterns": ["app/**", "package.json", "package-lock.json"]
   },
   "deploy": {
@@ -11,7 +11,7 @@
     "healthcheckTimeout": 300,
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 10,
-    "predeployCommand": "npm run type-check && npm run build"
+    "predeployCommand": "turbo build"
   },
   "github": {
     "deployOnPush": {

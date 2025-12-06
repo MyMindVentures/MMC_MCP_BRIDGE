@@ -333,6 +333,36 @@ Complete audit van alle credentials die gebruikt worden in de MMC MCP Bridge cod
 
 ---
 
+### 9. n8n Integration (3 credentials)
+
+#### n8n Instance API Key
+
+- **Key Name:** `N8N_INSTANCE_APIKEY` (primary) or `N8N_API_KEY` (legacy)
+- **Type:** API Key
+- **Used In:** `app/api/n8n/proxy.ts`
+- **Current Usage:** `process.env.N8N_INSTANCE_APIKEY || process.env.N8N_API_KEY`
+- **Doppler Path:** `mmc-mcp-bridge/dev/N8N_INSTANCE_APIKEY`
+- **Notes:**
+  - Used for n8n MCP server integration via @leonardsellem/n8n-mcp-server
+  - Supports both N8N_INSTANCE_APIKEY (new) and N8N_API_KEY (legacy) for backward compatibility
+  - Tested via Postman: [DATE] - All tools working correctly
+  - Rotating: Every 90 days
+
+#### n8n Base URL
+
+- **Key Name:** `N8N_BASE_URL`
+- **Type:** URL
+- **Used In:** `app/api/n8n/proxy.ts`
+- **Current Usage:** `process.env.N8N_BASE_URL || 'https://mmc-n8n-instance.up.railway.app'`
+- **Doppler Path:** `mmc-mcp-bridge/dev/N8N_BASE_URL`
+- **Notes:**
+  - Default: `https://mmc-n8n-instance.up.railway.app`
+  - Used for n8n instance connection
+  - Tested via Postman: [DATE] - All tools working correctly
+  - Rotating: N/A (URL, not a secret)
+
+---
+
 ## 🔄 OpenRouter Optimization
 
 ### Centralization Strategy

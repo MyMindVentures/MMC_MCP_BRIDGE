@@ -1,0 +1,66 @@
+{
+  "common": {
+    "loading": "Laden...",
+    "error": "Fout",
+    "success": "Succes",
+    "cancel": "Annuleren",
+    "save": "Opslaan",
+    "delete": "Verwijderen",
+    "edit": "Bewerken",
+    "close": "Sluiten",
+    "search": "Zoeken",
+    "filter": "Filteren",
+    "refresh": "Vernieuwen"
+  },
+  "app": {
+    "title": "MMC MCP Bridge",
+    "subtitle": "Enterprise MCP Orchestratie Platform",
+    "description": "Volledig MCP Protocol: Tools • Resources • Prompts • Sampling • GraphQL • SSE"
+  },
+  "health": {
+    "title": "Systeem Status",
+    "status": "Status",
+    "version": "Versie",
+    "servers": "Servers",
+    "mcpProtocol": "MCP Protocol"
+  },
+  "agent": {
+    "title": "Agentic Uitvoering",
+    "placeholder": "Voer uw instructie in voor de AI agent...",
+    "execute": "Voer Agent Uit",
+    "state": "Status",
+    "progress": "Voortgang",
+    "queued": "In Wachtrij",
+    "submitted": "Ingediend",
+    "completed": "Voltooid",
+    "failed": "Mislukt",
+    "error": "Fout"
+  },
+  "tabs": {
+    "servers": "Servers",
+    "resources": "Resources",
+    "prompts": "Prompts"
+  },
+  "servers": {
+    "title": "MCP Servers",
+    "noServers": "Geen servers ingeschakeld. Configureer omgevingsvariabelen om MCP servers in te schakelen.",
+    "tools": "tools",
+    "resources": "resources",
+    "prompts": "prompts",
+    "graphql": "GraphQL",
+    "sampling": "Sampling"
+  },
+  "resources": {
+    "title": "MCP Resources",
+    "server": "Server"
+  },
+  "prompts": {
+    "title": "MCP Prompts",
+    "args": "Args",
+    "server": "Server"
+  },
+  "cursor": {
+    "title": "Cursor IDE Config",
+    "config": "Cursor IDE Config:"
+  }
+}

@@ -80,38 +80,62 @@ async function executeLinearSync(direction: string) {
     const baseUrl = process.env.MCP_BRIDGE_URL || "http://localhost:3000";
     const apiKey = process.env.MCP_BRIDGE_API_KEY;
 
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+    };
+    if (apiKey) {
+      headers.Authorization = `Bearer ${apiKey}`;
+    }
+
     if (direction === "bidirectional") {
       // First sync Tasklist → Linear
-      await fetch(`${baseUrl}/api/sync/linear`, {
+      const response1 = await fetch(`${baseUrl}/api/sync/linear`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${apiKey}`,
-        },
+        headers,
         body: JSON.stringify({ direction: "tasklist-to-linear" }),
       });
 
+      if (!response1.ok) {
+        const error = await response1.text();
+        throw new Error(`Tasklist → Linear sync failed: ${error}`);
+      }
+
       // Then sync Linear → Tasklist
-      await fetch(`${baseUrl}/api/sync/linear`, {
+      const response2 = await fetch(`${baseUrl}/api/sync/linear`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${apiKey}`,
-        },
+        headers,
         body: JSON.stringify({ direction: "linear-to-tasklist" }),
       });
+
+      if (!response2.ok) {
+        const error = await response2.text();
+        throw new Error(`Linear → Tasklist sync failed: ${error}`);
+      }
+
+      const result1 = await response1.json();
+      const result2 = await response2.json();
+
+      return {
+        success: true,
+        timestamp: new Date().toISOString(),
+        tasklistToLinear: result1,
+        linearToTasklist: result2,
+      };
     } else {
-      await fetch(`${baseUrl}/api/sync/linear`, {
+      const response = await fetch(`${baseUrl}/api/sync/linear`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${apiKey}`,
-        },
+        headers,
         body: JSON.stringify({ direction }),
       });
-    }
 
-    return { success: true, timestamp: new Date().toISOString() };
+      if (!response.ok) {
+        const error = await response.text();
+        throw new Error(`Linear sync failed: ${error}`);
+      }
+
+      const result = await response.json();
+      return { success: true, timestamp: new Date().toISOString(), result };
+    }
   } catch (error: any) {
     console.error("[Sync Scheduler] Linear sync failed:", error);
     return { success: false, error: error.message };
@@ -129,44 +153,68 @@ async function executeNotionSync(direction: string, pageId?: string) {
       throw new Error("Notion pageId not configured");
     }
 
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+    };
+    if (apiKey) {
+      headers.Authorization = `Bearer ${apiKey}`;
+    }
+
     if (direction === "bidirectional") {
       // First sync PRD → Notion
-      await fetch(`${baseUrl}/api/sync/notion`, {
+      const response1 = await fetch(`${baseUrl}/api/sync/notion`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${apiKey}`,
-        },
+        headers,
         body: JSON.stringify({
           direction: "prd-to-notion",
           pageId: targetPageId,
         }),
       });
 
+      if (!response1.ok) {
+        const error = await response1.text();
+        throw new Error(`PRD → Notion sync failed: ${error}`);
+      }
+
       // Then sync Notion → PRD
-      await fetch(`${baseUrl}/api/sync/notion`, {
+      const response2 = await fetch(`${baseUrl}/api/sync/notion`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${apiKey}`,
-        },
+        headers,
         body: JSON.stringify({
           direction: "notion-to-prd",
           pageId: targetPageId,
         }),
       });
+
+      if (!response2.ok) {
+        const error = await response2.text();
+        throw new Error(`Notion → PRD sync failed: ${error}`);
+      }
+
+      const result1 = await response1.json();
+      const result2 = await response2.json();
+
+      return {
+        success: true,
+        timestamp: new Date().toISOString(),
+        prdToNotion: result1,
+        notionToPrd: result2,
+      };
     } else {
-      await fetch(`${baseUrl}/api/sync/notion`, {
+      const response = await fetch(`${baseUrl}/api/sync/notion`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${apiKey}`,
-        },
+        headers,
         body: JSON.stringify({ direction, pageId: targetPageId }),
       });
-    }
 
-    return { success: true, timestamp: new Date().toISOString() };
+      if (!response.ok) {
+        const error = await response.text();
+        throw new Error(`Notion sync failed: ${error}`);
+      }
+
+      const result = await response.json();
+      return { success: true, timestamp: new Date().toISOString(), result };
+    }
   } catch (error: any) {
     console.error("[Sync Scheduler] Notion sync failed:", error);
     return { success: false, error: error.message };

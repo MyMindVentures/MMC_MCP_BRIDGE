@@ -36,25 +36,47 @@ function parseMarkdown(content: string): {
     title: string;
     content: string[];
   } | null = null;
-  let title = lines[0]?.replace(/^#+\s*/, "") || "Untitled";
+
+  // Find first H1 as title, or use first line
+  let title = "Untitled";
+  for (const line of lines) {
+    if (line.match(/^#\s+/)) {
+      title = line.replace(/^#\s*/, "").trim();
+      break;
+    } else if (line.trim() && !title) {
+      title = line.trim();
+    }
+  }
 
   for (const line of lines) {
-    if (line.match(/^#{1,3}\s+/)) {
+    const headerMatch = line.match(/^(#{1,3})\s+(.+)$/);
+    if (headerMatch) {
       // Save previous section
       if (currentSection) {
         sections.push({
           level: currentSection.level,
           title: currentSection.title,
-          content: currentSection.content.join("\n"),
+          content: currentSection.content.join("\n").trim(),
         });
       }
 
       // Start new section
-      const level = line.match(/^#+/)?.[0].length || 1;
-      const sectionTitle = line.replace(/^#+\s*/, "").trim();
+      const level = headerMatch[1].length;
+      const sectionTitle = headerMatch[2].trim();
       currentSection = { level, title: sectionTitle, content: [] };
     } else if (currentSection) {
       currentSection.content.push(line);
+    } else if (!title || line.trim()) {
+      // Content before first section (introduction)
+      if (!sections.length || sections[0].level !== 0) {
+        sections.unshift({
+          level: 0,
+          title: "Introduction",
+          content: line.trim(),
+        });
+      } else {
+        sections[0].content += "\n" + line;
+      }
     }
   }
 
@@ -63,7 +85,7 @@ function parseMarkdown(content: string): {
     sections.push({
       level: currentSection.level,
       title: currentSection.title,
-      content: currentSection.content.join("\n"),
+      content: currentSection.content.join("\n").trim(),
     });
   }
 

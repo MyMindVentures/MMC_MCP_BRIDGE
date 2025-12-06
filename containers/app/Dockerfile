@@ -31,8 +31,8 @@ RUN npm ci --only=production=false
 # Copy source code
 COPY . .
 
-# Build the application
-RUN npm run build
+# Build the application with Turborepo
+RUN turbo build
 
 # Production stage
 FROM node:22.3.0-alpine AS runner

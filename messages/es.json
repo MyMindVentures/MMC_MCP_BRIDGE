@@ -1,0 +1,56 @@
+{
+  "common": {
+    "loading": "Cargando...",
+    "error": "Error",
+    "success": "Éxito",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "close": "Cerrar",
+    "search": "Buscar",
+    "filter": "Filtrar",
+    "refresh": "Actualizar"
+  },
+  "app": {
+    "title": "MMC MCP Bridge",
+    "subtitle": "Plataforma de Orquestación MCP Enterprise",
+    "description": "Protocolo MCP Completo: Tools • Resources • Prompts • Sampling • GraphQL • SSE"
+  },
+  "health": {
+    "title": "Estado del Sistema",
+    "status": "Estado",
+    "version": "Versión",
+    "servers": "Servidores",
+    "mcpProtocol": "Protocolo MCP"
+  },
+  "agent": {
+    "title": "Ejecución Agéntica",
+    "placeholder": "Ingrese su instrucción para el agente IA...",
+    "execute": "Ejecutar Agente",
+    "state": "Estado",
+    "progress": "Progreso",
+    "queued": "En Cola",
+    "submitted": "Enviado",
+    "completed": "Completado",
+    "failed": "Fallido",
+    "error": "Error"
+  },
+  "tabs": {
+    "servers": "Servidores",
+    "resources": "Recursos",
+    "prompts": "Prompts"
+  },
+  "servers": {
+    "title": "Servidores MCP",
+    "noServers": "No hay servidores habilitados. Configure las variables de entorno para habilitar los servidores MCP.",
+    "tools": "herramientas",
+    "resources": "recursos",
+    "prompts": "prompts",
+    "graphql": "GraphQL",
+    "sampling": "Sampling"
+  },
+  "resources": { "title": "Recursos MCP", "server": "Servidor" },
+  "prompts": { "title": "Prompts MCP", "args": "Args", "server": "Servidor" },
+  "cursor": { "title": "Config Cursor IDE", "config": "Config Cursor IDE:" }
+}

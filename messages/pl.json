@@ -1,0 +1,52 @@
+{
+  "common": {
+    "loading": "Ładowanie...",
+    "error": "Błąd",
+    "success": "Sukces",
+    "cancel": "Anuluj",
+    "save": "Zapisz",
+    "delete": "Usuń",
+    "edit": "Edytuj",
+    "close": "Zamknij",
+    "search": "Szukaj",
+    "filter": "Filtruj",
+    "refresh": "Odśwież"
+  },
+  "app": {
+    "title": "MMC MCP Bridge",
+    "subtitle": "Platforma Orchestracji MCP Enterprise",
+    "description": "Pełny Protokół MCP: Tools • Resources • Prompts • Sampling • GraphQL • SSE"
+  },
+  "health": {
+    "title": "Status Systemu",
+    "status": "Status",
+    "version": "Wersja",
+    "servers": "Serwery",
+    "mcpProtocol": "Protokół MCP"
+  },
+  "agent": {
+    "title": "Wykonanie Agenta",
+    "placeholder": "Wprowadź instrukcję dla agenta IA...",
+    "execute": "Wykonaj Agenta",
+    "state": "Stan",
+    "progress": "Postęp",
+    "queued": "W Kolejce",
+    "submitted": "Wysłane",
+    "completed": "Zakończone",
+    "failed": "Niepowodzenie",
+    "error": "Błąd"
+  },
+  "tabs": { "servers": "Serwery", "resources": "Zasoby", "prompts": "Prompts" },
+  "servers": {
+    "title": "Serwery MCP",
+    "noServers": "Brak włączonych serwerów. Skonfiguruj zmienne środowiskowe, aby włączyć serwery MCP.",
+    "tools": "narzędzia",
+    "resources": "zasoby",
+    "prompts": "prompts",
+    "graphql": "GraphQL",
+    "sampling": "Sampling"
+  },
+  "resources": { "title": "Zasoby MCP", "server": "Serwer" },
+  "prompts": { "title": "Prompts MCP", "args": "Args", "server": "Serwer" },
+  "cursor": { "title": "Config Cursor IDE", "config": "Config Cursor IDE:" }
+}

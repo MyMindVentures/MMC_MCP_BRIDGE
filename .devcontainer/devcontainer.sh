@@ -281,6 +281,26 @@ settings_restore() {
     mkdir -p "$HOME/.config/doppler"
     cp "$DOPPLER_CONFIG" "$HOME/.config/doppler/config.json" 2>/dev/null || true
     echo "  ✅ Doppler config restored"
+    
+    # Check if Doppler CLI is available and authenticated
+    if command -v doppler &> /dev/null; then
+      if doppler me &> /dev/null; then
+        echo "  ✅ Doppler CLI authenticated"
+        # Set project context if not set
+        if [ -z "$DOPPLER_PROJECT" ] && [ -f "$DOPPLER_CONFIG" ]; then
+          local project=$(jq -r '.project // empty' "$DOPPLER_CONFIG" 2>/dev/null)
+          local config=$(jq -r '.config // empty' "$DOPPLER_CONFIG" 2>/dev/null)
+          if [ -n "$project" ] && [ -n "$config" ]; then
+            doppler setup --project "$project" --config "$config" --no-interactive &> /dev/null || true
+            echo "  ✅ Doppler project context set: $project/$config"
+          fi
+        fi
+      else
+        echo "  ⚠️  Doppler CLI not authenticated. Run: doppler login"
+      fi
+    else
+      echo "  ⚠️  Doppler CLI not installed (will be available after devcontainer rebuild)"
+    fi
   fi
   
   if [ -f "$GITHUB_CONFIG" ]; then

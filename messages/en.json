@@ -1,0 +1,66 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "search": "Search",
+    "filter": "Filter",
+    "refresh": "Refresh"
+  },
+  "app": {
+    "title": "MMC MCP Bridge",
+    "subtitle": "Enterprise MCP Orchestration Platform",
+    "description": "Full MCP Protocol: Tools • Resources • Prompts • Sampling • GraphQL • SSE"
+  },
+  "health": {
+    "title": "System Health",
+    "status": "Status",
+    "version": "Version",
+    "servers": "Servers",
+    "mcpProtocol": "MCP Protocol"
+  },
+  "agent": {
+    "title": "Agentic Execution",
+    "placeholder": "Enter your instruction for the AI agent...",
+    "execute": "Execute Agent",
+    "state": "State",
+    "progress": "Progress",
+    "queued": "Queued",
+    "submitted": "Submitted",
+    "completed": "Completed",
+    "failed": "Failed",
+    "error": "Error"
+  },
+  "tabs": {
+    "servers": "Servers",
+    "resources": "Resources",
+    "prompts": "Prompts"
+  },
+  "servers": {
+    "title": "MCP Servers",
+    "noServers": "No servers enabled. Configure environment variables to enable MCP servers.",
+    "tools": "tools",
+    "resources": "resources",
+    "prompts": "prompts",
+    "graphql": "GraphQL",
+    "sampling": "Sampling"
+  },
+  "resources": {
+    "title": "MCP Resources",
+    "server": "Server"
+  },
+  "prompts": {
+    "title": "MCP Prompts",
+    "args": "Args",
+    "server": "Server"
+  },
+  "cursor": {
+    "title": "Cursor IDE Config",
+    "config": "Cursor IDE Config:"
+  }
+}
