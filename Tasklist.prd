@@ -99,4 +99,5 @@
 ⏳ feat-docker-runtime-monitoring-start: Docker Runtime Monitoring start: alle 3 containers (dev, e2e, app) monitoren voor runtime errors, logs analyseren, health checks valideren - Docker Runtime Monitoring & Debugging Specialist
 ✅ feat-docker-dagger-install-fix: Docker Dagger installatie fix: Dagger CLI installatie gefixed in dev en e2e containers (binary path van /tmp/dagger naar ./bin/dagger) - Docker Runtime Monitoring & Debugging Specialist
 ⏳ feat-docker-package-lock-sync: Docker build error: package-lock.json niet gesynchroniseerd met package.json - Missing dependencies (next-intl, workbox-window, @formatjs/*, etc.) - npm ci faalt in dev en e2e containers - Docker Specialist of CI-CD Specialist
+✅ feat-e2e-github-actions-migration: GitHub Actions workflows migreren naar E2E container: alle workflows gemigreerd naar bash scripts in containers/e2e/workflows/, E2E container geüpdatet, npm scripts toegevoegd, volledige documentatie gemaakt - GitHub Actions workflows zijn nu vervangen door E2E container workflows voor volledige controle en eenvoudigere debugging
 
