@@ -1,5 +1,4 @@
 name: mmc-mcp-bridge
-version: "3.8"
 
 services:
   # Development Container - Voor app development met hot-reload

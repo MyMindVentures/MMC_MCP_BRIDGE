@@ -107,6 +107,24 @@ package.json               # Docker management scripts (npm run docker:*)
 
 ## 🚀 Common Tasks
 
+### Container Sync & Updates
+
+**CRITICAL RESPONSIBILITY:** Keep all 3 containers up-to-date with the codebase as the project expands.
+
+- **Sync Check:** `npm run docker:sync:check` - Verify containers are in sync
+- **Sync Individual:** `npm run docker:sync:dev|app|e2e` - Sync specific container
+- **Sync All:** `npm run docker:sync:all` - Sync all containers
+
+**When to Sync:**
+
+- New dependencies added (`package.json` changed)
+- New directories added (`messages/`, new `app/api/` routes)
+- Configuration files changed (`turbo.json`, `tsconfig.json`)
+- New tools/CLIs needed (Docker, Dagger, etc.)
+- Middleware or root-level files changed
+
+**Sync Checklist:** See `containers/CONTAINER_SYNC_CHECKLIST.md`
+
 ### Building Containers
 
 ```bash
