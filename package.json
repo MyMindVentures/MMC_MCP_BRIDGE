@@ -61,7 +61,21 @@
     "docker:test:app": "docker compose up -d app && sleep 15 && curl -f http://localhost:3001/api/health || exit 1",
     "docker:test:all": "npm run docker:test:dev && npm run docker:test:app",
     "docker:validate": "docker compose config --quiet && echo '✅ docker-compose.yml is valid'",
-    "cicd:validate": "npm run type-check && npm run build && npm run docker:validate && echo '✅ All CI/CD validations passed'"
+    "docker:sync:check": "./containers/sync-containers.sh all --check-only",
+    "docker:sync:dev": "./containers/sync-containers.sh dev",
+    "docker:sync:app": "./containers/sync-containers.sh app",
+    "docker:sync:e2e": "./containers/sync-containers.sh e2e",
+    "docker:sync:all": "./containers/sync-containers.sh all",
+    "cicd:validate": "npm run type-check && npm run build && npm run docker:validate && echo '✅ All CI/CD validations passed'",
+    "workflow:all": "./containers/e2e/workflows/run-all.sh",
+    "workflow:pre-merge": "./containers/e2e/workflows/pre-merge-check.sh",
+    "workflow:ci-full": "./containers/e2e/workflows/ci-full.sh",
+    "workflow:lint": "./containers/e2e/workflows/lint.sh",
+    "workflow:security": "./containers/e2e/workflows/security-scan.sh",
+    "workflow:docker-build": "./containers/e2e/workflows/docker-build.sh",
+    "workflow:dagger": "./containers/e2e/workflows/dagger-pipeline.sh",
+    "workflow:node-versions": "./containers/e2e/workflows/node-multi-version.sh",
+    "test:e2e": "./containers/e2e/workflows/run-all.sh"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.27.0",
