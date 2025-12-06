@@ -3,7 +3,10 @@
 # Usage: ./containers/dev/build.sh [--tag] [--push-hub] [--push-ghcr]
 set -e
 
-cd /workspaces/MMC_MCP_BRIDGE
+# Get script directory and navigate to project root
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+cd "$PROJECT_ROOT"
 
 VERSION=$(node -p "require('./package.json').version")
 BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
