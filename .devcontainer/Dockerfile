@@ -1,7 +1,8 @@
 # MMC MCP Bridge DevContainer Image
 # Base: Microsoft DevContainer TypeScript Node.js 20
 # Docker Hub: mymindventures/mmc-mcp-bridge-devcontainer:2.0.0
-FROM mcr.microsoft.com/devcontainers/typescript-node:1-20-bullseye
+# Using specific tag format for compatibility with devcontainer feature injection
+FROM mcr.microsoft.com/devcontainers/typescript-node:1-20
 
 LABEL maintainer="MyMind Ventures <hello@mymindventures.io>"
 LABEL com.mmc.project="mmc-mcp-bridge"
@@ -57,15 +58,10 @@ RUN curl -sLf --retry 3 --tlsv1.2 --proto "=https" 'https://packages.doppler.com
     && apt-get install -y doppler \
     && apt-get clean -y && rm -rf /var/lib/apt/lists/*
 
-# Copy consolidated devcontainer script
-# Build context is parent directory (..), so .devcontainer/ is correct
-COPY .devcontainer/devcontainer.sh /usr/local/bin/devcontainer.sh
-
-# Make script executable
-RUN chmod +x /usr/local/bin/devcontainer.sh
-
 # Set working directory (source code will be bind-mounted by devcontainer)
 WORKDIR /workspaces/MMC_MCP_BRIDGE
 
 # Set user
 USER node
+
+# Note: devcontainer.sh will be copied in postCreateCommand from the mounted workspace

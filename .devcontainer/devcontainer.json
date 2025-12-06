@@ -2,7 +2,10 @@
   "name": "MMC_MCP_Bridge_DevContainer",
   "build": {
     "dockerfile": "Dockerfile",
-    "context": ".."
+    "context": "..",
+    "args": {
+      "BUILDKIT_INLINE_CACHE": "1"
+    }
   },
   "workspaceFolder": "/workspaces/MMC_MCP_BRIDGE",
 
@@ -80,7 +83,7 @@
     }
   },
 
-  "postCreateCommand": "bash -c 'cd /workspaces/MMC_MCP_BRIDGE && mkdir -p /workspaces/.devcontainer-persist 2>/dev/null || true && if [ -S /var/run/docker.sock ]; then sudo chmod 666 /var/run/docker.sock 2>/dev/null || true; fi && if [ -f package-lock.json ]; then npm ci; else npm install; fi && /usr/local/bin/devcontainer.sh setup'",
+  "postCreateCommand": "bash -c 'cd /workspaces/MMC_MCP_BRIDGE && mkdir -p /workspaces/.devcontainer-persist 2>/dev/null || true && if [ -S /var/run/docker.sock ]; then sudo chmod 666 /var/run/docker.sock 2>/dev/null || true; fi && cp .devcontainer/devcontainer.sh /usr/local/bin/devcontainer.sh 2>/dev/null || true && chmod +x /usr/local/bin/devcontainer.sh 2>/dev/null || true && if [ -f package-lock.json ]; then npm ci; else npm install; fi && /usr/local/bin/devcontainer.sh setup'",
   "postStartCommand": "bash -c 'mkdir -p /workspaces/.devcontainer-persist 2>/dev/null || true && if [ -S /var/run/docker.sock ]; then sudo chmod 666 /var/run/docker.sock 2>/dev/null || true; fi && /usr/local/bin/devcontainer.sh settings restore && /usr/local/bin/devcontainer.sh feature update && /usr/local/bin/devcontainer.sh daemon git-watcher & /usr/local/bin/devcontainer.sh daemon todos-sync &'",
   "postAttachCommand": "bash -c 'mkdir -p /workspaces/.devcontainer-persist 2>/dev/null || true && if [ -S /var/run/docker.sock ]; then sudo chmod 666 /var/run/docker.sock 2>/dev/null || true; fi && /usr/local/bin/devcontainer.sh settings restore && /usr/local/bin/devcontainer.sh git ensure-branch'",
 
