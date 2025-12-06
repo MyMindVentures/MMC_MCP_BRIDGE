@@ -32,7 +32,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: .devcontainer/Dockerfile
+          file: containers/dev/Dockerfile
           push: true
           tags: |
             ${{ env.DOCKER_HUB_USERNAME }}/${{ env.PROJECT_NAME }}-devcontainer:${{ env.VERSION }}
@@ -47,7 +47,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: .devcontainer/Dockerfile
+          file: containers/app/Dockerfile
           push: true
           tags: |
             ${{ env.DOCKER_HUB_USERNAME }}/${{ env.PROJECT_NAME }}-app:${{ env.VERSION }}
@@ -62,7 +62,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: .devcontainer/Dockerfile.e2e
+          file: containers/e2e/Dockerfile
           push: true
           tags: |
             ${{ env.DOCKER_HUB_USERNAME }}/${{ env.PROJECT_NAME }}-e2e:${{ env.VERSION }}
