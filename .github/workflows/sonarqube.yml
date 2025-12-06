@@ -39,6 +39,9 @@ permissions:
 jobs:
   Analysis:
     runs-on: ubuntu-latest
+    # DISABLED: SonarQube project key is not configured
+    # To enable: Configure SONAR_TOKEN, SONAR_HOST_URL secrets and set sonar.projectKey
+    if: false
 
     steps:
       - name: Analyze with SonarQube
