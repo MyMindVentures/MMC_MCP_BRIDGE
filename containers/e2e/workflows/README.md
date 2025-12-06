@@ -69,7 +69,7 @@ npm run workflow:lint
 - TypeScript strict checks
 
 ### 5. **security-scan.sh** - Security Scanning
-Vervangt: `codeql.yml`
+Vervangt: Basic security scanning
 
 **Doel:** Security vulnerability scanning
 
@@ -83,7 +83,98 @@ npm run workflow:security
 - Snyk (als geïnstalleerd)
 - Known vulnerable packages check
 
-### 6. **docker-build.sh** - Docker Builds
+### 6. **codeql.sh** - CodeQL Security Scanning
+Vervangt: `codeql.yml`
+
+**Doel:** Advanced security scanning met CodeQL
+
+**Gebruik:**
+```bash
+npm run workflow:codeql
+```
+
+**Features:**
+- CodeQL database creation
+- Multi-language analysis (JavaScript/TypeScript, Actions)
+- SARIF result export
+- Security vulnerability detection
+
+### 7. **superlinter.sh** - Super Linter
+Vervangt: `super-linter.yml`
+
+**Doel:** Multi-language code linting
+
+**Gebruik:**
+```bash
+npm run workflow:superlinter
+```
+
+**Features:**
+- Runs in Docker container
+- Supports multiple languages
+- Validates codebase against best practices
+
+### 8. **sonarqube.sh** - SonarQube Analysis
+Vervangt: `sonarqube.yml`
+
+**Doel:** Code quality and security analysis
+
+**Gebruik:**
+```bash
+npm run workflow:sonarqube
+```
+
+**Requirements:**
+- `SONAR_TOKEN` environment variable
+- `SONAR_HOST_URL` environment variable
+- `SONAR_PROJECT_KEY` environment variable
+
+**Features:**
+- Code quality metrics
+- Security vulnerability detection
+- Code smell detection
+- Technical debt analysis
+
+### 9. **datadog.sh** - Datadog Synthetic Tests
+Vervangt: `datadog-synthetics.yml`
+
+**Doel:** End-to-end synthetic testing
+
+**Gebruik:**
+```bash
+npm run workflow:datadog
+```
+
+**Requirements:**
+- `DD_API_KEY` environment variable
+- `DD_APP_KEY` environment variable
+
+**Features:**
+- Synthetic test execution
+- Test search by tags (`tag:e2e-tests`)
+- CI/CD integration
+
+### 10. **label.sh** - PR Labeler
+Vervangt: `label.yml`
+
+**Doel:** Auto-label pull requests based on changed files
+
+**Gebruik:**
+```bash
+npm run workflow:label
+```
+
+**Requirements:**
+- `GITHUB_TOKEN` environment variable
+- `.github/labeler.yml` configuration file
+- GitHub CLI (`gh`) or GitHub API access
+
+**Features:**
+- Automatic PR labeling
+- File path-based labeling
+- Custom label rules
+
+### 11. **docker-build.sh** - Docker Builds
 Vervangt: `docker-hub-publish.yml`
 
 **Doel:** Build en push Docker images naar registries
@@ -108,7 +199,7 @@ PUSH_HUB=true PUSH_GHCR=true npm run workflow:docker-build
 - app
 - e2e
 
-### 7. **dagger-pipeline.sh** - Dagger Pipeline
+### 12. **dagger-pipeline.sh** - Dagger Pipeline
 Vervangt: Dagger CI/CD workflows
 
 **Doel:** Run Dagger pipeline voor builds en deployments
@@ -118,7 +209,7 @@ Vervangt: Dagger CI/CD workflows
 npm run workflow:dagger
 ```
 
-### 8. **node-multi-version.sh** - Multi-Version Testing
+### 13. **node-multi-version.sh** - Multi-Version Testing
 Vervangt: `node.js.yml`
 
 **Doel:** Test op meerdere Node versies (18.x, 20.x, 22.x)
