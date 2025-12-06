@@ -121,7 +121,7 @@ services:
       retries: 3
     networks:
       - default
-    restart: "no"
+    restart: unless-stopped
 
 networks:
   default:
