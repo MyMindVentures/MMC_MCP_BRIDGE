@@ -2,11 +2,11 @@ name: Docker Hub Publish
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
     tags:
       - "v*"
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 env:
   DOCKER_HUB_USERNAME: mymindventures
@@ -77,4 +77,3 @@ jobs:
         run: |
           npm install -g @dagger.io/dagger
           dagger run ./.dagger/pipeline.ts
-

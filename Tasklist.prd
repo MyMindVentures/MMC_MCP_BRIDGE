@@ -69,6 +69,7 @@
 ✅ feat-docker-specialist-management: Docker specialist setup: alle 3 containers (dev, app, e2e) geoptimaliseerd met best practices, .dockerignore, build args, labels, Docker Hub en GHCR registratie scripts, cleanup scripts, validatie scripts
 ✅ feat-docker-specialist-role-description: Docker Specialist role description: volledige role description document aangemaakt in Agent Suite directory met alle verantwoordelijkheden, scripts, best practices en container details
 ✅ feat-docker-validation-testing: Docker validatie en testing: alle 3 containers gevalideerd, app Dockerfile geoptimaliseerd (production dependencies only), .dockerignore duplicaten verwijderd, validatie script toegevoegd (containers/validate.sh), VALIDATION_REPORT.md gemaakt
+✅ feat-docker-local-testing-setup: Docker local testing setup: build scripts gefixed (path detection), naming verbeterd voor Docker Desktop UI (MMC_MCP_Bridge_Dev, MMC_MCP_Bridge_App, MMC_MCP_Bridge_E2E), restart policies (unless-stopped), .dockerignore aangemaakt, labels uitgebreid met endpoints en ports, hot-reload geconfigureerd voor dev container
 🔄 feat-prd-notion-sync: PRD.md automatische sync met Notion Portfolio via MCP: PRD.md generator + Notion MCP integration - Sync API routes geïmplementeerd (/api/sync/notion en /api/sync/linear)
 ⏳ feat-doppler-mcp-full: Doppler MCP volledig integreren: alle 38 tools implementeren en testen volgens doppler-mcp repo
 ✅ feat-prd-creation: PRD.md uitgebreide documentatie: volledige project vision, n8n bidirectionele integratie, agentic AI architectuur, OpenWebUI integratie, roadmap
@@ -90,4 +91,8 @@
 ⏳ feat-github-actions-codeql-build: CodeQL workflow fix: manual build step verwijderen of aanpassen voor JavaScript/TypeScript (build-mode: none is al correct) - GitHub Actions Specialist
 ⏳ feat-github-actions-cleanup: GitHub Actions cleanup: disabled workflows verwijderen (docker-publish.yml, docker-image.yml) als niet meer nodig - GitHub Actions Specialist
 ⏳ feat-github-actions-credentials-verify: GitHub Actions credentials verificatie: Datadog en SonarQube secrets verifiëren of workflows disable als niet gebruikt - Doppler Credentials Specialist of CI-CD Specialist
+✅ feat-containers-sync-codebase: Containers sync met codebase: alle 3 containers (dev, e2e, app) geüpdatet om project uitbreidingen te reflecteren - Docker CLI en Dagger CLI toegevoegd, turbo.json en config files expliciet gekopieerd, i18n messages directory toegevoegd aan app container
+✅ feat-docker-compose-version-fix: Docker Compose version attribute fix: verouderde version: "3.8" verwijderd uit docker-compose.yml (obsolete in nieuwe Docker Compose versies) - Docker Runtime Monitoring & Debugging Specialist
+✅ feat-docker-runtime-monitoring-role: Docker Runtime Monitoring & Debugging Specialist role description: volledige role description gemaakt in Agent Suite directory met verantwoordelijkheden voor container monitoring, error detection, testing, debugging en task coordination
+⏳ feat-docker-runtime-monitoring-start: Docker Runtime Monitoring start: alle 3 containers (dev, e2e, app) monitoren voor runtime errors, logs analyseren, health checks valideren - Docker Runtime Monitoring & Debugging Specialist
 
