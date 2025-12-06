@@ -12,7 +12,14 @@ services:
         BUILD_DATE: ${BUILD_DATE:-}
         VCS_REF: ${VCS_REF:-}
     image: mmc-mcp-bridge-dev:latest
-    container_name: mmc-mcp-bridge-dev
+    container_name: MMC_MCP_Bridge_Dev
+    labels:
+      - "com.mmc.project=mmc-mcp-bridge"
+      - "com.mmc.component=dev"
+      - "com.mmc.container.type=development"
+      - "com.mmc.description=Development Container - Hot-reload enabled"
+      - "com.docker.desktop.service.name=MMC MCP Bridge - Dev"
+      - "com.docker.compose.service=dev"
     ports:
       - "3000:3000"
     volumes:
@@ -41,7 +48,7 @@ services:
       retries: 3
     networks:
       - default
-    restart: "no"
+    restart: unless-stopped
 
   # E2E Test Container - Voor testing, validatie en debugging met Dagger
   e2e:
@@ -53,7 +60,14 @@ services:
         BUILD_DATE: ${BUILD_DATE:-}
         VCS_REF: ${VCS_REF:-}
     image: mmc-mcp-bridge-e2e:latest
-    container_name: mmc-mcp-bridge-e2e
+    container_name: MMC_MCP_Bridge_E2E
+    labels:
+      - "com.mmc.project=mmc-mcp-bridge"
+      - "com.mmc.component=e2e"
+      - "com.mmc.container.type=testing"
+      - "com.mmc.description=E2E Test Container - Dagger CI/CD"
+      - "com.docker.desktop.service.name=MMC MCP Bridge - E2E"
+      - "com.docker.compose.service=e2e"
     volumes:
       - .:/workspaces/MMC_MCP_BRIDGE
       - /workspaces/MMC_MCP_BRIDGE/node_modules
@@ -65,7 +79,7 @@ services:
     networks:
       - default
     command: npm run test:e2e
-    restart: "no"
+    restart: unless-stopped
 
   # Full Stack App Container - Productie-ready applicatie
   app:
@@ -77,7 +91,14 @@ services:
         BUILD_DATE: ${BUILD_DATE:-}
         VCS_REF: ${VCS_REF:-}
     image: mmc-mcp-bridge-app:latest
-    container_name: mmc-mcp-bridge-app
+    container_name: MMC_MCP_Bridge_App
+    labels:
+      - "com.mmc.project=mmc-mcp-bridge"
+      - "com.mmc.component=app"
+      - "com.mmc.container.type=production"
+      - "com.mmc.description=Production App Container - Full Stack"
+      - "com.docker.desktop.service.name=MMC MCP Bridge - App"
+      - "com.docker.compose.service=app"
     ports:
       - "3001:3000"
     environment:
