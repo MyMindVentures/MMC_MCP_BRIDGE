@@ -47,10 +47,55 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
     echo "⚠️  Security scan found issues (non-blocking)"
 }
 
+# CodeQL Security Scanning
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "5️⃣  CodeQL Security Scanning"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+"${WORKFLOWS_DIR}/codeql.sh" || {
+    echo "⚠️  CodeQL scanning found issues (non-blocking)"
+}
+
+# Super Linter
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "6️⃣  Super Linter"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+"${WORKFLOWS_DIR}/superlinter.sh" || {
+    echo "⚠️  Super Linter found issues (non-blocking)"
+}
+
+# SonarQube Analysis
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "7️⃣  SonarQube Analysis"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+"${WORKFLOWS_DIR}/sonarqube.sh" || {
+    echo "⚠️  SonarQube analysis skipped or failed (non-blocking)"
+}
+
+# Datadog Synthetic Tests
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "8️⃣  Datadog Synthetic Tests"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+"${WORKFLOWS_DIR}/datadog.sh" || {
+    echo "⚠️  Datadog tests skipped or failed (non-blocking)"
+}
+
+# PR Labeler
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "9️⃣  PR Labeler"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+"${WORKFLOWS_DIR}/label.sh" || {
+    echo "⚠️  PR labeling skipped (non-blocking)"
+}
+
 # Docker Builds
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "5️⃣  Docker Builds"
+echo "🔟 Docker Builds"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 "${WORKFLOWS_DIR}/docker-build.sh" || {
     echo "❌ Docker builds failed"
@@ -60,7 +105,7 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 # Dagger Pipeline
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "6️⃣  Dagger Pipeline"
+echo "1️⃣1️⃣  Dagger Pipeline"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 "${WORKFLOWS_DIR}/dagger-pipeline.sh" || {
     echo "⚠️  Dagger pipeline failed (non-blocking)"

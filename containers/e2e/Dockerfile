@@ -55,6 +55,28 @@ RUN cd /tmp && \
     mv ./bin/dagger /usr/local/bin/dagger && \
     chmod +x /usr/local/bin/dagger
 
+# Install CodeQL CLI for security scanning
+RUN cd /tmp && \
+    wget -q https://github.com/github/codeql-cli-binaries/releases/latest/download/codeql-bundle-linux64.tar.gz && \
+    tar -xzf codeql-bundle-linux64.tar.gz && \
+    mv codeql /usr/local/bin/codeql && \
+    chmod +x /usr/local/bin/codeql && \
+    rm -f codeql-bundle-linux64.tar.gz
+
+# Install SonarQube Scanner for code analysis
+RUN cd /tmp && \
+    wget -q https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip && \
+    unzip -q sonar-scanner-cli-5.0.1.3006-linux.zip && \
+    mv sonar-scanner-5.0.1.3006-linux /opt/sonar-scanner && \
+    ln -s /opt/sonar-scanner/bin/sonar-scanner /usr/local/bin/sonar-scanner && \
+    rm -f sonar-scanner-cli-5.0.1.3006-linux.zip
+
+# Install GitHub CLI for PR labeling (Alpine)
+RUN apk add --no-cache github-cli || echo "GitHub CLI not available in Alpine repos"
+
+# Install unzip for SonarQube Scanner
+RUN apk add --no-cache unzip
+
 # Set Playwright to use system Chromium
 ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
 ENV PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium-browser
