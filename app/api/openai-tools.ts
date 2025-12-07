@@ -141,6 +141,9 @@ export async function executeOpenAITool(
         style: params.style,
         user: params.user,
       });
+      if (!image.data || image.data.length === 0) {
+        throw new Error("No image data returned from OpenAI.");
+      }
       return image.data[0];
     }
 
@@ -153,6 +156,9 @@ export async function executeOpenAITool(
         size: params.size || "1024x1024",
         response_format: params.response_format || "url",
       });
+      if (!image.data || image.data.length === 0) {
+        throw new Error("No image data returned from OpenAI.");
+      }
       return image.data[0];
     }
 
@@ -163,6 +169,9 @@ export async function executeOpenAITool(
         size: params.size || "1024x1024",
         response_format: params.response_format || "url",
       });
+      if (!image.data || image.data.length === 0) {
+        throw new Error("No image data returned from OpenAI.");
+      }
       return image.data[0];
     }
 
