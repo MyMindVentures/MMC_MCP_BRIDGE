@@ -404,3 +404,4 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser -Force; cd 
 **Version:** 1.0.0
 
 **Powered by MyMind Ventures** 🚀
+

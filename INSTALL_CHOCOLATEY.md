@@ -328,3 +328,4 @@ $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";"
 **Version:** 1.0.0
 
 **Powered by MyMind Ventures** 🚀
+

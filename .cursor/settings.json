@@ -25,6 +25,26 @@
   "typescript.preferences.importModuleSpecifier": "relative",
 
   // Terminal Configuration
+  // Windows (Primary - Current OS)
+  "terminal.integrated.defaultProfile.windows": "PowerShell",
+  "terminal.integrated.profiles.windows": {
+    "PowerShell": {
+      "source": "PowerShell",
+      "icon": "terminal-powershell",
+      "args": ["-NoExit", "-Command", "[Console]::OutputEncoding = [System.Text.Encoding]::UTF8"]
+    },
+    "Command Prompt": {
+      "path": [
+        "${env:windir}\\System32\\cmd.exe"
+      ],
+      "icon": "terminal-cmd"
+    },
+    "Git Bash": {
+      "source": "Git Bash",
+      "icon": "terminal-bash"
+    }
+  },
+  // Linux (DevContainer)
   "terminal.integrated.defaultProfile.linux": "bash",
   "terminal.integrated.profiles.linux": {
     "bash": {
@@ -36,6 +56,23 @@
       "icon": "terminal-powershell"
     }
   },
+  // Terminal Output Configuration - Force Output Visibility
+  "terminal.integrated.showExitAlert": false,
+  "terminal.integrated.enablePersistentSessions": true,
+  "terminal.integrated.persistentSessionReviveProcess": "onExit",
+  "terminal.integrated.scrollback": 10000,
+  "terminal.integrated.copyOnSelection": true,
+  "terminal.integrated.rightClickBehavior": "copyPaste",
+  // PowerShell Output Encoding
+  "terminal.integrated.automationProfile.windows": {
+    "path": "powershell.exe",
+    "args": [
+      "-NoLogo",
+      "-NoProfile",
+      "-ExecutionPolicy", "Bypass",
+      "-Command", "[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; $PSDefaultParameterValues['Out-File:Encoding'] = 'utf8'"
+    ]
+  },
 
   // Editor Configuration
   "editor.formatOnSave": true,
@@ -43,12 +80,14 @@
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
   },
+  "editor.rulers": [80, 120],
+  "editor.wordWrap": "on",
+  "editor.minimap.enabled": true,
   "editor.tabSize": 2,
   "editor.insertSpaces": true,
 
   // File Exclusions
   "files.exclude": {
-    "**/.git": true,
     "**/.next": true,
     "**/node_modules": true,
     "**/.DS_Store": true
@@ -69,11 +108,17 @@
   "git.confirmSync": false,
   "git.autofetch": true,
 
-  // Tasklist.prd Auto-Tracking Configuration
-  "cursor.ai.tasklistPath": "/workspaces/MMC_MCP_BRIDGE/Tasklist.prd",
-  "cursor.ai.autoUpdateTasklist": true,
-  "cursor.ai.tasklistFormat": "single-line",
+  // GitHub Extension Configuration
+  // Valid settings for GitHub Pull Requests and Issues extension:
+  "githubPullRequests.remotes": ["origin", "upstream"],
+  "githubPullRequests.defaultMergeMethod": "merge",
+  "githubPullRequests.fileListLayout": "tree",
+  "githubIssues.useBranchForIssues": true,
+  // Note: If you get "insufficient funds" error, check GitHub Copilot subscription
+  // Use GitLens or GitHub CLI as alternatives if needed
 
-  // Workspace Files to Always Reference
-  "cursor.ai.workspaceFiles": ["Tasklist.prd", "README.md", "package.json"]
+  // Cursor Cloud Agents Configuration
+  // DISABLED: Cloud Agents cause MCP SSE connection errors (NGHTTP2_REFUSED_STREAM)
+  // Use local MCP Bridge instead (configured above)
+  "cursor.general.enableCloudAgents": false
 }

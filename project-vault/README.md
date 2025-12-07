@@ -90,6 +90,9 @@ project-vault/                    # Root level
 ### Known Issues
 
 - **Issues Log:** `project-vault/known-issues/issues-log.md`
+- **Terminal Output Fix:** `project-vault/TERMINAL_OUTPUT_FIX.md` - PowerShell output visibility solution
+- **GitHub Extension Funds:** `project-vault/known-issues/GITHUB_EXTENSION_INSUFFICIENT_FUNDS.md` - GitHub Extension insufficient funds error
+- **MCP SSE Connection:** `project-vault/known-issues/MCP_SSE_CONNECTION_ERROR.md` - MCP SSE connection error (NGHTTP2_REFUSED_STREAM)
 
 ### Decisions
 

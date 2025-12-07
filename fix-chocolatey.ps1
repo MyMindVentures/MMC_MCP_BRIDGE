@@ -56,3 +56,4 @@ Write-Host "`nYou can now use Chocolatey commands:" -ForegroundColor Yellow
 Write-Host "  choco install azure-cli -y" -ForegroundColor White
 Write-Host "  choco install git -y" -ForegroundColor White
 Write-Host "  etc." -ForegroundColor White
+

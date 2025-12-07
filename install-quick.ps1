@@ -85,3 +85,4 @@ Write-Info "2. Start Docker Desktop"
 Write-Info "3. Open Cursor IDE"
 Write-Info "4. Open project: $repoPath"
 Write-Info "5. F1 → Dev Containers: Reopen in Container"
+
