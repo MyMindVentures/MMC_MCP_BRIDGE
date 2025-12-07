@@ -22,7 +22,10 @@ function getPool(): Pool {
 }
 
 // Helper: Build WHERE clause
-function buildWhereClause(where: Record<string, any>): { clause: string; values: any[] } {
+function buildWhereClause(where: Record<string, any>): {
+  clause: string;
+  values: any[];
+} {
   if (!where || Object.keys(where).length === 0) {
     return { clause: "", values: [] };
   }
@@ -46,7 +49,7 @@ function buildWhereClause(where: Record<string, any>): { clause: string; values:
 export async function listDatabases(): Promise<any[]> {
   const pool = getPool();
   const result = await pool.query(
-    "SELECT datname FROM pg_database WHERE datistemplate = false"
+    "SELECT datname FROM pg_database WHERE datistemplate = false",
   );
   return result.rows;
 }
@@ -54,7 +57,7 @@ export async function listDatabases(): Promise<any[]> {
 export async function listSchemas(database?: string): Promise<any[]> {
   const pool = getPool();
   const result = await pool.query(
-    "SELECT schema_name FROM information_schema.schemata WHERE schema_name NOT IN ('pg_catalog', 'information_schema')"
+    "SELECT schema_name FROM information_schema.schemata WHERE schema_name NOT IN ('pg_catalog', 'information_schema')",
   );
   return result.rows;
 }
@@ -63,68 +66,91 @@ export async function listTables(schema: string = "public"): Promise<any[]> {
   const pool = getPool();
   const result = await pool.query(
     "SELECT tablename FROM pg_tables WHERE schemaname = $1",
-    [schema]
+    [schema],
   );
   return result.rows;
 }
 
-export async function describeTable(table: string, schema: string = "public"): Promise<any[]> {
+export async function describeTable(
+  table: string,
+  schema: string = "public",
+): Promise<any[]> {
   const pool = getPool();
   const result = await pool.query(
     `SELECT column_name, data_type, character_maximum_length, is_nullable, column_default
      FROM information_schema.columns
      WHERE table_schema = $1 AND table_name = $2
      ORDER BY ordinal_position`,
-    [schema, table]
+    [schema, table],
   );
   return result.rows;
 }
 
-export async function listIndexes(table: string, schema: string = "public"): Promise<any[]> {
+export async function listIndexes(
+  table: string,
+  schema: string = "public",
+): Promise<any[]> {
   const pool = getPool();
   const result = await pool.query(
     `SELECT indexname, indexdef FROM pg_indexes WHERE schemaname = $1 AND tablename = $2`,
-    [schema, table]
+    [schema, table],
   );
   return result.rows;
 }
 
-export async function listConstraints(table: string, schema: string = "public"): Promise<any[]> {
+export async function listConstraints(
+  table: string,
+  schema: string = "public",
+): Promise<any[]> {
   const pool = getPool();
   const result = await pool.query(
     `SELECT conname, contype, pg_get_constraintdef(oid) as definition
      FROM pg_constraint
      WHERE conrelid = ($1 || '.' || $2)::regclass`,
-    [schema, table]
+    [schema, table],
   );
   return result.rows;
 }
 
 // DDL OPERATIONS
-export async function createTable(table: string, columns: any[], schema: string = "public"): Promise<any> {
+export async function createTable(
+  table: string,
+  columns: any[],
+  schema: string = "public",
+): Promise<any> {
   const pool = getPool();
-  const columnDefs = columns.map((col: any) => {
-    let def = `${col.name} ${col.type}`;
-    if (col.primaryKey) def += " PRIMARY KEY";
-    if (col.notNull) def += " NOT NULL";
-    if (col.unique) def += " UNIQUE";
-    if (col.default !== undefined) def += ` DEFAULT ${col.default}`;
-    return def;
-  }).join(", ");
+  const columnDefs = columns
+    .map((col: any) => {
+      let def = `${col.name} ${col.type}`;
+      if (col.primaryKey) def += " PRIMARY KEY";
+      if (col.notNull) def += " NOT NULL";
+      if (col.unique) def += " UNIQUE";
+      if (col.default !== undefined) def += ` DEFAULT ${col.default}`;
+      return def;
+    })
+    .join(", ");
 
   const sql = `CREATE TABLE ${schema}.${table} (${columnDefs})`;
   const result = await pool.query(sql);
   return { success: true, sql };
 }
 
-export async function alterTable(table: string, action: string, schema: string = "public"): Promise<any> {
+export async function alterTable(
+  table: string,
+  action: string,
+  schema: string = "public",
+): Promise<any> {
   const pool = getPool();
   const sql = `ALTER TABLE ${schema}.${table} ${action}`;
   const result = await pool.query(sql);
   return { success: true, sql };
 }
 
-export async function dropTable(table: string, schema: string = "public", cascade: boolean = false): Promise<any> {
+export async function dropTable(
+  table: string,
+  schema: string = "public",
+  cascade: boolean = false,
+): Promise<any> {
   const pool = getPool();
   const sql = `DROP TABLE ${schema}.${table}${cascade ? " CASCADE" : ""}`;
   const result = await pool.query(sql);
@@ -136,7 +162,7 @@ export async function createIndex(
   columns: string[],
   indexName?: string,
   unique: boolean = false,
-  schema: string = "public"
+  schema: string = "public",
 ): Promise<any> {
   const pool = getPool();
   const name = indexName || `idx_${table}_${columns.join("_")}`;
@@ -145,7 +171,10 @@ export async function createIndex(
   return { success: true, sql, indexName: name };
 }
 
-export async function dropIndex(indexName: string, schema: string = "public"): Promise<any> {
+export async function dropIndex(
+  indexName: string,
+  schema: string = "public",
+): Promise<any> {
   const pool = getPool();
   const sql = `DROP INDEX ${schema}.${indexName}`;
   const result = await pool.query(sql);
@@ -166,12 +195,12 @@ export async function select(
   orderBy?: string,
   limit?: number,
   offset?: number,
-  schema: string = "public"
+  schema: string = "public",
 ): Promise<any[]> {
   const pool = getPool();
   const cols = columns && columns.length > 0 ? columns.join(", ") : "*";
   const { clause, values } = buildWhereClause(where || {});
-  
+
   let sql = `SELECT ${cols} FROM ${schema}.${table} ${clause}`;
   if (orderBy) sql += ` ORDER BY ${orderBy}`;
   if (limit) sql += ` LIMIT ${limit}`;
@@ -185,7 +214,7 @@ export async function insert(
   table: string,
   data: Record<string, any>,
   returning?: string[],
-  schema: string = "public"
+  schema: string = "public",
 ): Promise<any> {
   const pool = getPool();
   const keys = Object.keys(data);
@@ -198,7 +227,9 @@ export async function insert(
   }
 
   const result = await pool.query(sql, values);
-  return returning ? result.rows[0] : { success: true, rowCount: result.rowCount };
+  return returning
+    ? result.rows[0]
+    : { success: true, rowCount: result.rowCount };
 }
 
 export async function update(
@@ -206,7 +237,7 @@ export async function update(
   data: Record<string, any>,
   where: Record<string, any>,
   returning?: string[],
-  schema: string = "public"
+  schema: string = "public",
 ): Promise<any> {
   const pool = getPool();
   const setKeys = Object.keys(data);
@@ -229,7 +260,7 @@ export async function deleteRows(
   table: string,
   where: Record<string, any>,
   returning?: string[],
-  schema: string = "public"
+  schema: string = "public",
 ): Promise<any> {
   const pool = getPool();
   const { clause, values } = buildWhereClause(where);
@@ -248,7 +279,7 @@ export async function upsert(
   data: Record<string, any>,
   conflictColumns: string[],
   returning?: string[],
-  schema: string = "public"
+  schema: string = "public",
 ): Promise<any> {
   const pool = getPool();
   const keys = Object.keys(data);
@@ -256,24 +287,28 @@ export async function upsert(
   const placeholders = values.map((_, i) => `$${i + 1}`).join(", ");
 
   const updateKeys = keys.filter((k) => !conflictColumns.includes(k));
-  const updateClause = updateKeys.map((key) => `${key} = EXCLUDED.${key}`).join(", ");
+  const updateClause = updateKeys
+    .map((key) => `${key} = EXCLUDED.${key}`)
+    .join(", ");
 
   let sql = `INSERT INTO ${schema}.${table} (${keys.join(", ")}) VALUES (${placeholders})`;
   sql += ` ON CONFLICT (${conflictColumns.join(", ")}) DO UPDATE SET ${updateClause}`;
-  
+
   if (returning && returning.length > 0) {
     sql += ` RETURNING ${returning.join(", ")}`;
   }
 
   const result = await pool.query(sql, values);
-  return returning ? result.rows[0] : { success: true, rowCount: result.rowCount };
+  return returning
+    ? result.rows[0]
+    : { success: true, rowCount: result.rowCount };
 }
 
 export async function bulkInsert(
   table: string,
   data: Record<string, any>[],
   returning?: string[],
-  schema: string = "public"
+  schema: string = "public",
 ): Promise<any> {
   if (data.length === 0) return { success: true, rowCount: 0 };
 
@@ -304,12 +339,12 @@ let transactionClient: PoolClient | null = null;
 export async function beginTransaction(isolationLevel?: string): Promise<any> {
   const pool = getPool();
   transactionClient = await pool.connect();
-  
+
   let sql = "BEGIN";
   if (isolationLevel) {
     sql += ` ISOLATION LEVEL ${isolationLevel}`;
   }
-  
+
   await transactionClient.query(sql);
   return { success: true, message: "Transaction started" };
 }
@@ -318,11 +353,11 @@ export async function commit(): Promise<any> {
   if (!transactionClient) {
     throw new Error("No active transaction");
   }
-  
+
   await transactionClient.query("COMMIT");
   transactionClient.release();
   transactionClient = null;
-  
+
   return { success: true, message: "Transaction committed" };
 }
 
@@ -330,16 +365,20 @@ export async function rollback(): Promise<any> {
   if (!transactionClient) {
     throw new Error("No active transaction");
   }
-  
+
   await transactionClient.query("ROLLBACK");
   transactionClient.release();
   transactionClient = null;
-  
+
   return { success: true, message: "Transaction rolled back" };
 }
 
 // MAINTENANCE
-export async function vacuum(table?: string, full: boolean = false, analyze: boolean = true): Promise<any> {
+export async function vacuum(
+  table?: string,
+  full: boolean = false,
+  analyze: boolean = true,
+): Promise<any> {
   const pool = getPool();
   let sql = "VACUUM";
   if (full) sql += " FULL";
@@ -357,27 +396,36 @@ export async function analyzeTable(table?: string): Promise<any> {
   return { success: true, sql };
 }
 
-export async function explain(sql: string, analyze: boolean = false): Promise<any[]> {
+export async function explain(
+  sql: string,
+  analyze: boolean = false,
+): Promise<any[]> {
   const pool = getPool();
   const explainSql = `EXPLAIN ${analyze ? "ANALYZE " : ""}${sql}`;
   const result = await pool.query(explainSql);
   return result.rows;
 }
 
-export async function tableSize(table: string, schema: string = "public"): Promise<any> {
+export async function tableSize(
+  table: string,
+  schema: string = "public",
+): Promise<any> {
   const pool = getPool();
   const result = await pool.query(
     `SELECT 
       pg_size_pretty(pg_total_relation_size($1 || '.' || $2)) as total_size,
       pg_size_pretty(pg_relation_size($1 || '.' || $2)) as table_size,
       pg_size_pretty(pg_indexes_size($1 || '.' || $2)) as indexes_size`,
-    [schema, table]
+    [schema, table],
   );
   return result.rows[0];
 }
 
 // MAIN EXECUTOR
-export async function executePostgresTool(tool: string, params: any): Promise<any> {
+export async function executePostgresTool(
+  tool: string,
+  params: any,
+): Promise<any> {
   try {
     switch (tool) {
       // Schema Discovery
@@ -407,7 +455,7 @@ export async function executePostgresTool(tool: string, params: any): Promise<an
           params.columns,
           params.indexName,
           params.unique,
-          params.schema
+          params.schema,
         );
       case "dropIndex":
         return await dropIndex(params.indexName, params.schema);
@@ -423,30 +471,45 @@ export async function executePostgresTool(tool: string, params: any): Promise<an
           params.orderBy,
           params.limit,
           params.offset,
-          params.schema
+          params.schema,
         );
       case "insert":
-        return await insert(params.table, params.data, params.returning, params.schema);
+        return await insert(
+          params.table,
+          params.data,
+          params.returning,
+          params.schema,
+        );
       case "update":
         return await update(
           params.table,
           params.data,
           params.where,
           params.returning,
-          params.schema
+          params.schema,
         );
       case "delete":
-        return await deleteRows(params.table, params.where, params.returning, params.schema);
+        return await deleteRows(
+          params.table,
+          params.where,
+          params.returning,
+          params.schema,
+        );
       case "upsert":
         return await upsert(
           params.table,
           params.data,
           params.conflictColumns,
           params.returning,
-          params.schema
+          params.schema,
         );
       case "bulkInsert":
-        return await bulkInsert(params.table, params.data, params.returning, params.schema);
+        return await bulkInsert(
+          params.table,
+          params.data,
+          params.returning,
+          params.schema,
+        );
 
       // Transactions
       case "beginTransaction":

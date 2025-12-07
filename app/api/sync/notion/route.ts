@@ -175,7 +175,7 @@ export async function POST(request: NextRequest) {
     if (!pageId) {
       return NextResponse.json(
         { error: "Notion pageId required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -183,7 +183,7 @@ export async function POST(request: NextRequest) {
     if (!client) {
       return NextResponse.json(
         { error: "Notion API key not configured" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -196,7 +196,7 @@ export async function POST(request: NextRequest) {
       const existingChildren = await executeNotionTool(
         client,
         "listPageChildren",
-        { pageId, pageSize: 100 }
+        { pageId, pageSize: 100 },
       );
 
       // Delete existing blocks
@@ -206,7 +206,7 @@ export async function POST(request: NextRequest) {
         } catch (error) {
           console.warn(
             `[Notion Sync] Failed to delete block ${block.id}:`,
-            error
+            error,
           );
         }
       }

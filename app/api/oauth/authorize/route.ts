@@ -1,120 +1,159 @@
 // OAuth2 Authorization Endpoint
 // Handles authorization code flow
 
-import { NextResponse } from 'next/server';
-import * as OAuth2Model from '../model';
+import { NextResponse } from "next/server";
+import * as OAuth2Model from "../model";
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
-  const clientId = url.searchParams.get('client_id');
-  const redirectUri = url.searchParams.get('redirect_uri');
-  const responseType = url.searchParams.get('response_type');
-  const scope = url.searchParams.get('scope') || '';
-  const state = url.searchParams.get('state') || '';
-  
+  const clientId = url.searchParams.get("client_id");
+  const redirectUri = url.searchParams.get("redirect_uri");
+  const responseType = url.searchParams.get("response_type");
+  const scope = url.searchParams.get("scope") || "";
+  const state = url.searchParams.get("state") || "";
+
   // Validate parameters
-  if (!clientId || !redirectUri || responseType !== 'code') {
-    return NextResponse.json({
-      error: 'invalid_request',
-      error_description: 'Missing or invalid parameters'
-    }, { status: 400 });
+  if (!clientId || !redirectUri || responseType !== "code") {
+    return NextResponse.json(
+      {
+        error: "invalid_request",
+        error_description: "Missing or invalid parameters",
+      },
+      { status: 400 },
+    );
   }
-  
+
   // Validate client
   const client = await OAuth2Model.getClient(clientId);
   if (!client) {
-    return NextResponse.json({
-      error: 'invalid_client',
-      error_description: 'Client not found'
-    }, { status: 401 });
+    return NextResponse.json(
+      {
+        error: "invalid_client",
+        error_description: "Client not found",
+      },
+      { status: 401 },
+    );
   }
-  
+
   // Validate redirect URI
   if (!OAuth2Model.validateRedirectUri(redirectUri, client)) {
-    return NextResponse.json({
-      error: 'invalid_request',
-      error_description: 'Invalid redirect_uri'
-    }, { status: 400 });
+    return NextResponse.json(
+      {
+        error: "invalid_request",
+        error_description: "Invalid redirect_uri",
+      },
+      { status: 400 },
+    );
   }
-  
+
   // Return authorization page HTML
-  return new Response(generateAuthorizationPage(clientId, redirectUri, scope, state, client.name), {
-    headers: { 'Content-Type': 'text/html' }
-  });
+  return new Response(
+    generateAuthorizationPage(clientId, redirectUri, scope, state, client.name),
+    {
+      headers: { "Content-Type": "text/html" },
+    },
+  );
 }
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { client_id, redirect_uri, scope, state, approved, username, password } = body;
-    
+    const {
+      client_id,
+      redirect_uri,
+      scope,
+      state,
+      approved,
+      username,
+      password,
+    } = body;
+
     if (!approved) {
       // User denied authorization
-      return NextResponse.json({
-        error: 'access_denied',
-        error_description: 'User denied authorization'
-      }, { status: 403 });
+      return NextResponse.json(
+        {
+          error: "access_denied",
+          error_description: "User denied authorization",
+        },
+        { status: 403 },
+      );
     }
-    
+
     // Validate client
     const client = await OAuth2Model.getClient(client_id);
     if (!client) {
-      return NextResponse.json({
-        error: 'invalid_client',
-        error_description: 'Client not found'
-      }, { status: 401 });
+      return NextResponse.json(
+        {
+          error: "invalid_client",
+          error_description: "Client not found",
+        },
+        { status: 401 },
+      );
     }
-    
+
     // Authenticate user (simple for now)
     const user = await OAuth2Model.getUser(username, password);
     if (!user) {
-      return NextResponse.json({
-        error: 'invalid_grant',
-        error_description: 'Invalid username or password'
-      }, { status: 401 });
+      return NextResponse.json(
+        {
+          error: "invalid_grant",
+          error_description: "Invalid username or password",
+        },
+        { status: 401 },
+      );
     }
-    
+
     // Generate authorization code
     const authorizationCode = generateRandomString(32);
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
-    
+
     await OAuth2Model.saveAuthorizationCode(
       {
         authorizationCode,
         expiresAt,
         redirectUri: redirect_uri,
-        scope
+        scope,
       },
       client,
-      user
+      user,
     );
-    
+
     // Redirect back to client with code
     const redirectUrl = new URL(redirect_uri);
-    redirectUrl.searchParams.set('code', authorizationCode);
-    if (state) redirectUrl.searchParams.set('state', state);
-    
+    redirectUrl.searchParams.set("code", authorizationCode);
+    if (state) redirectUrl.searchParams.set("state", state);
+
     return NextResponse.json({
-      redirect_uri: redirectUrl.toString()
+      redirect_uri: redirectUrl.toString(),
     });
   } catch (error: any) {
-    return NextResponse.json({
-      error: 'server_error',
-      error_description: error.message
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        error: "server_error",
+        error_description: error.message,
+      },
+      { status: 500 },
+    );
   }
 }
 
 function generateRandomString(length: number): string {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  let result = '';
+  const chars =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let result = "";
   for (let i = 0; i < length; i++) {
     result += chars.charAt(Math.floor(Math.random() * chars.length));
   }
   return result;
 }
 
-function generateAuthorizationPage(clientId: string, redirectUri: string, scope: string, state: string, clientName: string): string {
+function generateAuthorizationPage(
+  clientId: string,
+  redirectUri: string,
+  scope: string,
+  state: string,
+  clientName: string,
+): string {
   return `
 <!DOCTYPE html>
 <html lang="en">
@@ -265,7 +304,10 @@ function generateAuthorizationPage(clientId: string, redirectUri: string, scope:
     
     <div class="scopes">
       <h3>Requested Permissions:</h3>
-      ${scope.split(' ').map(s => `<div class="scope-item">${s || 'Full access'}</div>`).join('')}
+      ${scope
+        .split(" ")
+        .map((s) => `<div class="scope-item">${s || "Full access"}</div>`)
+        .join("")}
     </div>
     
     <form id="authForm">
@@ -338,4 +380,3 @@ function generateAuthorizationPage(clientId: string, redirectUri: string, scope:
 </html>
   `;
 }
-

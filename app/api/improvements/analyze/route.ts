@@ -238,13 +238,16 @@ export async function GET(request: NextRequest) {
         : improvements;
 
     // Group by category
-    const grouped = filtered.reduce((acc, improvement) => {
-      if (!acc[improvement.category]) {
-        acc[improvement.category] = [];
-      }
-      acc[improvement.category].push(improvement);
-      return acc;
-    }, {} as Record<string, Improvement[]>);
+    const grouped = filtered.reduce(
+      (acc, improvement) => {
+        if (!acc[improvement.category]) {
+          acc[improvement.category] = [];
+        }
+        acc[improvement.category].push(improvement);
+        return acc;
+      },
+      {} as Record<string, Improvement[]>,
+    );
 
     // Count by priority
     const priorityCounts = {

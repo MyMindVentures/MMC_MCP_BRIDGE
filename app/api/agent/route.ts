@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
     if (!instruction) {
       return NextResponse.json(
         { error: "Missing required field: instruction" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
         error: "Failed to submit agent task",
         message: error instanceof Error ? error.message : "Unknown error",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

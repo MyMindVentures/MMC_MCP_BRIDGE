@@ -39,10 +39,10 @@ async function testNotionConfig() {
 
   // Test Notion connection
   try {
-    const { Client as NotionClient } = await import("@notionhq/client");
+    const { Client: NotionClient } = await import("@notionhq/client");
     if (process.env.NOTION_API_KEY) {
       const client = new NotionClient({ auth: process.env.NOTION_API_KEY });
-      const me = await client.users.me();
+      const me = await client.users.me({});
       results.notionConnected = true;
       results.notionUser = me.name || me.id;
     } else {
@@ -171,7 +171,7 @@ async function testEndpoints() {
       {
         method: "GET",
         headers,
-      }
+      },
     );
     results.notionSyncStatus = response.ok;
     if (response.ok) {
@@ -220,8 +220,7 @@ export async function GET() {
     const health = {
       linear: results.linear.linearConnected && results.linear.linearApiKey,
       notion: results.notion.notionConnected && results.notion.notionApiKey,
-      files:
-        results.files.tasklist?.exists && results.files.prd?.exists,
+      files: results.files.tasklist?.exists && results.files.prd?.exists,
       redis: results.redis.redisConnected || !process.env.REDIS_URL,
       endpoints:
         results.endpoints.linearSyncStatus &&
@@ -248,7 +247,7 @@ export async function GET() {
         healthy: false,
         error: error.message,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -1,208 +1,215 @@
 // Notion Tools - Complete implementation of 25+ tools
 // Full CRUD for pages, blocks, databases, users, comments, and search
 
-import { Client as NotionClient } from '@notionhq/client';
+import { Client as NotionClient } from "@notionhq/client";
 
 export async function executeNotionTool(
   notion: NotionClient,
   toolName: string,
-  params: any
+  params: any,
 ): Promise<any> {
-  
   switch (toolName) {
     // === PAGE OPERATIONS ===
-    
-    case 'getPage': {
+
+    case "getPage": {
       const { pageId } = params;
       const page = await notion.pages.retrieve({ page_id: pageId });
       return page;
     }
-    
-    case 'createPage': {
+
+    case "createPage": {
       const { parent, properties, children } = params;
       const page = await notion.pages.create({
         parent,
         properties,
-        children: children || []
+        children: children || [],
       });
       return page;
     }
-    
-    case 'updatePage': {
+
+    case "updatePage": {
       const { pageId, properties } = params;
       const page = await notion.pages.update({
         page_id: pageId,
-        properties
+        properties,
       });
       return page;
     }
-    
-    case 'deletePage': {
+
+    case "deletePage": {
       const { pageId } = params;
       const page = await notion.pages.update({
         page_id: pageId,
-        archived: true
+        archived: true,
       });
       return page;
     }
-    
-    case 'listPageChildren': {
+
+    case "listPageChildren": {
       const { pageId, startCursor, pageSize = 100 } = params;
       const response = await notion.blocks.children.list({
         block_id: pageId,
         start_cursor: startCursor,
-        page_size: pageSize
+        page_size: pageSize,
       });
       return response;
     }
-    
+
     // === BLOCK OPERATIONS ===
-    
-    case 'getBlock': {
+
+    case "getBlock": {
       const { blockId } = params;
       const block = await notion.blocks.retrieve({ block_id: blockId });
       return block;
     }
-    
-    case 'appendBlock': {
+
+    case "appendBlock": {
       const { blockId, children } = params;
       const response = await notion.blocks.children.append({
         block_id: blockId,
-        children
+        children,
       });
       return response;
     }
-    
-    case 'updateBlock': {
+
+    case "updateBlock": {
       const { blockId, block } = params;
       const updated = await notion.blocks.update({
         block_id: blockId,
-        ...block
+        ...block,
       });
       return updated;
     }
-    
-    case 'deleteBlock': {
+
+    case "deleteBlock": {
       const { blockId } = params;
       const block = await notion.blocks.delete({ block_id: blockId });
       return block;
     }
-    
+
     // === DATABASE OPERATIONS ===
-    
-    case 'getDatabase': {
+
+    case "getDatabase": {
       const { databaseId } = params;
-      const database = await notion.databases.retrieve({ database_id: databaseId });
+      const database = await notion.databases.retrieve({
+        database_id: databaseId,
+      });
       return database;
     }
-    
-    case 'queryDatabase': {
+
+    case "queryDatabase": {
       const { databaseId, filter, sorts, startCursor, pageSize = 100 } = params;
       const response = await notion.databases.query({
         database_id: databaseId,
         filter,
         sorts,
         start_cursor: startCursor,
-        page_size: pageSize
+        page_size: pageSize,
       });
       return response;
     }
-    
-    case 'createDatabase': {
+
+    case "createDatabase": {
       const { parentPageId, title, properties } = params;
       const database = await notion.databases.create({
-        parent: { type: 'page_id', page_id: parentPageId },
-        title: [{ type: 'text', text: { content: title } }],
-        properties
+        parent: { type: "page_id", page_id: parentPageId },
+        title: [{ type: "text", text: { content: title } }],
+        properties,
       });
       return database;
     }
-    
-    case 'updateDatabase': {
+
+    case "updateDatabase": {
       const { databaseId, title, properties } = params;
       const database = await notion.databases.update({
         database_id: databaseId,
-        title: title ? [{ type: 'text', text: { content: title } }] : undefined,
-        properties
+        title: title ? [{ type: "text", text: { content: title } }] : undefined,
+        properties,
       });
       return database;
     }
-    
+
     // === SEARCH & FILTER ===
-    
-    case 'search': {
+
+    case "search": {
       const { query, filter, sort, startCursor, pageSize = 100 } = params;
       const response = await notion.search({
         query,
         filter,
         sort,
         start_cursor: startCursor,
-        page_size: pageSize
+        page_size: pageSize,
       });
       return response;
     }
-    
+
     // === USER OPERATIONS ===
-    
-    case 'listUsers': {
+
+    case "listUsers": {
       const { startCursor, pageSize = 100 } = params;
       const response = await notion.users.list({
         start_cursor: startCursor,
-        page_size: pageSize
+        page_size: pageSize,
       });
       return response;
     }
-    
-    case 'getUser': {
+
+    case "getUser": {
       const { userId } = params;
       const user = await notion.users.retrieve({ user_id: userId });
       return user;
     }
-    
-    case 'getMe': {
-      const bot = await notion.users.me();
+
+    case "getMe": {
+      const bot = await notion.users.me({});
       return bot;
     }
-    
+
     // === COMMENT OPERATIONS ===
-    
-    case 'createComment': {
+
+    case "createComment": {
       const { pageId, richText } = params;
       const comment = await notion.comments.create({
         parent: { page_id: pageId },
-        rich_text: richText
+        rich_text: richText,
       });
       return comment;
     }
-    
-    case 'listComments': {
+
+    case "listComments": {
       const { blockId, startCursor, pageSize = 100 } = params;
       const response = await notion.comments.list({
         block_id: blockId,
         start_cursor: startCursor,
-        page_size: pageSize
+        page_size: pageSize,
       });
       return response;
     }
-    
+
     // === ADVANCED OPERATIONS ===
-    
-    case 'duplicatePage': {
+
+    case "duplicatePage": {
       // Get original page
       const { pageId } = params;
       const original = await notion.pages.retrieve({ page_id: pageId });
-      
+
       // Create duplicate
-      if ('properties' in original && 'parent' in original) {
-        const duplicate = await notion.pages.create({
-          parent: original.parent,
-          properties: original.properties
-        });
-        return duplicate;
+      if ("properties" in original && "parent" in original) {
+        if (
+          original.parent.type === "page_id" ||
+          original.parent.type === "database_id"
+        ) {
+          const duplicate = await notion.pages.create({
+            parent: original.parent,
+            properties: original.properties,
+          });
+          return duplicate;
+        }
       }
-      throw new Error('Invalid page structure');
+      throw new Error("Invalid page structure or parent type for duplication.");
     }
-    
+
+    /*
     case 'movePageToWorkspace': {
       const { pageId, workspaceId } = params;
       const page = await notion.pages.update({
@@ -211,43 +218,36 @@ export async function executeNotionTool(
       });
       return page;
     }
-    
-    case 'getPageProperty': {
+    */
+
+    case "getPageProperty": {
       const { pageId, propertyId } = params;
       const property = await notion.pages.properties.retrieve({
         page_id: pageId,
-        property_id: propertyId
+        property_id: propertyId,
       });
       return property;
     }
-    
-    case 'bulkCreatePages': {
+
+    case "bulkCreatePages": {
       const { parent, pagesData } = params;
       const results = [];
-      
+
       for (const pageData of pagesData) {
         const page = await notion.pages.create({
           parent,
           properties: pageData.properties,
-          children: pageData.children || []
+          children: pageData.children || [],
         });
         results.push(page);
       }
-      
+
       return { count: results.length, pages: results };
     }
-    
+
     default:
       throw new Error(`Unknown notion tool: ${toolName}`);
   }
 }
 
-console.log('[Notion Tools] 25+ tools loaded');
-
-
-
-
-
-
-
-
+console.log("[Notion Tools] 25+ tools loaded");

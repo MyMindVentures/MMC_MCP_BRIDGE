@@ -228,14 +228,12 @@ npm run dagger:local
 **Railway Dashboard Setup (REQUIRED):**
 
 1. **Connect GitHub Repository:**
-
    - Go to Railway Dashboard → Project → Settings → GitHub
    - Connect your GitHub repository
    - Enable "Deploy on Push" ✅
    - Enable "Deploy on Pull Request" ✅ (for preview deployments)
 
 2. **Service Settings:**
-
    - Go to Service → Settings → Source
    - Ensure "Auto Deploy" is enabled ✅
    - Set branch to `main` for production

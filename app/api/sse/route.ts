@@ -10,6 +10,30 @@ import {
   getN8NCommunityResources,
   getN8NCommunityPrompts,
 } from "../n8n/proxy";
+import { appendFile } from "fs/promises";
+
+// Debug logging helper (file-based fallback)
+async function debugLog(data: any) {
+  const logPath = process.cwd() + "/.cursor/debug.log";
+  const logLine = JSON.stringify({ ...data, timestamp: Date.now() }) + "\n";
+  try {
+    // Ensure directory exists
+    const { mkdir } = await import("fs/promises");
+    try {
+      await mkdir(process.cwd() + "/.cursor", { recursive: true });
+    } catch {}
+    await appendFile(logPath, logLine).catch((err) => {
+      console.error("[Debug] Failed to write log:", err);
+    });
+    fetch("http://127.0.0.1:7242/ingest/030eea83-1f2d-447b-8780-b95a991da708", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    }).catch(() => {});
+  } catch (err: any) {
+    console.error("[Debug] Logging error:", err?.message);
+  }
+}
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -68,8 +92,28 @@ async function getCachedN8NData() {
 }
 
 export async function GET(request: Request) {
+  // #region agent log
+  await debugLog({
+    location: "sse/route.ts:70",
+    message: "SSE GET entry",
+    data: { hasApiKey: !!process.env.MCP_BRIDGE_API_KEY },
+    sessionId: "debug-session",
+    runId: "run1",
+    hypothesisId: "E",
+  });
+  // #endregion agent log
   // Optional authentication (if API keys configured)
   const authResult = await verifyAuth(request);
+  // #region agent log
+  await debugLog({
+    location: "sse/route.ts:73",
+    message: "SSE auth result",
+    data: { allowed: authResult.allowed, reason: authResult.reason },
+    sessionId: "debug-session",
+    runId: "run1",
+    hypothesisId: "E",
+  });
+  // #endregion agent log
   if (!authResult.allowed && process.env.MCP_BRIDGE_API_KEY) {
     return new Response(
       JSON.stringify({
@@ -80,21 +124,46 @@ export async function GET(request: Request) {
           data: { hint: "Add header: Authorization: Bearer <your-api-key>" },
         },
       }),
-      { status: 401, headers: { "Content-Type": "application/json" } }
+      { status: 401, headers: { "Content-Type": "application/json" } },
     );
   }
   const encoder = new TextEncoder();
 
   const stream = new ReadableStream({
-    start(controller) {
+    async start(controller) {
+      // #region agent log
+      debugLog({
+        location: "sse/route.ts:88",
+        message: "SSE stream start",
+        data: {},
+        sessionId: "debug-session",
+        runId: "run1",
+        hypothesisId: "E",
+      }).catch(() => {});
+      // #endregion agent log
       const send = (event: string, data: any) => {
-        controller.enqueue(
-          encoder.encode(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`)
-        );
+        try {
+          controller.enqueue(
+            encoder.encode(
+              `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`,
+            ),
+          );
+        } catch (err: any) {
+          // #region agent log
+          debugLog({
+            location: "sse/route.ts:90",
+            message: "SSE send error",
+            data: { event, errorMessage: err?.message },
+            sessionId: "debug-session",
+            runId: "run1",
+            hypothesisId: "E",
+          }).catch(() => {});
+          // #endregion agent log
+        }
       };
 
       const enabledServers = Object.values(MCP_SERVERS).filter(
-        (s) => s.enabled
+        (s) => s.enabled,
       );
 
       // Get n8n tools dynamically (using cache)
@@ -113,23 +182,23 @@ export async function GET(request: Request) {
       // Calculate totals including dynamic n8n tools
       const staticToolsCount = enabledServers.reduce(
         (sum, s) => sum + (s.name === "n8n" ? 0 : s.tools.length),
-        0
+        0,
       );
       const totalTools = staticToolsCount + n8nTools.length;
       const staticResourcesCount = enabledServers.reduce(
         (sum, s) => sum + (s.name === "n8n" ? 0 : s.resources?.length || 0),
-        0
+        0,
       );
       const totalResources = staticResourcesCount + n8nResources.length;
       const staticPromptsCount = enabledServers.reduce(
         (sum, s) => sum + (s.name === "n8n" ? 0 : s.prompts?.length || 0),
-        0
+        0,
       );
       const totalPrompts = staticPromptsCount + n8nPrompts.length;
 
       // MCP Protocol: Send server info
       const serversWithSampling = enabledServers.filter(
-        (s) => s.supportsSampling
+        (s) => s.supportsSampling,
       );
       send("message", {
         jsonrpc: "2.0",
@@ -256,6 +325,16 @@ export async function GET(request: Request) {
 
       // Cleanup on close
       request.signal.addEventListener("abort", () => {
+        // #region agent log
+        debugLog({
+          location: "sse/route.ts:258",
+          message: "SSE stream abort",
+          data: {},
+          sessionId: "debug-session",
+          runId: "run1",
+          hypothesisId: "E",
+        }).catch(() => {});
+        // #endregion agent log
         clearInterval(keepAlive);
         controller.close();
       });
@@ -289,7 +368,7 @@ export async function POST(request: Request) {
           data: { hint: "Add header: Authorization: Bearer <your-api-key>" },
         },
       },
-      { status: 401 }
+      { status: 401 },
     );
   }
 
@@ -297,6 +376,16 @@ export async function POST(request: Request) {
 
   try {
     const body = await request.json();
+    // #region agent log
+    await debugLog({
+      location: "sse/route.ts:298",
+      message: "SSE POST entry",
+      data: { hasBody: !!body, method: body?.method, jsonrpc: body?.jsonrpc },
+      sessionId: "debug-session",
+      runId: "run1",
+      hypothesisId: "D",
+    });
+    // #endregion agent log
     requestId = body.id || null; // Capture id for error responses
 
     if (body.jsonrpc !== "2.0") {
@@ -309,7 +398,7 @@ export async function POST(request: Request) {
             message: 'Invalid Request: jsonrpc must be "2.0"',
           },
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -329,12 +418,27 @@ export async function POST(request: Request) {
               message: "Invalid params: tool name required",
             },
           },
-          { status: 400 }
+          { status: 400 },
         );
       }
 
       // Parse tool name: "server_tool"
       const [serverName, toolName] = name.split("_", 2);
+      // #region agent log
+      await debugLog({
+        location: "sse/route.ts:337",
+        message: "SSE tool call parse",
+        data: {
+          name,
+          serverName,
+          toolName,
+          hasServer: !!MCP_SERVERS[serverName],
+        },
+        sessionId: "debug-session",
+        runId: "run1",
+        hypothesisId: "D",
+      });
+      // #endregion agent log
       const server = MCP_SERVERS[serverName];
 
       if (!server || !server.enabled) {
@@ -365,7 +469,7 @@ export async function POST(request: Request) {
         // For n8n, validate tool exists dynamically (using cache)
         const cachedData = await getCachedN8NData();
         const toolExists = cachedData.tools.some(
-          (t: any) => t.name === toolName
+          (t: any) => t.name === toolName,
         );
         if (!toolExists) {
           return Response.json({
@@ -405,13 +509,13 @@ export async function POST(request: Request) {
               message: "Invalid params: resource uri required",
             },
           },
-          { status: 400 }
+          { status: 400 },
         );
       }
 
       // Find resource by URI
       const enabledServers = Object.values(MCP_SERVERS).filter(
-        (s) => s.enabled
+        (s) => s.enabled,
       );
       for (const server of enabledServers) {
         const resource = (server.resources || []).find((r) => r.uri === uri);
@@ -432,7 +536,7 @@ export async function POST(request: Request) {
                       server: server.name,
                     },
                     null,
-                    2
+                    2,
                   ),
                 },
               ],
@@ -462,7 +566,7 @@ export async function POST(request: Request) {
               message: "Invalid params: prompt name required",
             },
           },
-          { status: 400 }
+          { status: 400 },
         );
       }
 
@@ -523,7 +627,7 @@ export async function POST(request: Request) {
         id: requestId,
         error: { code: -32601, message: `Method not found: ${method}` },
       },
-      { status: 404 }
+      { status: 404 },
     );
   } catch (error: any) {
     // JSON-RPC 2.0: Always include id in error response when available
@@ -540,7 +644,7 @@ export async function POST(request: Request) {
           },
         },
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

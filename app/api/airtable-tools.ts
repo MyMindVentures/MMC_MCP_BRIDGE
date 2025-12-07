@@ -1,7 +1,7 @@
 // Airtable MCP Tools - Full Implementation
 // Covers: Records (CRUD), Bulk Operations, Fields, Views, Tables, Search
 
-import Airtable from 'airtable';
+import Airtable from "airtable";
 
 // Singleton Airtable client
 let airtableClient: Airtable | null = null;
@@ -9,20 +9,23 @@ let airtableClient: Airtable | null = null;
 function getClient(): Airtable {
   if (!airtableClient) {
     if (!process.env.AIRTABLE_API_KEY) {
-      throw new Error('AIRTABLE_API_KEY not configured');
+      throw new Error("AIRTABLE_API_KEY not configured");
     }
     airtableClient = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY });
   }
   return airtableClient;
 }
 
-export async function executeAirtableTool(tool: string, params: any): Promise<any> {
+export async function executeAirtableTool(
+  tool: string,
+  params: any,
+): Promise<any> {
   const client = getClient();
   const base = client.base(params.baseId);
 
   switch (tool) {
     // ==================== RECORD OPERATIONS ====================
-    case 'listRecords': {
+    case "listRecords": {
       const table = base(params.table);
       const records = await table
         .select({
@@ -34,14 +37,14 @@ export async function executeAirtableTool(tool: string, params: any): Promise<an
         })
         .all();
 
-      return records.map(record => ({
+      return records.map((record) => ({
         id: (record as any).id,
         fields: record.fields,
         createdTime: (record as any)._rawJson?.createdTime,
       }));
     }
 
-    case 'getRecord': {
+    case "getRecord": {
       const table = base(params.table);
       const record = await table.find(params.recordId);
 
@@ -52,7 +55,7 @@ export async function executeAirtableTool(tool: string, params: any): Promise<an
       };
     }
 
-    case 'createRecord': {
+    case "createRecord": {
       const table = base(params.table);
       const record = await table.create(params.fields, {
         typecast: params.typecast !== false,
@@ -65,7 +68,7 @@ export async function executeAirtableTool(tool: string, params: any): Promise<an
       };
     }
 
-    case 'updateRecord': {
+    case "updateRecord": {
       const table = base(params.table);
       const record = await table.update(params.recordId, params.fields, {
         typecast: params.typecast !== false,
@@ -77,7 +80,7 @@ export async function executeAirtableTool(tool: string, params: any): Promise<an
       };
     }
 
-    case 'deleteRecord': {
+    case "deleteRecord": {
       const table = base(params.table);
       const deleted = await table.destroy(params.recordId);
 
@@ -88,11 +91,11 @@ export async function executeAirtableTool(tool: string, params: any): Promise<an
     }
 
     // ==================== BULK OPERATIONS ====================
-    case 'bulkCreate': {
+    case "bulkCreate": {
       const table = base(params.table);
       const records = await table.create(
         params.records.map((r: any) => ({ fields: r })),
-        { typecast: params.typecast !== false }
+        { typecast: params.typecast !== false },
       );
 
       return (records as any).map((record: any) => ({
@@ -101,14 +104,14 @@ export async function executeAirtableTool(tool: string, params: any): Promise<an
       }));
     }
 
-    case 'bulkUpdate': {
+    case "bulkUpdate": {
       const table = base(params.table);
       const records = await table.update(
         params.records.map((r: any) => ({
           id: r.id,
           fields: r.fields,
         })),
-        { typecast: params.typecast !== false }
+        { typecast: params.typecast !== false },
       );
 
       return (records as any).map((record: any) => ({
@@ -117,7 +120,7 @@ export async function executeAirtableTool(tool: string, params: any): Promise<an
       }));
     }
 
-    case 'bulkDelete': {
+    case "bulkDelete": {
       const table = base(params.table);
       const deleted = await table.destroy(params.recordIds);
 
@@ -128,7 +131,7 @@ export async function executeAirtableTool(tool: string, params: any): Promise<an
     }
 
     // ==================== SEARCH & FILTER ====================
-    case 'filterRecords': {
+    case "filterRecords": {
       const table = base(params.table);
       const records = await table
         .select({
@@ -144,7 +147,7 @@ export async function executeAirtableTool(tool: string, params: any): Promise<an
       }));
     }
 
-    case 'sortRecords': {
+    case "sortRecords": {
       const table = base(params.table);
       const records = await table
         .select({
@@ -159,19 +162,20 @@ export async function executeAirtableTool(tool: string, params: any): Promise<an
       }));
     }
 
-    case 'searchRecords': {
+    case "searchRecords": {
       const table = base(params.table);
-      
+
       // Build search formula
       const searchFields = params.searchFields || [];
       const searchTerm = params.searchTerm;
-      
-      let formula = '';
+
+      let formula = "";
       if (searchFields.length > 0) {
         const conditions = searchFields.map(
-          (field: string) => `SEARCH(LOWER("${searchTerm}"), LOWER({${field}}))`
+          (field: string) =>
+            `SEARCH(LOWER("${searchTerm}"), LOWER({${field}}))`,
         );
-        formula = `OR(${conditions.join(', ')})`;
+        formula = `OR(${conditions.join(", ")})`;
       }
 
       const records = await table
@@ -188,7 +192,7 @@ export async function executeAirtableTool(tool: string, params: any): Promise<an
     }
 
     // ==================== FIELDS (via Metadata API) ====================
-    case 'listFields': {
+    case "listFields": {
       // Note: Airtable Metadata API requires separate authentication
       // This is a simplified version using the base schema
       const table = base(params.table);
@@ -198,15 +202,17 @@ export async function executeAirtableTool(tool: string, params: any): Promise<an
         return { fields: [] };
       }
 
-      const fields = Object.keys((records[0] as any).fields).map((fieldName: string) => ({
-        name: fieldName,
-        type: typeof (records[0] as any).fields[fieldName],
-      }));
+      const fields = Object.keys((records[0] as any).fields).map(
+        (fieldName: string) => ({
+          name: fieldName,
+          type: typeof (records[0] as any).fields[fieldName],
+        }),
+      );
 
       return { fields };
     }
 
-    case 'getFieldInfo': {
+    case "getFieldInfo": {
       // Get info about a specific field by examining records
       const table = base(params.table);
       const records = await table.select({ maxRecords: 10 }).firstPage();
@@ -225,7 +231,7 @@ export async function executeAirtableTool(tool: string, params: any): Promise<an
     }
 
     // ==================== VIEWS ====================
-    case 'listViews': {
+    case "listViews": {
       // Note: View listing requires Metadata API
       // This returns records from a specific view
       const table = base(params.table);
@@ -246,7 +252,7 @@ export async function executeAirtableTool(tool: string, params: any): Promise<an
       };
     }
 
-    case 'getView': {
+    case "getView": {
       const table = base(params.table);
       const records = await table
         .select({
@@ -266,16 +272,16 @@ export async function executeAirtableTool(tool: string, params: any): Promise<an
     }
 
     // ==================== TABLES ====================
-    case 'listTables': {
+    case "listTables": {
       // Note: This requires base schema access
       // Returns a simplified version
       return {
         baseId: params.baseId,
-        message: 'Use Airtable Metadata API for full table listing',
+        message: "Use Airtable Metadata API for full table listing",
       };
     }
 
-    case 'getTableInfo': {
+    case "getTableInfo": {
       const table = base(params.table);
       const records = await table.select({ maxRecords: 1 }).firstPage();
 
@@ -300,10 +306,10 @@ export async function executeAirtableTool(tool: string, params: any): Promise<an
     }
 
     // ==================== PAGINATION ====================
-    case 'getPage': {
+    case "getPage": {
       const table = base(params.table);
       const pageSize = params.pageSize || 100;
-      
+
       let records;
       if (params.offset) {
         records = await table
@@ -323,7 +329,7 @@ export async function executeAirtableTool(tool: string, params: any): Promise<an
       }
 
       return {
-        records: records.map(r => ({
+        records: records.map((r) => ({
           id: r.id,
           fields: r.fields,
         })),
@@ -332,7 +338,7 @@ export async function executeAirtableTool(tool: string, params: any): Promise<an
     }
 
     // ==================== ADVANCED ====================
-    case 'replaceRecord': {
+    case "replaceRecord": {
       // Replace (PUT) instead of update (PATCH)
       const table = base(params.table);
       const record = await table.replace(params.recordId, params.fields);
@@ -343,10 +349,10 @@ export async function executeAirtableTool(tool: string, params: any): Promise<an
       };
     }
 
-    case 'upsertRecord': {
+    case "upsertRecord": {
       // Upsert: update if exists, create if not
       const table = base(params.table);
-      
+
       try {
         // Try to find existing record
         const existing = await table.find(params.recordId);
@@ -354,7 +360,7 @@ export async function executeAirtableTool(tool: string, params: any): Promise<an
         return {
           id: updated.id,
           fields: updated.fields,
-          action: 'updated',
+          action: "updated",
         };
       } catch (error: any) {
         // Record doesn't exist, create it
@@ -363,7 +369,7 @@ export async function executeAirtableTool(tool: string, params: any): Promise<an
           return {
             id: (created as any).id,
             fields: (created as any).fields,
-            action: 'created',
+            action: "created",
           };
         }
         throw error;
@@ -374,4 +380,3 @@ export async function executeAirtableTool(tool: string, params: any): Promise<an
       throw new Error(`Unknown Airtable tool: ${tool}`);
   }
 }
-

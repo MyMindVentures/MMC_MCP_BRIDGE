@@ -3,7 +3,8 @@
 # Build en push Docker images naar registries
 set -e
 
-CONTAINERS=("dev" "app" "e2e")
+# Only e2e container remains - dev and app were removed (replaced by devcontainer)
+CONTAINERS=("e2e")
 REGISTRY_HUB="mymindventures"
 REGISTRY_GHCR="ghcr.io/mymindventures"
 VERSION=$(node -p "require('./package.json').version" 2>/dev/null || echo "latest")

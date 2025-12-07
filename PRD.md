@@ -118,7 +118,6 @@
 #### **Phase 1: Backend → n8n Schema Generation**
 
 1. **MCP Server Registration**
-
    - When an MCP server is registered in `mcp-config.ts`, the system automatically:
      - Analyzes all tools, resources, and prompts
      - Generates a corresponding n8n workflow JSON Schema
@@ -157,14 +156,12 @@
 #### **Phase 2: n8n → Backend Code Generation**
 
 1. **Workflow Analysis**
-
    - When a workflow is created/updated in n8n (via OpenWebUI or n8n UI):
      - The system analyzes the workflow JSON Schema
      - Identifies MCP server integrations
      - Generates corresponding backend API routes
 
 2. **Code Generation**
-
    - For each n8n node that uses MCP Bridge:
      - Generate Next.js API route (`/app/api/generated/:endpoint/route.ts`)
      - Include proper authentication, rate limiting, error handling
@@ -182,7 +179,7 @@
 ```typescript
 // Generate n8n workflow JSON from MCP server config
 export async function generateN8NWorkflowFromMCP(
-  serverName: string
+  serverName: string,
 ): Promise<n8n.Workflow> {
   const server = MCP_SERVERS[serverName];
 
@@ -213,7 +210,7 @@ export async function generateN8NWorkflowFromMCP(
 ```typescript
 // Generate Next.js API route from n8n workflow
 export async function generateBackendFromN8NWorkflow(
-  workflow: n8n.Workflow
+  workflow: n8n.Workflow,
 ): Promise<string> {
   // Analyze workflow nodes
   // Generate TypeScript API routes
@@ -233,7 +230,6 @@ export async function generateBackendFromN8NWorkflow(
 ### How Agents Work
 
 1. **Agent Node in n8n**
-
    - Special n8n node type: `MMC Agent`
    - Accepts natural language instructions
    - Executes multi-step plans across multiple MCP servers
@@ -308,13 +304,11 @@ The agent will:
 ### Integration Flow
 
 1. **OpenWebUI → n8n Schema**
-
    - User builds workflow visually in OpenWebUI
    - Workflow is saved as n8n JSON Schema
    - Schema is sent to MCP Bridge
 
 2. **Schema → Backend Generation**
-
    - MCP Bridge analyzes the n8n schema
    - Generates corresponding backend API routes
    - Commits code to Git (via Git MCP)
@@ -329,12 +323,10 @@ The agent will:
 **The ultimate vision: An agentic agent that builds a new frontend based on n8n workflows.**
 
 1. **n8n Workflow Analysis**
-
    - Agent analyzes all n8n workflows
    - Identifies data flows, user interactions, API endpoints
 
 2. **Frontend Generation**
-
    - Generates React/Next.js components
    - Creates forms, tables, dashboards based on workflow structure
    - Implements real-time updates via SSE
@@ -404,7 +396,6 @@ The agent will:
 ### Authentication Methods
 
 1. **API Key (Simple)**
-
    - Bearer token in `Authorization` header
    - Single key for all operations
    - Suitable for server-to-server communication

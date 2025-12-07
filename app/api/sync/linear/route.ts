@@ -19,8 +19,8 @@ function parseTasklistLine(line: string) {
       status === "✅"
         ? "completed"
         : status === "🔄"
-        ? "in_progress"
-        : "pending",
+          ? "in_progress"
+          : "pending",
     featId: featId.trim(),
     description: description.trim(),
     fullLine: line.trim(),
@@ -89,7 +89,7 @@ async function getLinearTeamId(): Promise<string | null> {
 // Note: Linear SDK updateIssue accepts stateId or state name, but we'll use the existing state from the issue
 async function getStateIdForState(
   teamId: string,
-  stateName: string
+  stateName: string,
 ): Promise<string | null> {
   try {
     // Get issues to find state IDs (workaround)
@@ -99,7 +99,7 @@ async function getStateIdForState(
 
     // Find an issue with the target state to get the state ID
     const issueWithState = issues.find(
-      (issue: any) => issue.state?.name === stateName
+      (issue: any) => issue.state?.name === stateName,
     );
 
     return issueWithState?.state?.id || null;
@@ -122,7 +122,7 @@ export async function POST(request: NextRequest) {
       if (todos.length === 0) {
         return NextResponse.json(
           { error: "No todos found in Tasklist.prd" },
-          { status: 400 }
+          { status: 400 },
         );
       }
 
@@ -131,7 +131,7 @@ export async function POST(request: NextRequest) {
       if (!teamId) {
         return NextResponse.json(
           { error: "No Linear team found" },
-          { status: 400 }
+          { status: 400 },
         );
       }
 
@@ -178,7 +178,7 @@ export async function POST(request: NextRequest) {
             } else {
               // Fallback: try using state name (some Linear SDK versions support this)
               console.warn(
-                `[Linear Sync] State ID not found for "${linearState}", using state name`
+                `[Linear Sync] State ID not found for "${linearState}", using state name`,
               );
             }
 
@@ -223,7 +223,7 @@ export async function POST(request: NextRequest) {
       if (!teamId) {
         return NextResponse.json(
           { error: "No Linear team found" },
-          { status: 400 }
+          { status: 400 },
         );
       }
 
@@ -256,7 +256,7 @@ export async function POST(request: NextRequest) {
 
         if (matchingIssue) {
           const newStatus = mapLinearStateToStatus(
-            matchingIssue.state?.name || "Todo"
+            matchingIssue.state?.name || "Todo",
           );
           if (newStatus !== todo.status) {
             const newLine = `${newStatus} ${todo.featId}: ${todo.description}`;

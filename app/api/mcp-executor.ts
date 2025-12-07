@@ -3,9 +3,9 @@
 
 import simpleGit from "simple-git";
 import { promises as fs } from "fs";
+import { appendFile } from "fs/promises";
 import { chromium } from "playwright";
 import { MongoClient } from "mongodb";
-import { LinearClient } from "@linear/sdk";
 import { Octokit } from "@octokit/rest";
 import OpenAI from "openai";
 import Anthropic from "@anthropic-ai/sdk";
@@ -27,6 +27,31 @@ import { executeNotionTool } from "./notion-tools";
 import { executeSlackTool } from "./slack-tools";
 import { Redis } from "ioredis";
 
+// Debug logging helper (file-based fallback)
+async function debugLog(data: any) {
+  const logPath = process.cwd() + "/.cursor/debug.log";
+  const logLine = JSON.stringify({ ...data, timestamp: Date.now() }) + "\n";
+  try {
+    // Ensure directory exists
+    try {
+      await fs.mkdir(process.cwd() + "/.cursor", { recursive: true });
+    } catch {}
+    await appendFile(logPath, logLine).catch((err) => {
+      // Fallback to console if file write fails
+      console.log("[Debug Log]", JSON.stringify(data));
+    });
+    // Also try HTTP logging
+    fetch("http://127.0.0.1:7242/ingest/030eea83-1f2d-447b-8780-b95a991da708", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    }).catch(() => {});
+  } catch (err: any) {
+    // Final fallback - always log to console
+    console.log("[Debug Log Error]", err?.message, JSON.stringify(data));
+  }
+}
+
 // Redis connection helper
 function getRedis(): Redis | null {
   if (!process.env.REDIS_URL) return null;
@@ -47,12 +72,12 @@ async function gql(
   endpoint: string,
   query: string,
   vars: any,
-  headers: Record<string, string>
+  headers: Record<string, string>,
 ) {
   const res = await axios.post(
     endpoint,
     { query, variables: vars },
-    { headers }
+    { headers },
   );
   return res.data;
 }
@@ -63,7 +88,7 @@ async function logToolExecution(
   toolName: string,
   params: any,
   result: any,
-  error?: any
+  error?: any,
 ) {
   const redisClient = getRedis();
   if (!redisClient) return;
@@ -89,9 +114,19 @@ async function logToolExecution(
 export async function executeMCPTool(
   serverName: string,
   toolName: string,
-  params: any
+  params: any,
 ): Promise<any> {
   const startTime = Date.now();
+  // #region agent log
+  await debugLog({
+    location: "mcp-executor.ts:88",
+    message: "executeMCPTool entry",
+    data: { serverName, toolName, paramsKeys: Object.keys(params || {}) },
+    sessionId: "debug-session",
+    runId: "run1",
+    hypothesisId: "A",
+  });
+  // #endregion agent log
   try {
     let result: any;
 
@@ -99,26 +134,7 @@ export async function executeMCPTool(
       case "n8n": {
         // Use @leonardsellem/n8n-mcp-server (BEST IN THE WORLD! 🌍)
         result = await executeN8NCommunityTool(toolName, params);
-        // MCP SDK returns { content: [{ type: 'text', text: '...' }] }
-        // Extract the actual result from the content array
-        if (result && result.content && Array.isArray(result.content)) {
-          // If content is an array, try to parse JSON from text or return as-is
-          const textContent = result.content.find(
-            (c: any) => c.type === "text"
-          )?.text;
-          if (textContent) {
-            try {
-              // Try to parse as JSON, fallback to text
-              result = JSON.parse(textContent);
-            } catch {
-              // Not JSON, return as text
-              result = textContent;
-            }
-          } else {
-            // No text content, return the whole content array
-            result = result.content;
-          }
-        }
+        result = result.content || result;
         break;
       }
 
@@ -145,6 +161,10 @@ export async function executeMCPTool(
             });
           case "fileInfo":
             return await fs.stat(params.path);
+          case "executeCommand": {
+            const { executeCommand } = await import("./filesystem-tools");
+            return await executeCommand(params);
+          }
           default:
             throw new Error(`Unknown filesystem tool: ${toolName}`);
         }
@@ -190,6 +210,19 @@ export async function executeMCPTool(
       }
 
       case "mongodb": {
+        // #region agent log
+        await debugLog({
+          location: "mcp-executor.ts:176",
+          message: "MongoDB tool execution",
+          data: {
+            hasEnvVar: !!process.env.MONGODB_CONNECTION_STRING,
+            hasClient: !!mongoClient,
+          },
+          sessionId: "debug-session",
+          runId: "run1",
+          hypothesisId: "C",
+        });
+        // #endregion agent log
         if (!process.env.MONGODB_CONNECTION_STRING)
           throw new Error("MONGODB_CONNECTION_STRING not configured");
         if (!mongoClient) {
@@ -202,33 +235,10 @@ export async function executeMCPTool(
       }
 
       case "linear": {
-        if (!process.env.LINEAR_API_KEY)
-          throw new Error("LINEAR_API_KEY not configured");
-        const client = new LinearClient({ apiKey: process.env.LINEAR_API_KEY });
-
-        switch (toolName) {
-          case "listIssues":
-            const issues = await client.issues(params.filter);
-            return await issues.nodes;
-          case "createIssue":
-            const issue = await client.createIssue({
-              teamId: params.teamId,
-              title: params.title,
-              description: params.description,
-            });
-            return issue;
-          case "updateIssue":
-            const updated = await client.updateIssue(
-              params.issueId,
-              params.data
-            );
-            return updated;
-          case "searchIssues":
-            const results = await client.searchIssues(params.query);
-            return results;
-          default:
-            throw new Error(`Unknown linear tool: ${toolName}`);
-        }
+        // Use comprehensive Linear tools (30+ tools!)
+        const { executeLinearTool } = await import("./linear-tools");
+        result = await executeLinearTool(toolName, params);
+        break;
       }
 
       case "railway": {
@@ -259,6 +269,19 @@ export async function executeMCPTool(
       }
 
       case "postgres": {
+        // #region agent log
+        await debugLog({
+          location: "mcp-executor.ts:222",
+          message: "Postgres tool execution",
+          data: {
+            hasEnvVar: !!process.env.POSTGRES_CONNECTION_STRING,
+            hasPool: !!pgPool,
+          },
+          sessionId: "debug-session",
+          runId: "run1",
+          hypothesisId: "C",
+        });
+        // #endregion agent log
         if (!process.env.POSTGRES_CONNECTION_STRING)
           throw new Error("POSTGRES_CONNECTION_STRING not configured");
         if (!pgPool) {
@@ -268,10 +291,20 @@ export async function executeMCPTool(
         }
 
         // Use new comprehensive Postgres tools (25+ tools!)
-        return await executePostgresTool(pgPool, toolName, params);
+        return await executePostgresTool(toolName, params);
       }
 
       case "sqlite": {
+        // #region agent log
+        await debugLog({
+          location: "mcp-executor.ts:266",
+          message: "SQLite tool execution",
+          data: { hasEnvVar: !!process.env.SQLITE_DB_PATH },
+          sessionId: "debug-session",
+          runId: "run1",
+          hypothesisId: "C",
+        });
+        // #endregion agent log
         if (!process.env.SQLITE_DB_PATH)
           throw new Error("SQLITE_DB_PATH not configured");
         if (!sqliteDb) {
@@ -325,6 +358,13 @@ export async function executeMCPTool(
         return await executeDopplerTool(toolName, params);
       }
 
+      case "docker": {
+        // Use comprehensive Docker tools (25+ tools!)
+        const { executeDockerTool } = await import("./docker-tools");
+        result = await executeDockerTool(toolName, params);
+        break;
+      }
+
       case "raindrop": {
         if (!process.env.RAINDROP_TOKEN)
           throw new Error("RAINDROP_TOKEN not configured");
@@ -336,7 +376,7 @@ export async function executeMCPTool(
               headers: {
                 Authorization: `Bearer ${process.env.RAINDROP_TOKEN}`,
               },
-            }
+            },
           );
           return data.items;
         }
@@ -352,7 +392,7 @@ export async function executeMCPTool(
             "https://api.getpostman.com/collections",
             {
               headers: { "X-Api-Key": process.env.POSTMAN_API_KEY },
-            }
+            },
           );
           return data.collections;
         }
@@ -404,7 +444,7 @@ export async function executeMCPTool(
                 "X-Subscription-Token": process.env.BRAVE_SEARCH_API_KEY,
               },
               params: { q: params.query },
-            }
+            },
           );
           return data;
         }
@@ -446,7 +486,7 @@ export async function executeMCPTool(
               headers: {
                 Authorization: `Bearer ${process.env.STRAPI_API_KEY}`,
               },
-            }
+            },
           );
           return data.data;
         }
@@ -469,24 +509,43 @@ export async function executeMCPTool(
         throw new Error(`Unknown stripe tool: ${toolName}`);
       }
 
-      case "dagger": {
-        // Use comprehensive Dagger tools (13+ tools!)
-        const { executeDaggerTool } = await import("./dagger-tools");
-        result = await executeDaggerTool(toolName, params);
-        break;
-      }
-
       default:
         throw new Error(`Unknown server: ${serverName}`);
     }
 
     // Log successful execution
     const duration = Date.now() - startTime;
+    // #region agent log
+    await debugLog({
+      location: "mcp-executor.ts:450",
+      message: "executeMCPTool success",
+      data: { serverName, toolName, duration, resultType: typeof result },
+      sessionId: "debug-session",
+      runId: "run1",
+      hypothesisId: "A",
+    });
+    // #endregion agent log
     await logToolExecution(serverName, toolName, params, result, undefined);
     return result;
   } catch (error: any) {
     // Log failed execution
     const duration = Date.now() - startTime;
+    // #region agent log
+    await debugLog({
+      location: "mcp-executor.ts:454",
+      message: "executeMCPTool error",
+      data: {
+        serverName,
+        toolName,
+        duration,
+        errorMessage: error?.message,
+        errorStack: error?.stack?.substring(0, 200),
+      },
+      sessionId: "debug-session",
+      runId: "run1",
+      hypothesisId: "B",
+    });
+    // #endregion agent log
     await logToolExecution(serverName, toolName, params, null, error);
     throw error;
   }

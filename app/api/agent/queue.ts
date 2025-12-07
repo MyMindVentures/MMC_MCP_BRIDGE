@@ -101,7 +101,7 @@ Break down user tasks into executable steps using these servers. Return JSON arr
 }
 
 // Agent Worker - lazy initialization
-let agentWorker: Worker<AgentTask, TaskResult> | null = null;
+export let agentWorker: Worker<AgentTask, TaskResult> | null = null;
 
 function getAgentWorker(): Worker<AgentTask, TaskResult> {
   if (!agentWorker) {
@@ -112,7 +112,7 @@ function getAgentWorker(): Worker<AgentTask, TaskResult> {
         const results: StepResult[] = [];
 
         console.log(
-          `[Agent] Starting task: ${job.data.id} - ${job.data.description}`
+          `[Agent] Starting task: ${job.data.id} - ${job.data.description}`,
         );
 
         // If no steps provided, use AI to plan
@@ -129,7 +129,7 @@ function getAgentWorker(): Worker<AgentTask, TaskResult> {
 
           try {
             console.log(
-              `[Agent] Step ${i + 1}/${steps.length}: ${step.description}`
+              `[Agent] Step ${i + 1}/${steps.length}: ${step.description}`,
             );
 
             // Update job progress
@@ -139,7 +139,7 @@ function getAgentWorker(): Worker<AgentTask, TaskResult> {
             const result = await executeMCPTool(
               step.server,
               step.tool,
-              step.params
+              step.params,
             );
 
             results.push({
@@ -152,7 +152,7 @@ function getAgentWorker(): Worker<AgentTask, TaskResult> {
             });
 
             console.log(
-              `[Agent] Step ${i + 1} completed in ${Date.now() - stepStart}ms`
+              `[Agent] Step ${i + 1} completed in ${Date.now() - stepStart}ms`,
             );
           } catch (error: any) {
             console.error(`[Agent] Step ${i + 1} failed:`, error.message);
@@ -180,8 +180,8 @@ function getAgentWorker(): Worker<AgentTask, TaskResult> {
           successCount === steps.length
             ? "completed"
             : successCount === 0
-            ? "failed"
-            : "partial";
+              ? "failed"
+              : "partial";
 
         const summary = `Task ${status}: ${successCount}/${steps.length} steps completed in ${duration}ms`;
         console.log(`[Agent] ${summary}`);
@@ -194,7 +194,7 @@ function getAgentWorker(): Worker<AgentTask, TaskResult> {
           duration,
         };
       },
-      { connection: getRedisConnection() }
+      { connection: getRedisConnection() },
     );
 
     // Event handlers
@@ -215,7 +215,7 @@ function getAgentWorker(): Worker<AgentTask, TaskResult> {
 
 // Helper: Submit task to queue
 export async function submitAgentTask(
-  task: Omit<AgentTask, "id">
+  task: Omit<AgentTask, "id">,
 ): Promise<string> {
   if (!process.env.REDIS_URL) {
     throw new Error("REDIS_URL not configured. Cannot submit agent task.");
@@ -241,7 +241,7 @@ export async function submitAgentTask(
         type: "exponential",
         delay: 2000,
       },
-    }
+    },
   );
 
   return job.id as string;

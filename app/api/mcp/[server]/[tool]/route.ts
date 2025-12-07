@@ -9,7 +9,7 @@ import { getN8NCommunityTools } from "../../../n8n/proxy";
 
 export async function POST(
   request: Request,
-  context: { params: Promise<{ server: string; tool: string }> }
+  context: { params: Promise<{ server: string; tool: string }> },
 ) {
   // 🔐 Authentication check
   const authResult = await verifyAuth(request);
@@ -17,7 +17,7 @@ export async function POST(
     return authErrorResponse(
       authResult.reason || "Unauthorized",
       401,
-      authResult.rateLimit
+      authResult.rateLimit,
     );
   }
 
@@ -28,7 +28,7 @@ export async function POST(
     if (!server || !server.enabled) {
       return NextResponse.json(
         { error: "Server not found or disabled" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -47,13 +47,13 @@ export async function POST(
         if (!tool) {
           return NextResponse.json(
             { error: `Tool not found: ${toolName} in n8n server` },
-            { status: 404 }
+            { status: 404 },
           );
         }
       } catch (error: any) {
         return NextResponse.json(
           { error: `Failed to validate n8n tool: ${error.message}` },
-          { status: 500 }
+          { status: 500 },
         );
       }
     }
@@ -63,7 +63,7 @@ export async function POST(
     // Validate tool input schema if available
     if (tool.inputSchema && tool.inputSchema.required) {
       const missing = tool.inputSchema.required.filter(
-        (field: string) => !(field in body)
+        (field: string) => !(field in body),
       );
       if (missing.length > 0) {
         return NextResponse.json(
@@ -72,7 +72,7 @@ export async function POST(
             missing: missing,
             schema: tool.inputSchema,
           },
-          { status: 400 }
+          { status: 400 },
         );
       }
     }
@@ -96,17 +96,17 @@ export async function POST(
         server: serverName,
         tool: toolName,
       },
-      { headers }
+      { headers },
     );
   } catch (error: any) {
     // Enhanced error handling
     const statusCode = error.message?.includes("not configured")
       ? 503
       : error.message?.includes("not found")
-      ? 404
-      : error.message?.includes("Invalid")
-      ? 400
-      : 500;
+        ? 404
+        : error.message?.includes("Invalid")
+          ? 400
+          : 500;
 
     return NextResponse.json(
       {
@@ -115,7 +115,7 @@ export async function POST(
         tool: (await context.params).tool,
         timestamp: new Date().toISOString(),
       },
-      { status: statusCode }
+      { status: statusCode },
     );
   }
 }

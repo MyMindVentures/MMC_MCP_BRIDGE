@@ -60,12 +60,12 @@ async function gql(
   endpoint: string,
   query: string,
   vars: any,
-  headers: Record<string, string>
+  headers: Record<string, string>,
 ) {
   const res = await axios.post(
     endpoint,
     { query, variables: vars },
-    { headers }
+    { headers },
   );
   return res.data;
 }
@@ -84,39 +84,229 @@ export const MCP_SERVERS: Record<string, MCPServer> = {
     enabled: true,
     tools: [
       // Basic Operations (6 tools)
-      { name: "clone", description: "Clone repository", inputSchema: { type: "object", properties: { url: { type: "string" }, path: { type: "string" } }, required: ["url", "path"] } },
-      { name: "commit", description: "Commit changes", inputSchema: { type: "object", properties: { message: { type: "string" }, files: { type: "array" }, path: { type: "string" } }, required: ["message"] } },
-      { name: "push", description: "Push to remote", inputSchema: { type: "object", properties: { remote: { type: "string" }, branch: { type: "string" }, path: { type: "string" } } } },
-      { name: "pull", description: "Pull from remote", inputSchema: { type: "object", properties: { remote: { type: "string" }, branch: { type: "string" }, path: { type: "string" } } } },
-      { name: "status", description: "Get git status", inputSchema: { type: "object", properties: { path: { type: "string" } } } },
-      { name: "log", description: "Get commit log", inputSchema: { type: "object", properties: { limit: { type: "number" }, path: { type: "string" } } } },
-      
+      {
+        name: "clone",
+        description: "Clone repository",
+        inputSchema: {
+          type: "object",
+          properties: { url: { type: "string" }, path: { type: "string" } },
+          required: ["url", "path"],
+        },
+      },
+      {
+        name: "commit",
+        description: "Commit changes",
+        inputSchema: {
+          type: "object",
+          properties: {
+            message: { type: "string" },
+            files: { type: "array" },
+            path: { type: "string" },
+          },
+          required: ["message"],
+        },
+      },
+      {
+        name: "push",
+        description: "Push to remote",
+        inputSchema: {
+          type: "object",
+          properties: {
+            remote: { type: "string" },
+            branch: { type: "string" },
+            path: { type: "string" },
+          },
+        },
+      },
+      {
+        name: "pull",
+        description: "Pull from remote",
+        inputSchema: {
+          type: "object",
+          properties: {
+            remote: { type: "string" },
+            branch: { type: "string" },
+            path: { type: "string" },
+          },
+        },
+      },
+      {
+        name: "status",
+        description: "Get git status",
+        inputSchema: {
+          type: "object",
+          properties: { path: { type: "string" } },
+        },
+      },
+      {
+        name: "log",
+        description: "Get commit log",
+        inputSchema: {
+          type: "object",
+          properties: { limit: { type: "number" }, path: { type: "string" } },
+        },
+      },
+
       // Branch Operations (1 tool with actions)
-      { name: "branch", description: "Manage branches (list/create/delete/checkout)", inputSchema: { type: "object", properties: { action: { type: "string", enum: ["list", "create", "delete", "checkout", "switch"] }, name: { type: "string" }, path: { type: "string" } }, required: ["action"] } },
-      
+      {
+        name: "branch",
+        description: "Manage branches (list/create/delete/checkout)",
+        inputSchema: {
+          type: "object",
+          properties: {
+            action: {
+              type: "string",
+              enum: ["list", "create", "delete", "checkout", "switch"],
+            },
+            name: { type: "string" },
+            path: { type: "string" },
+          },
+          required: ["action"],
+        },
+      },
+
       // Diff Operations (2 tools)
-      { name: "diff", description: "Show differences", inputSchema: { type: "object", properties: { options: { type: "object", properties: { staged: { type: "boolean" }, file: { type: "string" } } }, path: { type: "string" } } } },
-      { name: "diffSummary", description: "Get diff summary", inputSchema: { type: "object", properties: { path: { type: "string" } } } },
-      
+      {
+        name: "diff",
+        description: "Show differences",
+        inputSchema: {
+          type: "object",
+          properties: {
+            options: {
+              type: "object",
+              properties: {
+                staged: { type: "boolean" },
+                file: { type: "string" },
+              },
+            },
+            path: { type: "string" },
+          },
+        },
+      },
+      {
+        name: "diffSummary",
+        description: "Get diff summary",
+        inputSchema: {
+          type: "object",
+          properties: { path: { type: "string" } },
+        },
+      },
+
       // Stash Operations (1 tool with actions)
-      { name: "stash", description: "Stash operations (save/pop/list/clear/drop)", inputSchema: { type: "object", properties: { action: { type: "string", enum: ["save", "push", "pop", "list", "clear", "drop"] }, path: { type: "string" } }, required: ["action"] } },
-      
+      {
+        name: "stash",
+        description: "Stash operations (save/pop/list/clear/drop)",
+        inputSchema: {
+          type: "object",
+          properties: {
+            action: {
+              type: "string",
+              enum: ["save", "push", "pop", "list", "clear", "drop"],
+            },
+            path: { type: "string" },
+          },
+          required: ["action"],
+        },
+      },
+
       // Tag Operations (1 tool with actions)
-      { name: "tag", description: "Tag operations (list/create/delete)", inputSchema: { type: "object", properties: { action: { type: "string", enum: ["list", "create", "delete"] }, name: { type: "string" }, message: { type: "string" }, path: { type: "string" } }, required: ["action"] } },
-      
+      {
+        name: "tag",
+        description: "Tag operations (list/create/delete)",
+        inputSchema: {
+          type: "object",
+          properties: {
+            action: { type: "string", enum: ["list", "create", "delete"] },
+            name: { type: "string" },
+            message: { type: "string" },
+            path: { type: "string" },
+          },
+          required: ["action"],
+        },
+      },
+
       // Remote Operations (1 tool with actions)
-      { name: "remote", description: "Remote operations (list/add/remove/get-url)", inputSchema: { type: "object", properties: { action: { type: "string", enum: ["list", "add", "remove", "get-url"] }, name: { type: "string" }, url: { type: "string" }, path: { type: "string" } }, required: ["action"] } },
-      
+      {
+        name: "remote",
+        description: "Remote operations (list/add/remove/get-url)",
+        inputSchema: {
+          type: "object",
+          properties: {
+            action: {
+              type: "string",
+              enum: ["list", "add", "remove", "get-url"],
+            },
+            name: { type: "string" },
+            url: { type: "string" },
+            path: { type: "string" },
+          },
+          required: ["action"],
+        },
+      },
+
       // Merge & Rebase (2 tools)
-      { name: "merge", description: "Merge branch", inputSchema: { type: "object", properties: { branch: { type: "string" }, options: { type: "object", properties: { noFf: { type: "boolean" }, squash: { type: "boolean" } } }, path: { type: "string" } }, required: ["branch"] } },
-      { name: "rebase", description: "Rebase branch", inputSchema: { type: "object", properties: { branch: { type: "string" }, path: { type: "string" } }, required: ["branch"] } },
-      
+      {
+        name: "merge",
+        description: "Merge branch",
+        inputSchema: {
+          type: "object",
+          properties: {
+            branch: { type: "string" },
+            options: {
+              type: "object",
+              properties: {
+                noFf: { type: "boolean" },
+                squash: { type: "boolean" },
+              },
+            },
+            path: { type: "string" },
+          },
+          required: ["branch"],
+        },
+      },
+      {
+        name: "rebase",
+        description: "Rebase branch",
+        inputSchema: {
+          type: "object",
+          properties: { branch: { type: "string" }, path: { type: "string" } },
+          required: ["branch"],
+        },
+      },
+
       // Reset (1 tool)
-      { name: "reset", description: "Reset to commit", inputSchema: { type: "object", properties: { mode: { type: "string", enum: ["soft", "mixed", "hard"] }, commit: { type: "string" }, path: { type: "string" } } } },
-      
+      {
+        name: "reset",
+        description: "Reset to commit",
+        inputSchema: {
+          type: "object",
+          properties: {
+            mode: { type: "string", enum: ["soft", "mixed", "hard"] },
+            commit: { type: "string" },
+            path: { type: "string" },
+          },
+        },
+      },
+
       // Advanced (2 tools)
-      { name: "blame", description: "Show file blame", inputSchema: { type: "object", properties: { file: { type: "string" }, path: { type: "string" } }, required: ["file"] } },
-      { name: "show", description: "Show commit details", inputSchema: { type: "object", properties: { commit: { type: "string" }, path: { type: "string" } }, required: ["commit"] } },
+      {
+        name: "blame",
+        description: "Show file blame",
+        inputSchema: {
+          type: "object",
+          properties: { file: { type: "string" }, path: { type: "string" } },
+          required: ["file"],
+        },
+      },
+      {
+        name: "show",
+        description: "Show commit details",
+        inputSchema: {
+          type: "object",
+          properties: { commit: { type: "string" }, path: { type: "string" } },
+          required: ["commit"],
+        },
+      },
     ],
     resources: [
       {
@@ -270,17 +460,23 @@ AVOID: Use GitHub MCP for GitHub-specific features (issues, PRs, workflows). Use
           });
         case "fileInfo":
           return await fs.stat(params.path);
+        case "executeCommand": {
+          const { executeCommand } = await import("./filesystem-tools");
+          return await executeCommand(params);
+        }
         default:
           throw new Error(`Unknown filesystem tool: ${tool}`);
       }
     },
-    agentBriefing: `FILESYSTEM MCP - Use for ALL file and directory operations.
+    agentBriefing: `FILESYSTEM MCP - Use for ALL file and directory operations + Command Execution.
 
 WHEN TO USE:
 - Reading/writing files, creating/deleting directories
 - Listing directory contents, checking file info
 - File manipulation tasks, configuration file management
-- Any task involving local file system operations
+- Executing shell commands and workflow scripts
+- Running npm scripts, Docker commands, CI/CD workflows
+- Any task involving local file system operations or terminal commands
 
 KEY TOOLS:
 - readFile: Read file contents (supports encoding)
@@ -289,6 +485,14 @@ KEY TOOLS:
 - deleteFile: Remove files
 - createDir: Create directories (recursive support)
 - fileInfo: Get file stats (size, permissions, etc.)
+- executeCommand: Execute shell commands and return output (NEW!)
+
+COMMAND EXECUTION:
+- executeCommand allows running shell commands safely
+- Supports npm scripts, Docker commands, workflow scripts
+- Working directory can be specified
+- Timeout protection (default 30s)
+- Returns stdout, stderr, exitCode, success
 
 USE CASES:
 - "Read the package.json file"
@@ -296,8 +500,33 @@ USE CASES:
 - "List all files in the app directory"
 - "Write configuration to .env file"
 - "Delete temporary files"
+- "Run npm run workflow:all"
+- "Execute ./containers/e2e/workflows/pre-merge-check.sh"
+- "Run docker compose up -d dev"
+- "Execute workflow pre-merge-check"
 
-AVOID: Use Git MCP for version-controlled file operations. Use Filesystem MCP for direct file system access.`,
+WORKFLOW SCRIPTS:
+All workflow scripts are in containers/e2e/workflows/:
+- pre-merge-check.sh: Pre-merge validation
+- ci-full.sh: Full CI pipeline
+- lint.sh: Code linting
+- security-scan.sh: Security scanning
+- codeql.sh: CodeQL security scanning
+- superlinter.sh: Super linter
+- sonarqube.sh: SonarQube analysis
+- datadog.sh: Datadog synthetic tests
+- label.sh: PR labeling
+- docker-build.sh: Docker builds
+- dagger-pipeline.sh: Dagger pipeline
+- node-multi-version.sh: Multi-version testing
+- run-all.sh: Run all workflows
+
+You can execute them via:
+- executeCommand with command: "bash ./containers/e2e/workflows/pre-merge-check.sh"
+- executeCommand with command: "npm run workflow:all"
+- executeCommand with command: "workflow pre-merge-check" (via wrapper)
+
+AVOID: Use Git MCP for version-controlled file operations. Use Filesystem MCP for direct file system access and command execution.`,
   },
 
   // 3. PLAYWRIGHT - Playwright SDK (FULLY UPGRADED: 24+ tools!)
@@ -307,63 +536,359 @@ AVOID: Use Git MCP for version-controlled file operations. Use Filesystem MCP fo
     enabled: true,
     tools: [
       // Navigation (4 tools)
-      { name: "navigate", description: "Navigate to URL", inputSchema: { type: "object", properties: { url: { type: "string" }, waitUntil: { type: "string" }, timeout: { type: "number" } }, required: ["url"] } },
-      { name: "goBack", description: "Go back", inputSchema: { type: "object", properties: { waitUntil: { type: "string" } } } },
-      { name: "goForward", description: "Go forward", inputSchema: { type: "object", properties: { waitUntil: { type: "string" } } } },
-      { name: "reload", description: "Reload page", inputSchema: { type: "object", properties: { waitUntil: { type: "string" } } } },
-      
+      {
+        name: "navigate",
+        description: "Navigate to URL",
+        inputSchema: {
+          type: "object",
+          properties: {
+            url: { type: "string" },
+            waitUntil: { type: "string" },
+            timeout: { type: "number" },
+          },
+          required: ["url"],
+        },
+      },
+      {
+        name: "goBack",
+        description: "Go back",
+        inputSchema: {
+          type: "object",
+          properties: { waitUntil: { type: "string" } },
+        },
+      },
+      {
+        name: "goForward",
+        description: "Go forward",
+        inputSchema: {
+          type: "object",
+          properties: { waitUntil: { type: "string" } },
+        },
+      },
+      {
+        name: "reload",
+        description: "Reload page",
+        inputSchema: {
+          type: "object",
+          properties: { waitUntil: { type: "string" } },
+        },
+      },
+
       // Screenshots (2 tools)
-      { name: "screenshot", description: "Take screenshot", inputSchema: { type: "object", properties: { url: { type: "string" }, fullPage: { type: "boolean" }, type: { type: "string" }, quality: { type: "number" } } } },
-      { name: "screenshotElement", description: "Screenshot element", inputSchema: { type: "object", properties: { url: { type: "string" }, selector: { type: "string" }, type: { type: "string" } }, required: ["selector"] } },
-      
+      {
+        name: "screenshot",
+        description: "Take screenshot",
+        inputSchema: {
+          type: "object",
+          properties: {
+            url: { type: "string" },
+            fullPage: { type: "boolean" },
+            type: { type: "string" },
+            quality: { type: "number" },
+          },
+        },
+      },
+      {
+        name: "screenshotElement",
+        description: "Screenshot element",
+        inputSchema: {
+          type: "object",
+          properties: {
+            url: { type: "string" },
+            selector: { type: "string" },
+            type: { type: "string" },
+          },
+          required: ["selector"],
+        },
+      },
+
       // PDF (1 tool)
-      { name: "generatePDF", description: "Generate PDF", inputSchema: { type: "object", properties: { url: { type: "string" }, format: { type: "string" }, landscape: { type: "boolean" }, printBackground: { type: "boolean" } } } },
-      
+      {
+        name: "generatePDF",
+        description: "Generate PDF",
+        inputSchema: {
+          type: "object",
+          properties: {
+            url: { type: "string" },
+            format: { type: "string" },
+            landscape: { type: "boolean" },
+            printBackground: { type: "boolean" },
+          },
+        },
+      },
+
       // Video (1 tool)
-      { name: "recordVideo", description: "Record video", inputSchema: { type: "object", properties: { url: { type: "string" }, duration: { type: "number" }, actions: { type: "array" }, videoDir: { type: "string" } }, required: ["url"] } },
-      
+      {
+        name: "recordVideo",
+        description: "Record video",
+        inputSchema: {
+          type: "object",
+          properties: {
+            url: { type: "string" },
+            duration: { type: "number" },
+            actions: { type: "array" },
+            videoDir: { type: "string" },
+          },
+          required: ["url"],
+        },
+      },
+
       // Scraping (3 tools)
-      { name: "scrape", description: "Scrape content", inputSchema: { type: "object", properties: { url: { type: "string" }, selector: { type: "string" } } } },
-      { name: "scrapeMultiple", description: "Scrape multiple selectors", inputSchema: { type: "object", properties: { url: { type: "string" }, selectors: { type: "object" } }, required: ["selectors"] } },
-      { name: "evaluate", description: "Evaluate JavaScript", inputSchema: { type: "object", properties: { url: { type: "string" }, script: { type: "string" } }, required: ["script"] } },
-      
+      {
+        name: "scrape",
+        description: "Scrape content",
+        inputSchema: {
+          type: "object",
+          properties: { url: { type: "string" }, selector: { type: "string" } },
+        },
+      },
+      {
+        name: "scrapeMultiple",
+        description: "Scrape multiple selectors",
+        inputSchema: {
+          type: "object",
+          properties: {
+            url: { type: "string" },
+            selectors: { type: "object" },
+          },
+          required: ["selectors"],
+        },
+      },
+      {
+        name: "evaluate",
+        description: "Evaluate JavaScript",
+        inputSchema: {
+          type: "object",
+          properties: { url: { type: "string" }, script: { type: "string" } },
+          required: ["script"],
+        },
+      },
+
       // Interactions (5 tools)
-      { name: "click", description: "Click element", inputSchema: { type: "object", properties: { url: { type: "string" }, selector: { type: "string" }, button: { type: "string" }, clickCount: { type: "number" } }, required: ["selector"] } },
-      { name: "fill", description: "Fill input", inputSchema: { type: "object", properties: { url: { type: "string" }, selector: { type: "string" }, value: { type: "string" } }, required: ["selector", "value"] } },
-      { name: "type", description: "Type text", inputSchema: { type: "object", properties: { url: { type: "string" }, selector: { type: "string" }, text: { type: "string" }, delay: { type: "number" } }, required: ["selector", "text"] } },
-      { name: "select", description: "Select option", inputSchema: { type: "object", properties: { url: { type: "string" }, selector: { type: "string" }, value: { type: "string" } }, required: ["selector", "value"] } },
-      { name: "interact", description: "Execute multiple actions", inputSchema: { type: "object", properties: { url: { type: "string" }, actions: { type: "array" } }, required: ["actions"] } },
-      
+      {
+        name: "click",
+        description: "Click element",
+        inputSchema: {
+          type: "object",
+          properties: {
+            url: { type: "string" },
+            selector: { type: "string" },
+            button: { type: "string" },
+            clickCount: { type: "number" },
+          },
+          required: ["selector"],
+        },
+      },
+      {
+        name: "fill",
+        description: "Fill input",
+        inputSchema: {
+          type: "object",
+          properties: {
+            url: { type: "string" },
+            selector: { type: "string" },
+            value: { type: "string" },
+          },
+          required: ["selector", "value"],
+        },
+      },
+      {
+        name: "type",
+        description: "Type text",
+        inputSchema: {
+          type: "object",
+          properties: {
+            url: { type: "string" },
+            selector: { type: "string" },
+            text: { type: "string" },
+            delay: { type: "number" },
+          },
+          required: ["selector", "text"],
+        },
+      },
+      {
+        name: "select",
+        description: "Select option",
+        inputSchema: {
+          type: "object",
+          properties: {
+            url: { type: "string" },
+            selector: { type: "string" },
+            value: { type: "string" },
+          },
+          required: ["selector", "value"],
+        },
+      },
+      {
+        name: "interact",
+        description: "Execute multiple actions",
+        inputSchema: {
+          type: "object",
+          properties: { url: { type: "string" }, actions: { type: "array" } },
+          required: ["actions"],
+        },
+      },
+
       // Waiting (2 tools)
-      { name: "waitForSelector", description: "Wait for selector", inputSchema: { type: "object", properties: { url: { type: "string" }, selector: { type: "string" }, state: { type: "string" }, timeout: { type: "number" } }, required: ["selector"] } },
-      { name: "waitForNavigation", description: "Wait for navigation", inputSchema: { type: "object", properties: { url: { type: "string" }, waitUntil: { type: "string" }, timeout: { type: "number" } }, required: ["url"] } },
-      
+      {
+        name: "waitForSelector",
+        description: "Wait for selector",
+        inputSchema: {
+          type: "object",
+          properties: {
+            url: { type: "string" },
+            selector: { type: "string" },
+            state: { type: "string" },
+            timeout: { type: "number" },
+          },
+          required: ["selector"],
+        },
+      },
+      {
+        name: "waitForNavigation",
+        description: "Wait for navigation",
+        inputSchema: {
+          type: "object",
+          properties: {
+            url: { type: "string" },
+            waitUntil: { type: "string" },
+            timeout: { type: "number" },
+          },
+          required: ["url"],
+        },
+      },
+
       // Network (2 tools)
-      { name: "interceptNetwork", description: "Intercept network requests", inputSchema: { type: "object", properties: { url: { type: "string" } }, required: ["url"] } },
-      { name: "blockResources", description: "Block resources", inputSchema: { type: "object", properties: { url: { type: "string" }, pattern: { type: "string" } }, required: ["url"] } },
-      
+      {
+        name: "interceptNetwork",
+        description: "Intercept network requests",
+        inputSchema: {
+          type: "object",
+          properties: { url: { type: "string" } },
+          required: ["url"],
+        },
+      },
+      {
+        name: "blockResources",
+        description: "Block resources",
+        inputSchema: {
+          type: "object",
+          properties: { url: { type: "string" }, pattern: { type: "string" } },
+          required: ["url"],
+        },
+      },
+
       // Cookies (3 tools)
-      { name: "getCookies", description: "Get cookies", inputSchema: { type: "object", properties: { url: { type: "string" }, urls: { type: "array" } } } },
-      { name: "setCookies", description: "Set cookies", inputSchema: { type: "object", properties: { cookies: { type: "array" } }, required: ["cookies"] } },
-      { name: "clearCookies", description: "Clear cookies", inputSchema: { type: "object", properties: {} } },
-      
+      {
+        name: "getCookies",
+        description: "Get cookies",
+        inputSchema: {
+          type: "object",
+          properties: { url: { type: "string" }, urls: { type: "array" } },
+        },
+      },
+      {
+        name: "setCookies",
+        description: "Set cookies",
+        inputSchema: {
+          type: "object",
+          properties: { cookies: { type: "array" } },
+          required: ["cookies"],
+        },
+      },
+      {
+        name: "clearCookies",
+        description: "Clear cookies",
+        inputSchema: { type: "object", properties: {} },
+      },
+
       // Storage (2 tools)
-      { name: "getLocalStorage", description: "Get localStorage", inputSchema: { type: "object", properties: { url: { type: "string" } } } },
-      { name: "setLocalStorage", description: "Set localStorage", inputSchema: { type: "object", properties: { url: { type: "string" }, items: { type: "object" } }, required: ["items"] } },
-      
+      {
+        name: "getLocalStorage",
+        description: "Get localStorage",
+        inputSchema: {
+          type: "object",
+          properties: { url: { type: "string" } },
+        },
+      },
+      {
+        name: "setLocalStorage",
+        description: "Set localStorage",
+        inputSchema: {
+          type: "object",
+          properties: { url: { type: "string" }, items: { type: "object" } },
+          required: ["items"],
+        },
+      },
+
       // Emulation (3 tools)
-      { name: "emulateDevice", description: "Emulate device", inputSchema: { type: "object", properties: { url: { type: "string" }, device: { type: "string" } }, required: ["url", "device"] } },
-      { name: "setGeolocation", description: "Set geolocation", inputSchema: { type: "object", properties: { url: { type: "string" }, latitude: { type: "number" }, longitude: { type: "number" }, accuracy: { type: "number" } }, required: ["latitude", "longitude"] } },
-      { name: "setViewport", description: "Set viewport", inputSchema: { type: "object", properties: { width: { type: "number" }, height: { type: "number" } }, required: ["width", "height"] } },
+      {
+        name: "emulateDevice",
+        description: "Emulate device",
+        inputSchema: {
+          type: "object",
+          properties: { url: { type: "string" }, device: { type: "string" } },
+          required: ["url", "device"],
+        },
+      },
+      {
+        name: "setGeolocation",
+        description: "Set geolocation",
+        inputSchema: {
+          type: "object",
+          properties: {
+            url: { type: "string" },
+            latitude: { type: "number" },
+            longitude: { type: "number" },
+            accuracy: { type: "number" },
+          },
+          required: ["latitude", "longitude"],
+        },
+      },
+      {
+        name: "setViewport",
+        description: "Set viewport",
+        inputSchema: {
+          type: "object",
+          properties: { width: { type: "number" }, height: { type: "number" } },
+          required: ["width", "height"],
+        },
+      },
     ],
     resources: [
-      { uri: "playwright://browsers", name: "Browsers", description: "Available browsers" },
-      { uri: "playwright://devices", name: "Devices", description: "Emulated devices" },
+      {
+        uri: "playwright://browsers",
+        name: "Browsers",
+        description: "Available browsers",
+      },
+      {
+        uri: "playwright://devices",
+        name: "Devices",
+        description: "Emulated devices",
+      },
     ],
     prompts: [
-      { name: "web_automation", description: "Help automate web tasks", arguments: [{ name: "task", description: "What to automate", required: true }] },
-      { name: "scrape_data", description: "Help scrape data", arguments: [{ name: "url", description: "URL to scrape", required: true }] },
-      { name: "test_website", description: "Help test website", arguments: [{ name: "url", description: "URL to test", required: true }] },
+      {
+        name: "web_automation",
+        description: "Help automate web tasks",
+        arguments: [
+          { name: "task", description: "What to automate", required: true },
+        ],
+      },
+      {
+        name: "scrape_data",
+        description: "Help scrape data",
+        arguments: [
+          { name: "url", description: "URL to scrape", required: true },
+        ],
+      },
+      {
+        name: "test_website",
+        description: "Help test website",
+        arguments: [
+          { name: "url", description: "URL to test", required: true },
+        ],
+      },
     ],
     execute: async (tool, params) => {
       const { executePlaywrightTool } = await import("./playwright-tools");
@@ -405,9 +930,115 @@ AVOID: Use Puppeteer MCP for similar tasks (they overlap). Playwright is more mo
     enabled: true,
     tools: [
       {
-        name: "dynamic",
-        description: "Tools from @leonardsellem/n8n-mcp-server",
-        inputSchema: { type: "object", properties: {} },
+        name: "listWorkflows",
+        description: "List all n8n workflows",
+        inputSchema: {
+          type: "object",
+          properties: {
+            active: { type: "boolean", description: "Filter by active status" },
+            tags: {
+              type: "array",
+              items: { type: "string" },
+              description: "Filter by tags",
+            },
+          },
+        },
+      },
+      {
+        name: "getWorkflow",
+        description: "Get workflow by ID",
+        inputSchema: {
+          type: "object",
+          properties: {
+            id: { type: "string", description: "Workflow ID" },
+          },
+          required: ["id"],
+        },
+      },
+      {
+        name: "createWorkflow",
+        description: "Create new n8n workflow",
+        inputSchema: {
+          type: "object",
+          properties: {
+            name: { type: "string" },
+            nodes: { type: "array" },
+            connections: { type: "object" },
+            settings: { type: "object" },
+            tags: { type: "array", items: { type: "string" } },
+          },
+          required: ["name", "nodes", "connections"],
+        },
+      },
+      {
+        name: "updateWorkflow",
+        description: "Update existing n8n workflow",
+        inputSchema: {
+          type: "object",
+          properties: {
+            id: { type: "string" },
+            name: { type: "string" },
+            nodes: { type: "array" },
+            connections: { type: "object" },
+            settings: { type: "object" },
+            active: { type: "boolean" },
+          },
+          required: ["id"],
+        },
+      },
+      {
+        name: "executeWorkflow",
+        description: "Execute/trigger n8n workflow",
+        inputSchema: {
+          type: "object",
+          properties: {
+            id: { type: "string" },
+            data: { type: "object", description: "Input data for workflow" },
+          },
+          required: ["id"],
+        },
+      },
+      {
+        name: "getExecution",
+        description: "Get workflow execution by ID",
+        inputSchema: {
+          type: "object",
+          properties: {
+            id: { type: "string", description: "Execution ID" },
+          },
+          required: ["id"],
+        },
+      },
+      {
+        name: "listExecutions",
+        description: "List workflow executions",
+        inputSchema: {
+          type: "object",
+          properties: {
+            workflowId: { type: "string" },
+            status: {
+              type: "string",
+              enum: ["waiting", "error", "success", "running"],
+            },
+            limit: { type: "number" },
+          },
+        },
+      },
+      {
+        name: "buildWorkflowFromDescription",
+        description:
+          "AI workflow builder - create workflow from natural language description",
+        inputSchema: {
+          type: "object",
+          properties: {
+            description: {
+              type: "string",
+              description: "Natural language workflow description",
+            },
+            name: { type: "string" },
+          },
+          required: ["description"],
+        },
       },
     ],
     resources: [
@@ -736,8 +1367,13 @@ AVOID: Use individual MCP servers (Slack, GitHub, etc.) for simple single-servic
     ],
     execute: async (tool, params) => {
       // Import the full mongodb tools implementation
+      if (!process.env.MONGODB_CONNECTION_STRING)
+        throw new Error("MONGODB_CONNECTION_STRING not configured");
+      const { MongoClient } = await import("mongodb");
+      const client = new MongoClient(process.env.MONGODB_CONNECTION_STRING);
+      await client.connect();
       const { executeMongoDBTool } = await import("./mongodb-tools");
-      return await executeMongoDBTool(tool, params);
+      return await executeMongoDBTool(client, tool, params);
     },
     agentBriefing: `MONGODB MCP - Use for ALL MongoDB database operations.
 
@@ -866,7 +1502,10 @@ AVOID: Use Postgres/SQLite MCP for relational data. Use MongoDB MCP for document
         description: "Update comment",
         inputSchema: {
           type: "object",
-          properties: { commentId: { type: "string" }, body: { type: "string" } },
+          properties: {
+            commentId: { type: "string" },
+            body: { type: "string" },
+          },
           required: ["commentId", "body"],
         },
       },
@@ -918,7 +1557,10 @@ AVOID: Use Postgres/SQLite MCP for relational data. Use MongoDB MCP for document
         description: "Update project",
         inputSchema: {
           type: "object",
-          properties: { projectId: { type: "string" }, data: { type: "object" } },
+          properties: {
+            projectId: { type: "string" },
+            data: { type: "object" },
+          },
           required: ["projectId", "data"],
         },
       },
@@ -1166,56 +1808,317 @@ AVOID: Use GitHub MCP for code-related issues/PRs. Use Linear MCP for project ma
     },
     tools: [
       // Projects (4 tools)
-      { name: "listProjects", description: "List Railway projects", inputSchema: { type: "object", properties: {} } },
-      { name: "getProject", description: "Get project details", inputSchema: { type: "object", properties: { projectId: { type: "string" } }, required: ["projectId"] } },
-      { name: "createProject", description: "Create project", inputSchema: { type: "object", properties: { name: { type: "string" }, description: { type: "string" } }, required: ["name"] } },
-      { name: "deleteProject", description: "Delete project", inputSchema: { type: "object", properties: { projectId: { type: "string" } }, required: ["projectId"] } },
-      
+      {
+        name: "listProjects",
+        description: "List Railway projects",
+        inputSchema: { type: "object", properties: {} },
+      },
+      {
+        name: "getProject",
+        description: "Get project details",
+        inputSchema: {
+          type: "object",
+          properties: { projectId: { type: "string" } },
+          required: ["projectId"],
+        },
+      },
+      {
+        name: "createProject",
+        description: "Create project",
+        inputSchema: {
+          type: "object",
+          properties: {
+            name: { type: "string" },
+            description: { type: "string" },
+          },
+          required: ["name"],
+        },
+      },
+      {
+        name: "deleteProject",
+        description: "Delete project",
+        inputSchema: {
+          type: "object",
+          properties: { projectId: { type: "string" } },
+          required: ["projectId"],
+        },
+      },
+
       // Services (4 tools)
-      { name: "listServices", description: "List services", inputSchema: { type: "object", properties: { projectId: { type: "string" } }, required: ["projectId"] } },
-      { name: "getService", description: "Get service details", inputSchema: { type: "object", properties: { serviceId: { type: "string" } }, required: ["serviceId"] } },
-      { name: "createService", description: "Create service", inputSchema: { type: "object", properties: { projectId: { type: "string" }, name: { type: "string" }, source: { type: "object" } }, required: ["projectId", "name"] } },
-      { name: "deleteService", description: "Delete service", inputSchema: { type: "object", properties: { serviceId: { type: "string" } }, required: ["serviceId"] } },
-      
+      {
+        name: "listServices",
+        description: "List services",
+        inputSchema: {
+          type: "object",
+          properties: { projectId: { type: "string" } },
+          required: ["projectId"],
+        },
+      },
+      {
+        name: "getService",
+        description: "Get service details",
+        inputSchema: {
+          type: "object",
+          properties: { serviceId: { type: "string" } },
+          required: ["serviceId"],
+        },
+      },
+      {
+        name: "createService",
+        description: "Create service",
+        inputSchema: {
+          type: "object",
+          properties: {
+            projectId: { type: "string" },
+            name: { type: "string" },
+            source: { type: "object" },
+          },
+          required: ["projectId", "name"],
+        },
+      },
+      {
+        name: "deleteService",
+        description: "Delete service",
+        inputSchema: {
+          type: "object",
+          properties: { serviceId: { type: "string" } },
+          required: ["serviceId"],
+        },
+      },
+
       // Deployments (4 tools)
-      { name: "deployService", description: "Deploy service", inputSchema: { type: "object", properties: { serviceId: { type: "string" } }, required: ["serviceId"] } },
-      { name: "listDeployments", description: "List deployments", inputSchema: { type: "object", properties: { serviceId: { type: "string" } }, required: ["serviceId"] } },
-      { name: "getDeployment", description: "Get deployment details", inputSchema: { type: "object", properties: { deploymentId: { type: "string" } }, required: ["deploymentId"] } },
-      { name: "rollbackDeployment", description: "Rollback deployment", inputSchema: { type: "object", properties: { deploymentId: { type: "string" } }, required: ["deploymentId"] } },
-      
+      {
+        name: "deployService",
+        description: "Deploy service",
+        inputSchema: {
+          type: "object",
+          properties: { serviceId: { type: "string" } },
+          required: ["serviceId"],
+        },
+      },
+      {
+        name: "listDeployments",
+        description: "List deployments",
+        inputSchema: {
+          type: "object",
+          properties: { serviceId: { type: "string" } },
+          required: ["serviceId"],
+        },
+      },
+      {
+        name: "getDeployment",
+        description: "Get deployment details",
+        inputSchema: {
+          type: "object",
+          properties: { deploymentId: { type: "string" } },
+          required: ["deploymentId"],
+        },
+      },
+      {
+        name: "rollbackDeployment",
+        description: "Rollback deployment",
+        inputSchema: {
+          type: "object",
+          properties: { deploymentId: { type: "string" } },
+          required: ["deploymentId"],
+        },
+      },
+
       // Environment Variables (3 tools)
-      { name: "listVariables", description: "List environment variables", inputSchema: { type: "object", properties: { serviceId: { type: "string" }, environmentId: { type: "string" } }, required: ["serviceId", "environmentId"] } },
-      { name: "setVariable", description: "Set environment variable", inputSchema: { type: "object", properties: { serviceId: { type: "string" }, environmentId: { type: "string" }, name: { type: "string" }, value: { type: "string" } }, required: ["serviceId", "environmentId", "name", "value"] } },
-      { name: "deleteVariable", description: "Delete environment variable", inputSchema: { type: "object", properties: { variableId: { type: "string" } }, required: ["variableId"] } },
-      
+      {
+        name: "listVariables",
+        description: "List environment variables",
+        inputSchema: {
+          type: "object",
+          properties: {
+            serviceId: { type: "string" },
+            environmentId: { type: "string" },
+          },
+          required: ["serviceId", "environmentId"],
+        },
+      },
+      {
+        name: "setVariable",
+        description: "Set environment variable",
+        inputSchema: {
+          type: "object",
+          properties: {
+            serviceId: { type: "string" },
+            environmentId: { type: "string" },
+            name: { type: "string" },
+            value: { type: "string" },
+          },
+          required: ["serviceId", "environmentId", "name", "value"],
+        },
+      },
+      {
+        name: "deleteVariable",
+        description: "Delete environment variable",
+        inputSchema: {
+          type: "object",
+          properties: { variableId: { type: "string" } },
+          required: ["variableId"],
+        },
+      },
+
       // Volumes (3 tools)
-      { name: "listVolumes", description: "List volumes", inputSchema: { type: "object", properties: { serviceId: { type: "string" } }, required: ["serviceId"] } },
-      { name: "createVolume", description: "Create volume", inputSchema: { type: "object", properties: { serviceId: { type: "string" }, name: { type: "string" }, mountPath: { type: "string" } }, required: ["serviceId", "name", "mountPath"] } },
-      { name: "deleteVolume", description: "Delete volume", inputSchema: { type: "object", properties: { volumeId: { type: "string" } }, required: ["volumeId"] } },
-      
+      {
+        name: "listVolumes",
+        description: "List volumes",
+        inputSchema: {
+          type: "object",
+          properties: { serviceId: { type: "string" } },
+          required: ["serviceId"],
+        },
+      },
+      {
+        name: "createVolume",
+        description: "Create volume",
+        inputSchema: {
+          type: "object",
+          properties: {
+            serviceId: { type: "string" },
+            name: { type: "string" },
+            mountPath: { type: "string" },
+          },
+          required: ["serviceId", "name", "mountPath"],
+        },
+      },
+      {
+        name: "deleteVolume",
+        description: "Delete volume",
+        inputSchema: {
+          type: "object",
+          properties: { volumeId: { type: "string" } },
+          required: ["volumeId"],
+        },
+      },
+
       // Domains (3 tools)
-      { name: "listDomains", description: "List custom domains", inputSchema: { type: "object", properties: { serviceId: { type: "string" } }, required: ["serviceId"] } },
-      { name: "createDomain", description: "Create custom domain", inputSchema: { type: "object", properties: { serviceId: { type: "string" }, domain: { type: "string" } }, required: ["serviceId", "domain"] } },
-      { name: "deleteDomain", description: "Delete custom domain", inputSchema: { type: "object", properties: { domainId: { type: "string" } }, required: ["domainId"] } },
-      
+      {
+        name: "listDomains",
+        description: "List custom domains",
+        inputSchema: {
+          type: "object",
+          properties: { serviceId: { type: "string" } },
+          required: ["serviceId"],
+        },
+      },
+      {
+        name: "createDomain",
+        description: "Create custom domain",
+        inputSchema: {
+          type: "object",
+          properties: {
+            serviceId: { type: "string" },
+            domain: { type: "string" },
+          },
+          required: ["serviceId", "domain"],
+        },
+      },
+      {
+        name: "deleteDomain",
+        description: "Delete custom domain",
+        inputSchema: {
+          type: "object",
+          properties: { domainId: { type: "string" } },
+          required: ["domainId"],
+        },
+      },
+
       // Logs & Metrics (2 tools)
-      { name: "getLogs", description: "Get deployment logs", inputSchema: { type: "object", properties: { deploymentId: { type: "string" }, limit: { type: "number" } }, required: ["deploymentId"] } },
-      { name: "getMetrics", description: "Get service metrics", inputSchema: { type: "object", properties: { serviceId: { type: "string" }, measurementName: { type: "string" } }, required: ["serviceId"] } },
-      
+      {
+        name: "getLogs",
+        description: "Get deployment logs",
+        inputSchema: {
+          type: "object",
+          properties: {
+            deploymentId: { type: "string" },
+            limit: { type: "number" },
+          },
+          required: ["deploymentId"],
+        },
+      },
+      {
+        name: "getMetrics",
+        description: "Get service metrics",
+        inputSchema: {
+          type: "object",
+          properties: {
+            serviceId: { type: "string" },
+            measurementName: { type: "string" },
+          },
+          required: ["serviceId"],
+        },
+      },
+
       // Environments (2 tools)
-      { name: "listEnvironments", description: "List environments", inputSchema: { type: "object", properties: { projectId: { type: "string" } }, required: ["projectId"] } },
-      { name: "createEnvironment", description: "Create environment", inputSchema: { type: "object", properties: { projectId: { type: "string" }, name: { type: "string" } }, required: ["projectId", "name"] } },
+      {
+        name: "listEnvironments",
+        description: "List environments",
+        inputSchema: {
+          type: "object",
+          properties: { projectId: { type: "string" } },
+          required: ["projectId"],
+        },
+      },
+      {
+        name: "createEnvironment",
+        description: "Create environment",
+        inputSchema: {
+          type: "object",
+          properties: {
+            projectId: { type: "string" },
+            name: { type: "string" },
+          },
+          required: ["projectId", "name"],
+        },
+      },
     ],
     resources: [
-      { uri: "railway://projects", name: "Projects", description: "All Railway projects" },
-      { uri: "railway://deployments", name: "Deployments", description: "Recent deployments" },
-      { uri: "railway://services", name: "Services", description: "All services" },
-      { uri: "railway://metrics", name: "Metrics", description: "Service metrics" },
+      {
+        uri: "railway://projects",
+        name: "Projects",
+        description: "All Railway projects",
+      },
+      {
+        uri: "railway://deployments",
+        name: "Deployments",
+        description: "Recent deployments",
+      },
+      {
+        uri: "railway://services",
+        name: "Services",
+        description: "All services",
+      },
+      {
+        uri: "railway://metrics",
+        name: "Metrics",
+        description: "Service metrics",
+      },
     ],
     prompts: [
-      { name: "deploy_app", description: "Help deploy to Railway", arguments: [{ name: "repo", description: "GitHub repo URL", required: true }] },
-      { name: "manage_env", description: "Manage environment variables", arguments: [{ name: "service", description: "Service name", required: true }] },
-      { name: "troubleshoot", description: "Troubleshoot deployment", arguments: [{ name: "issue", description: "Issue description", required: true }] },
+      {
+        name: "deploy_app",
+        description: "Help deploy to Railway",
+        arguments: [
+          { name: "repo", description: "GitHub repo URL", required: true },
+        ],
+      },
+      {
+        name: "manage_env",
+        description: "Manage environment variables",
+        arguments: [
+          { name: "service", description: "Service name", required: true },
+        ],
+      },
+      {
+        name: "troubleshoot",
+        description: "Troubleshoot deployment",
+        arguments: [
+          { name: "issue", description: "Issue description", required: true },
+        ],
+      },
     ],
     execute: async (tool, params) => {
       const { executeRailwayTool } = await import("./railway-tools");
@@ -1259,54 +2162,441 @@ AVOID: Use other MCPs for application logic. Use Railway MCP for infrastructure 
     },
     tools: [
       // Repository Operations (5 tools)
-      { name: "listRepos", description: "List repos", inputSchema: { type: "object", properties: { owner: { type: "string" }, limit: { type: "number" } } } },
-      { name: "getRepo", description: "Get repo details", inputSchema: { type: "object", properties: { owner: { type: "string" }, repo: { type: "string" } }, required: ["owner", "repo"] } },
-      { name: "createRepo", description: "Create repo", inputSchema: { type: "object", properties: { name: { type: "string" }, description: { type: "string" }, private: { type: "boolean" } }, required: ["name"] } },
-      { name: "updateRepo", description: "Update repo", inputSchema: { type: "object", properties: { owner: { type: "string" }, repo: { type: "string" }, data: { type: "object" } }, required: ["owner", "repo", "data"] } },
-      { name: "deleteRepo", description: "Delete repo", inputSchema: { type: "object", properties: { owner: { type: "string" }, repo: { type: "string" } }, required: ["owner", "repo"] } },
-      
+      {
+        name: "listRepos",
+        description: "List repos",
+        inputSchema: {
+          type: "object",
+          properties: { owner: { type: "string" }, limit: { type: "number" } },
+        },
+      },
+      {
+        name: "getRepo",
+        description: "Get repo details",
+        inputSchema: {
+          type: "object",
+          properties: { owner: { type: "string" }, repo: { type: "string" } },
+          required: ["owner", "repo"],
+        },
+      },
+      {
+        name: "createRepo",
+        description: "Create repo",
+        inputSchema: {
+          type: "object",
+          properties: {
+            name: { type: "string" },
+            description: { type: "string" },
+            private: { type: "boolean" },
+          },
+          required: ["name"],
+        },
+      },
+      {
+        name: "updateRepo",
+        description: "Update repo",
+        inputSchema: {
+          type: "object",
+          properties: {
+            owner: { type: "string" },
+            repo: { type: "string" },
+            data: { type: "object" },
+          },
+          required: ["owner", "repo", "data"],
+        },
+      },
+      {
+        name: "deleteRepo",
+        description: "Delete repo",
+        inputSchema: {
+          type: "object",
+          properties: { owner: { type: "string" }, repo: { type: "string" } },
+          required: ["owner", "repo"],
+        },
+      },
+
       // Issue Operations (5 tools)
-      { name: "listIssues", description: "List issues", inputSchema: { type: "object", properties: { owner: { type: "string" }, repo: { type: "string" }, state: { type: "string" } }, required: ["owner", "repo"] } },
-      { name: "getIssue", description: "Get issue", inputSchema: { type: "object", properties: { owner: { type: "string" }, repo: { type: "string" }, issue_number: { type: "number" } }, required: ["owner", "repo", "issue_number"] } },
-      { name: "createIssue", description: "Create issue", inputSchema: { type: "object", properties: { owner: { type: "string" }, repo: { type: "string" }, title: { type: "string" }, body: { type: "string" }, labels: { type: "array" } }, required: ["owner", "repo", "title"] } },
-      { name: "updateIssue", description: "Update issue", inputSchema: { type: "object", properties: { owner: { type: "string" }, repo: { type: "string" }, issue_number: { type: "number" }, data: { type: "object" } }, required: ["owner", "repo", "issue_number", "data"] } },
-      { name: "closeIssue", description: "Close issue", inputSchema: { type: "object", properties: { owner: { type: "string" }, repo: { type: "string" }, issue_number: { type: "number" } }, required: ["owner", "repo", "issue_number"] } },
-      
+      {
+        name: "listIssues",
+        description: "List issues",
+        inputSchema: {
+          type: "object",
+          properties: {
+            owner: { type: "string" },
+            repo: { type: "string" },
+            state: { type: "string" },
+          },
+          required: ["owner", "repo"],
+        },
+      },
+      {
+        name: "getIssue",
+        description: "Get issue",
+        inputSchema: {
+          type: "object",
+          properties: {
+            owner: { type: "string" },
+            repo: { type: "string" },
+            issue_number: { type: "number" },
+          },
+          required: ["owner", "repo", "issue_number"],
+        },
+      },
+      {
+        name: "createIssue",
+        description: "Create issue",
+        inputSchema: {
+          type: "object",
+          properties: {
+            owner: { type: "string" },
+            repo: { type: "string" },
+            title: { type: "string" },
+            body: { type: "string" },
+            labels: { type: "array" },
+          },
+          required: ["owner", "repo", "title"],
+        },
+      },
+      {
+        name: "updateIssue",
+        description: "Update issue",
+        inputSchema: {
+          type: "object",
+          properties: {
+            owner: { type: "string" },
+            repo: { type: "string" },
+            issue_number: { type: "number" },
+            data: { type: "object" },
+          },
+          required: ["owner", "repo", "issue_number", "data"],
+        },
+      },
+      {
+        name: "closeIssue",
+        description: "Close issue",
+        inputSchema: {
+          type: "object",
+          properties: {
+            owner: { type: "string" },
+            repo: { type: "string" },
+            issue_number: { type: "number" },
+          },
+          required: ["owner", "repo", "issue_number"],
+        },
+      },
+
       // Pull Request Operations (5 tools)
-      { name: "listPRs", description: "List PRs", inputSchema: { type: "object", properties: { owner: { type: "string" }, repo: { type: "string" }, state: { type: "string" } }, required: ["owner", "repo"] } },
-      { name: "getPR", description: "Get PR", inputSchema: { type: "object", properties: { owner: { type: "string" }, repo: { type: "string" }, pull_number: { type: "number" } }, required: ["owner", "repo", "pull_number"] } },
-      { name: "createPR", description: "Create PR", inputSchema: { type: "object", properties: { owner: { type: "string" }, repo: { type: "string" }, title: { type: "string" }, head: { type: "string" }, base: { type: "string" }, body: { type: "string" } }, required: ["owner", "repo", "title", "head", "base"] } },
-      { name: "mergePR", description: "Merge PR", inputSchema: { type: "object", properties: { owner: { type: "string" }, repo: { type: "string" }, pull_number: { type: "number" }, merge_method: { type: "string" } }, required: ["owner", "repo", "pull_number"] } },
-      { name: "reviewPR", description: "Review PR", inputSchema: { type: "object", properties: { owner: { type: "string" }, repo: { type: "string" }, pull_number: { type: "number" }, event: { type: "string" }, body: { type: "string" } }, required: ["owner", "repo", "pull_number", "event"] } },
-      
+      {
+        name: "listPRs",
+        description: "List PRs",
+        inputSchema: {
+          type: "object",
+          properties: {
+            owner: { type: "string" },
+            repo: { type: "string" },
+            state: { type: "string" },
+          },
+          required: ["owner", "repo"],
+        },
+      },
+      {
+        name: "getPR",
+        description: "Get PR",
+        inputSchema: {
+          type: "object",
+          properties: {
+            owner: { type: "string" },
+            repo: { type: "string" },
+            pull_number: { type: "number" },
+          },
+          required: ["owner", "repo", "pull_number"],
+        },
+      },
+      {
+        name: "createPR",
+        description: "Create PR",
+        inputSchema: {
+          type: "object",
+          properties: {
+            owner: { type: "string" },
+            repo: { type: "string" },
+            title: { type: "string" },
+            head: { type: "string" },
+            base: { type: "string" },
+            body: { type: "string" },
+          },
+          required: ["owner", "repo", "title", "head", "base"],
+        },
+      },
+      {
+        name: "mergePR",
+        description: "Merge PR",
+        inputSchema: {
+          type: "object",
+          properties: {
+            owner: { type: "string" },
+            repo: { type: "string" },
+            pull_number: { type: "number" },
+            merge_method: { type: "string" },
+          },
+          required: ["owner", "repo", "pull_number"],
+        },
+      },
+      {
+        name: "reviewPR",
+        description: "Review PR",
+        inputSchema: {
+          type: "object",
+          properties: {
+            owner: { type: "string" },
+            repo: { type: "string" },
+            pull_number: { type: "number" },
+            event: { type: "string" },
+            body: { type: "string" },
+          },
+          required: ["owner", "repo", "pull_number", "event"],
+        },
+      },
+
       // Workflow Operations (5 tools)
-      { name: "listWorkflows", description: "List workflows", inputSchema: { type: "object", properties: { owner: { type: "string" }, repo: { type: "string" } }, required: ["owner", "repo"] } },
-      { name: "getWorkflow", description: "Get workflow", inputSchema: { type: "object", properties: { owner: { type: "string" }, repo: { type: "string" }, workflow_id: { type: "number" } }, required: ["owner", "repo", "workflow_id"] } },
-      { name: "triggerWorkflow", description: "Trigger workflow", inputSchema: { type: "object", properties: { owner: { type: "string" }, repo: { type: "string" }, workflow_id: { type: "number" }, ref: { type: "string" }, inputs: { type: "object" } }, required: ["owner", "repo", "workflow_id", "ref"] } },
-      { name: "listWorkflowRuns", description: "List workflow runs", inputSchema: { type: "object", properties: { owner: { type: "string" }, repo: { type: "string" }, workflow_id: { type: "number" } }, required: ["owner", "repo"] } },
-      { name: "getWorkflowRun", description: "Get workflow run", inputSchema: { type: "object", properties: { owner: { type: "string" }, repo: { type: "string" }, run_id: { type: "number" } }, required: ["owner", "repo", "run_id"] } },
-      
+      {
+        name: "listWorkflows",
+        description: "List workflows",
+        inputSchema: {
+          type: "object",
+          properties: { owner: { type: "string" }, repo: { type: "string" } },
+          required: ["owner", "repo"],
+        },
+      },
+      {
+        name: "getWorkflow",
+        description: "Get workflow",
+        inputSchema: {
+          type: "object",
+          properties: {
+            owner: { type: "string" },
+            repo: { type: "string" },
+            workflow_id: { type: "number" },
+          },
+          required: ["owner", "repo", "workflow_id"],
+        },
+      },
+      {
+        name: "triggerWorkflow",
+        description: "Trigger workflow",
+        inputSchema: {
+          type: "object",
+          properties: {
+            owner: { type: "string" },
+            repo: { type: "string" },
+            workflow_id: { type: "number" },
+            ref: { type: "string" },
+            inputs: { type: "object" },
+          },
+          required: ["owner", "repo", "workflow_id", "ref"],
+        },
+      },
+      {
+        name: "listWorkflowRuns",
+        description: "List workflow runs",
+        inputSchema: {
+          type: "object",
+          properties: {
+            owner: { type: "string" },
+            repo: { type: "string" },
+            workflow_id: { type: "number" },
+          },
+          required: ["owner", "repo"],
+        },
+      },
+      {
+        name: "getWorkflowRun",
+        description: "Get workflow run",
+        inputSchema: {
+          type: "object",
+          properties: {
+            owner: { type: "string" },
+            repo: { type: "string" },
+            run_id: { type: "number" },
+          },
+          required: ["owner", "repo", "run_id"],
+        },
+      },
+
       // Release Operations (5 tools)
-      { name: "listReleases", description: "List releases", inputSchema: { type: "object", properties: { owner: { type: "string" }, repo: { type: "string" } }, required: ["owner", "repo"] } },
-      { name: "getRelease", description: "Get release", inputSchema: { type: "object", properties: { owner: { type: "string" }, repo: { type: "string" }, release_id: { type: "number" } }, required: ["owner", "repo", "release_id"] } },
-      { name: "createRelease", description: "Create release", inputSchema: { type: "object", properties: { owner: { type: "string" }, repo: { type: "string" }, tag_name: { type: "string" }, name: { type: "string" }, body: { type: "string" } }, required: ["owner", "repo", "tag_name"] } },
-      { name: "updateRelease", description: "Update release", inputSchema: { type: "object", properties: { owner: { type: "string" }, repo: { type: "string" }, release_id: { type: "number" }, data: { type: "object" } }, required: ["owner", "repo", "release_id", "data"] } },
-      { name: "deleteRelease", description: "Delete release", inputSchema: { type: "object", properties: { owner: { type: "string" }, repo: { type: "string" }, release_id: { type: "number" } }, required: ["owner", "repo", "release_id"] } },
-      
+      {
+        name: "listReleases",
+        description: "List releases",
+        inputSchema: {
+          type: "object",
+          properties: { owner: { type: "string" }, repo: { type: "string" } },
+          required: ["owner", "repo"],
+        },
+      },
+      {
+        name: "getRelease",
+        description: "Get release",
+        inputSchema: {
+          type: "object",
+          properties: {
+            owner: { type: "string" },
+            repo: { type: "string" },
+            release_id: { type: "number" },
+          },
+          required: ["owner", "repo", "release_id"],
+        },
+      },
+      {
+        name: "createRelease",
+        description: "Create release",
+        inputSchema: {
+          type: "object",
+          properties: {
+            owner: { type: "string" },
+            repo: { type: "string" },
+            tag_name: { type: "string" },
+            name: { type: "string" },
+            body: { type: "string" },
+          },
+          required: ["owner", "repo", "tag_name"],
+        },
+      },
+      {
+        name: "updateRelease",
+        description: "Update release",
+        inputSchema: {
+          type: "object",
+          properties: {
+            owner: { type: "string" },
+            repo: { type: "string" },
+            release_id: { type: "number" },
+            data: { type: "object" },
+          },
+          required: ["owner", "repo", "release_id", "data"],
+        },
+      },
+      {
+        name: "deleteRelease",
+        description: "Delete release",
+        inputSchema: {
+          type: "object",
+          properties: {
+            owner: { type: "string" },
+            repo: { type: "string" },
+            release_id: { type: "number" },
+          },
+          required: ["owner", "repo", "release_id"],
+        },
+      },
+
       // Branch Operations (4 tools)
-      { name: "listBranches", description: "List branches", inputSchema: { type: "object", properties: { owner: { type: "string" }, repo: { type: "string" } }, required: ["owner", "repo"] } },
-      { name: "getBranch", description: "Get branch", inputSchema: { type: "object", properties: { owner: { type: "string" }, repo: { type: "string" }, branch: { type: "string" } }, required: ["owner", "repo", "branch"] } },
-      { name: "createBranch", description: "Create branch", inputSchema: { type: "object", properties: { owner: { type: "string" }, repo: { type: "string" }, branch: { type: "string" }, sha: { type: "string" } }, required: ["owner", "repo", "branch", "sha"] } },
-      { name: "deleteBranch", description: "Delete branch", inputSchema: { type: "object", properties: { owner: { type: "string" }, repo: { type: "string" }, branch: { type: "string" } }, required: ["owner", "repo", "branch"] } },
-      
+      {
+        name: "listBranches",
+        description: "List branches",
+        inputSchema: {
+          type: "object",
+          properties: { owner: { type: "string" }, repo: { type: "string" } },
+          required: ["owner", "repo"],
+        },
+      },
+      {
+        name: "getBranch",
+        description: "Get branch",
+        inputSchema: {
+          type: "object",
+          properties: {
+            owner: { type: "string" },
+            repo: { type: "string" },
+            branch: { type: "string" },
+          },
+          required: ["owner", "repo", "branch"],
+        },
+      },
+      {
+        name: "createBranch",
+        description: "Create branch",
+        inputSchema: {
+          type: "object",
+          properties: {
+            owner: { type: "string" },
+            repo: { type: "string" },
+            branch: { type: "string" },
+            sha: { type: "string" },
+          },
+          required: ["owner", "repo", "branch", "sha"],
+        },
+      },
+      {
+        name: "deleteBranch",
+        description: "Delete branch",
+        inputSchema: {
+          type: "object",
+          properties: {
+            owner: { type: "string" },
+            repo: { type: "string" },
+            branch: { type: "string" },
+          },
+          required: ["owner", "repo", "branch"],
+        },
+      },
+
       // Commit Operations (2 tools)
-      { name: "listCommits", description: "List commits", inputSchema: { type: "object", properties: { owner: { type: "string" }, repo: { type: "string" }, sha: { type: "string" }, path: { type: "string" } }, required: ["owner", "repo"] } },
-      { name: "getCommit", description: "Get commit", inputSchema: { type: "object", properties: { owner: { type: "string" }, repo: { type: "string" }, ref: { type: "string" } }, required: ["owner", "repo", "ref"] } },
-      
+      {
+        name: "listCommits",
+        description: "List commits",
+        inputSchema: {
+          type: "object",
+          properties: {
+            owner: { type: "string" },
+            repo: { type: "string" },
+            sha: { type: "string" },
+            path: { type: "string" },
+          },
+          required: ["owner", "repo"],
+        },
+      },
+      {
+        name: "getCommit",
+        description: "Get commit",
+        inputSchema: {
+          type: "object",
+          properties: {
+            owner: { type: "string" },
+            repo: { type: "string" },
+            ref: { type: "string" },
+          },
+          required: ["owner", "repo", "ref"],
+        },
+      },
+
       // Search Operations (3 tools)
-      { name: "searchCode", description: "Search code", inputSchema: { type: "object", properties: { query: { type: "string" } }, required: ["query"] } },
-      { name: "searchRepos", description: "Search repos", inputSchema: { type: "object", properties: { query: { type: "string" } }, required: ["query"] } },
-      { name: "searchIssues", description: "Search issues", inputSchema: { type: "object", properties: { query: { type: "string" } }, required: ["query"] } },
+      {
+        name: "searchCode",
+        description: "Search code",
+        inputSchema: {
+          type: "object",
+          properties: { query: { type: "string" } },
+          required: ["query"],
+        },
+      },
+      {
+        name: "searchRepos",
+        description: "Search repos",
+        inputSchema: {
+          type: "object",
+          properties: { query: { type: "string" } },
+          required: ["query"],
+        },
+      },
+      {
+        name: "searchIssues",
+        description: "Search issues",
+        inputSchema: {
+          type: "object",
+          properties: { query: { type: "string" } },
+          required: ["query"],
+        },
+      },
     ],
     resources: [
       { uri: "github://repos", name: "Repositories", description: "All repos" },
@@ -1359,70 +2649,446 @@ AVOID: Use Git MCP for local git operations. Use GitHub MCP for GitHub platform 
     supportsSampling: true,
     tools: [
       // Chat Completions (5 tools)
-      { name: "chat", description: "Chat with GPT", inputSchema: { type: "object", properties: { model: { type: "string" }, messages: { type: "array" }, temperature: { type: "number" }, max_tokens: { type: "number" } }, required: ["messages"] } },
-      { name: "chatStreaming", description: "Chat with streaming", inputSchema: { type: "object", properties: { model: { type: "string" }, messages: { type: "array" }, temperature: { type: "number" } }, required: ["messages"] } },
-      { name: "chatWithFunctions", description: "Chat with function calling", inputSchema: { type: "object", properties: { model: { type: "string" }, messages: { type: "array" }, functions: { type: "array" }, function_call: { type: "string" } }, required: ["messages", "functions"] } },
-      { name: "chatWithTools", description: "Chat with tools", inputSchema: { type: "object", properties: { model: { type: "string" }, messages: { type: "array" }, tools: { type: "array" }, tool_choice: { type: "string" } }, required: ["messages", "tools"] } },
-      { name: "chatWithVision", description: "Chat with vision (images)", inputSchema: { type: "object", properties: { model: { type: "string" }, messages: { type: "array" }, max_tokens: { type: "number" } }, required: ["messages"] } },
-      
+      {
+        name: "chat",
+        description: "Chat with GPT",
+        inputSchema: {
+          type: "object",
+          properties: {
+            model: { type: "string" },
+            messages: { type: "array" },
+            temperature: { type: "number" },
+            max_tokens: { type: "number" },
+          },
+          required: ["messages"],
+        },
+      },
+      {
+        name: "chatStreaming",
+        description: "Chat with streaming",
+        inputSchema: {
+          type: "object",
+          properties: {
+            model: { type: "string" },
+            messages: { type: "array" },
+            temperature: { type: "number" },
+          },
+          required: ["messages"],
+        },
+      },
+      {
+        name: "chatWithFunctions",
+        description: "Chat with function calling",
+        inputSchema: {
+          type: "object",
+          properties: {
+            model: { type: "string" },
+            messages: { type: "array" },
+            functions: { type: "array" },
+            function_call: { type: "string" },
+          },
+          required: ["messages", "functions"],
+        },
+      },
+      {
+        name: "chatWithTools",
+        description: "Chat with tools",
+        inputSchema: {
+          type: "object",
+          properties: {
+            model: { type: "string" },
+            messages: { type: "array" },
+            tools: { type: "array" },
+            tool_choice: { type: "string" },
+          },
+          required: ["messages", "tools"],
+        },
+      },
+      {
+        name: "chatWithVision",
+        description: "Chat with vision (images)",
+        inputSchema: {
+          type: "object",
+          properties: {
+            model: { type: "string" },
+            messages: { type: "array" },
+            max_tokens: { type: "number" },
+          },
+          required: ["messages"],
+        },
+      },
+
       // Legacy Completions (1 tool)
-      { name: "completion", description: "Text completion", inputSchema: { type: "object", properties: { prompt: { type: "string" }, model: { type: "string" }, max_tokens: { type: "number" } }, required: ["prompt"] } },
-      
+      {
+        name: "completion",
+        description: "Text completion",
+        inputSchema: {
+          type: "object",
+          properties: {
+            prompt: { type: "string" },
+            model: { type: "string" },
+            max_tokens: { type: "number" },
+          },
+          required: ["prompt"],
+        },
+      },
+
       // Embeddings (2 tools)
-      { name: "embedding", description: "Generate embeddings", inputSchema: { type: "object", properties: { input: { type: "string" }, model: { type: "string" } }, required: ["input"] } },
-      { name: "batchEmbeddings", description: "Generate embeddings for multiple inputs", inputSchema: { type: "object", properties: { inputs: { type: "array" }, model: { type: "string" } }, required: ["inputs"] } },
-      
+      {
+        name: "embedding",
+        description: "Generate embeddings",
+        inputSchema: {
+          type: "object",
+          properties: { input: { type: "string" }, model: { type: "string" } },
+          required: ["input"],
+        },
+      },
+      {
+        name: "batchEmbeddings",
+        description: "Generate embeddings for multiple inputs",
+        inputSchema: {
+          type: "object",
+          properties: { inputs: { type: "array" }, model: { type: "string" } },
+          required: ["inputs"],
+        },
+      },
+
       // Images (3 tools)
-      { name: "generateImage", description: "Generate image with DALL-E", inputSchema: { type: "object", properties: { prompt: { type: "string" }, model: { type: "string" }, size: { type: "string" }, quality: { type: "string" }, style: { type: "string" } }, required: ["prompt"] } },
-      { name: "editImage", description: "Edit image with DALL-E", inputSchema: { type: "object", properties: { image: { type: "string" }, prompt: { type: "string" }, mask: { type: "string" }, size: { type: "string" } }, required: ["image", "prompt"] } },
-      { name: "createImageVariation", description: "Create image variation", inputSchema: { type: "object", properties: { image: { type: "string" }, size: { type: "string" } }, required: ["image"] } },
-      
+      {
+        name: "generateImage",
+        description: "Generate image with DALL-E",
+        inputSchema: {
+          type: "object",
+          properties: {
+            prompt: { type: "string" },
+            model: { type: "string" },
+            size: { type: "string" },
+            quality: { type: "string" },
+            style: { type: "string" },
+          },
+          required: ["prompt"],
+        },
+      },
+      {
+        name: "editImage",
+        description: "Edit image with DALL-E",
+        inputSchema: {
+          type: "object",
+          properties: {
+            image: { type: "string" },
+            prompt: { type: "string" },
+            mask: { type: "string" },
+            size: { type: "string" },
+          },
+          required: ["image", "prompt"],
+        },
+      },
+      {
+        name: "createImageVariation",
+        description: "Create image variation",
+        inputSchema: {
+          type: "object",
+          properties: { image: { type: "string" }, size: { type: "string" } },
+          required: ["image"],
+        },
+      },
+
       // Assistants (8 tools)
-      { name: "createAssistant", description: "Create assistant", inputSchema: { type: "object", properties: { name: { type: "string" }, description: { type: "string" }, model: { type: "string" }, instructions: { type: "string" }, tools: { type: "array" } }, required: ["name", "model"] } },
-      { name: "listAssistants", description: "List assistants", inputSchema: { type: "object", properties: { limit: { type: "number" }, order: { type: "string" } } } },
-      { name: "getAssistant", description: "Get assistant", inputSchema: { type: "object", properties: { assistant_id: { type: "string" } }, required: ["assistant_id"] } },
-      { name: "updateAssistant", description: "Update assistant", inputSchema: { type: "object", properties: { assistant_id: { type: "string" }, name: { type: "string" }, instructions: { type: "string" } }, required: ["assistant_id"] } },
-      { name: "deleteAssistant", description: "Delete assistant", inputSchema: { type: "object", properties: { assistant_id: { type: "string" } }, required: ["assistant_id"] } },
-      { name: "createThread", description: "Create thread", inputSchema: { type: "object", properties: { messages: { type: "array" }, metadata: { type: "object" } } } },
-      { name: "runAssistant", description: "Run assistant", inputSchema: { type: "object", properties: { thread_id: { type: "string" }, assistant_id: { type: "string" }, instructions: { type: "string" } }, required: ["thread_id", "assistant_id"] } },
-      { name: "getRun", description: "Get run status", inputSchema: { type: "object", properties: { thread_id: { type: "string" }, run_id: { type: "string" } }, required: ["thread_id", "run_id"] } },
-      
+      {
+        name: "createAssistant",
+        description: "Create assistant",
+        inputSchema: {
+          type: "object",
+          properties: {
+            name: { type: "string" },
+            description: { type: "string" },
+            model: { type: "string" },
+            instructions: { type: "string" },
+            tools: { type: "array" },
+          },
+          required: ["name", "model"],
+        },
+      },
+      {
+        name: "listAssistants",
+        description: "List assistants",
+        inputSchema: {
+          type: "object",
+          properties: { limit: { type: "number" }, order: { type: "string" } },
+        },
+      },
+      {
+        name: "getAssistant",
+        description: "Get assistant",
+        inputSchema: {
+          type: "object",
+          properties: { assistant_id: { type: "string" } },
+          required: ["assistant_id"],
+        },
+      },
+      {
+        name: "updateAssistant",
+        description: "Update assistant",
+        inputSchema: {
+          type: "object",
+          properties: {
+            assistant_id: { type: "string" },
+            name: { type: "string" },
+            instructions: { type: "string" },
+          },
+          required: ["assistant_id"],
+        },
+      },
+      {
+        name: "deleteAssistant",
+        description: "Delete assistant",
+        inputSchema: {
+          type: "object",
+          properties: { assistant_id: { type: "string" } },
+          required: ["assistant_id"],
+        },
+      },
+      {
+        name: "createThread",
+        description: "Create thread",
+        inputSchema: {
+          type: "object",
+          properties: {
+            messages: { type: "array" },
+            metadata: { type: "object" },
+          },
+        },
+      },
+      {
+        name: "runAssistant",
+        description: "Run assistant",
+        inputSchema: {
+          type: "object",
+          properties: {
+            thread_id: { type: "string" },
+            assistant_id: { type: "string" },
+            instructions: { type: "string" },
+          },
+          required: ["thread_id", "assistant_id"],
+        },
+      },
+      {
+        name: "getRun",
+        description: "Get run status",
+        inputSchema: {
+          type: "object",
+          properties: {
+            thread_id: { type: "string" },
+            run_id: { type: "string" },
+          },
+          required: ["thread_id", "run_id"],
+        },
+      },
+
       // Fine-tuning (4 tools)
-      { name: "createFineTune", description: "Create fine-tune job", inputSchema: { type: "object", properties: { training_file: { type: "string" }, model: { type: "string" }, hyperparameters: { type: "object" } }, required: ["training_file"] } },
-      { name: "listFineTunes", description: "List fine-tune jobs", inputSchema: { type: "object", properties: { limit: { type: "number" } } } },
-      { name: "getFineTune", description: "Get fine-tune job", inputSchema: { type: "object", properties: { fine_tuning_job_id: { type: "string" } }, required: ["fine_tuning_job_id"] } },
-      { name: "cancelFineTune", description: "Cancel fine-tune job", inputSchema: { type: "object", properties: { fine_tuning_job_id: { type: "string" } }, required: ["fine_tuning_job_id"] } },
-      
+      {
+        name: "createFineTune",
+        description: "Create fine-tune job",
+        inputSchema: {
+          type: "object",
+          properties: {
+            training_file: { type: "string" },
+            model: { type: "string" },
+            hyperparameters: { type: "object" },
+          },
+          required: ["training_file"],
+        },
+      },
+      {
+        name: "listFineTunes",
+        description: "List fine-tune jobs",
+        inputSchema: {
+          type: "object",
+          properties: { limit: { type: "number" } },
+        },
+      },
+      {
+        name: "getFineTune",
+        description: "Get fine-tune job",
+        inputSchema: {
+          type: "object",
+          properties: { fine_tuning_job_id: { type: "string" } },
+          required: ["fine_tuning_job_id"],
+        },
+      },
+      {
+        name: "cancelFineTune",
+        description: "Cancel fine-tune job",
+        inputSchema: {
+          type: "object",
+          properties: { fine_tuning_job_id: { type: "string" } },
+          required: ["fine_tuning_job_id"],
+        },
+      },
+
       // Audio (3 tools)
-      { name: "transcribe", description: "Transcribe audio (Whisper)", inputSchema: { type: "object", properties: { file: { type: "string" }, model: { type: "string" }, language: { type: "string" } }, required: ["file"] } },
-      { name: "translate", description: "Translate audio", inputSchema: { type: "object", properties: { file: { type: "string" }, model: { type: "string" } }, required: ["file"] } },
-      { name: "textToSpeech", description: "Text to speech", inputSchema: { type: "object", properties: { input: { type: "string" }, voice: { type: "string" }, model: { type: "string" } }, required: ["input"] } },
-      
+      {
+        name: "transcribe",
+        description: "Transcribe audio (Whisper)",
+        inputSchema: {
+          type: "object",
+          properties: {
+            file: { type: "string" },
+            model: { type: "string" },
+            language: { type: "string" },
+          },
+          required: ["file"],
+        },
+      },
+      {
+        name: "translate",
+        description: "Translate audio",
+        inputSchema: {
+          type: "object",
+          properties: { file: { type: "string" }, model: { type: "string" } },
+          required: ["file"],
+        },
+      },
+      {
+        name: "textToSpeech",
+        description: "Text to speech",
+        inputSchema: {
+          type: "object",
+          properties: {
+            input: { type: "string" },
+            voice: { type: "string" },
+            model: { type: "string" },
+          },
+          required: ["input"],
+        },
+      },
+
       // Files (5 tools)
-      { name: "uploadFile", description: "Upload file", inputSchema: { type: "object", properties: { file: { type: "string" }, purpose: { type: "string" } }, required: ["file"] } },
-      { name: "listFiles", description: "List files", inputSchema: { type: "object", properties: { purpose: { type: "string" } } } },
-      { name: "getFile", description: "Get file", inputSchema: { type: "object", properties: { file_id: { type: "string" } }, required: ["file_id"] } },
-      { name: "deleteFile", description: "Delete file", inputSchema: { type: "object", properties: { file_id: { type: "string" } }, required: ["file_id"] } },
-      { name: "getFileContent", description: "Get file content", inputSchema: { type: "object", properties: { file_id: { type: "string" } }, required: ["file_id"] } },
-      
+      {
+        name: "uploadFile",
+        description: "Upload file",
+        inputSchema: {
+          type: "object",
+          properties: { file: { type: "string" }, purpose: { type: "string" } },
+          required: ["file"],
+        },
+      },
+      {
+        name: "listFiles",
+        description: "List files",
+        inputSchema: {
+          type: "object",
+          properties: { purpose: { type: "string" } },
+        },
+      },
+      {
+        name: "getFile",
+        description: "Get file",
+        inputSchema: {
+          type: "object",
+          properties: { file_id: { type: "string" } },
+          required: ["file_id"],
+        },
+      },
+      {
+        name: "deleteFile",
+        description: "Delete file",
+        inputSchema: {
+          type: "object",
+          properties: { file_id: { type: "string" } },
+          required: ["file_id"],
+        },
+      },
+      {
+        name: "getFileContent",
+        description: "Get file content",
+        inputSchema: {
+          type: "object",
+          properties: { file_id: { type: "string" } },
+          required: ["file_id"],
+        },
+      },
+
       // Moderation (2 tools)
-      { name: "moderateText", description: "Moderate text", inputSchema: { type: "object", properties: { input: { type: "string" }, model: { type: "string" } }, required: ["input"] } },
-      { name: "moderateBatch", description: "Moderate multiple texts", inputSchema: { type: "object", properties: { inputs: { type: "array" }, model: { type: "string" } }, required: ["inputs"] } },
-      
+      {
+        name: "moderateText",
+        description: "Moderate text",
+        inputSchema: {
+          type: "object",
+          properties: { input: { type: "string" }, model: { type: "string" } },
+          required: ["input"],
+        },
+      },
+      {
+        name: "moderateBatch",
+        description: "Moderate multiple texts",
+        inputSchema: {
+          type: "object",
+          properties: { inputs: { type: "array" }, model: { type: "string" } },
+          required: ["inputs"],
+        },
+      },
+
       // Models (3 tools)
-      { name: "listModels", description: "List models", inputSchema: { type: "object", properties: {} } },
-      { name: "getModel", description: "Get model", inputSchema: { type: "object", properties: { model: { type: "string" } }, required: ["model"] } },
-      { name: "deleteModel", description: "Delete fine-tuned model", inputSchema: { type: "object", properties: { model: { type: "string" } }, required: ["model"] } },
+      {
+        name: "listModels",
+        description: "List models",
+        inputSchema: { type: "object", properties: {} },
+      },
+      {
+        name: "getModel",
+        description: "Get model",
+        inputSchema: {
+          type: "object",
+          properties: { model: { type: "string" } },
+          required: ["model"],
+        },
+      },
+      {
+        name: "deleteModel",
+        description: "Delete fine-tuned model",
+        inputSchema: {
+          type: "object",
+          properties: { model: { type: "string" } },
+          required: ["model"],
+        },
+      },
     ],
     resources: [
-      { uri: "openai://models", name: "Models", description: "Available OpenAI models" },
-      { uri: "openai://assistants", name: "Assistants", description: "Available assistants" },
+      {
+        uri: "openai://models",
+        name: "Models",
+        description: "Available OpenAI models",
+      },
+      {
+        uri: "openai://assistants",
+        name: "Assistants",
+        description: "Available assistants",
+      },
       { uri: "openai://files", name: "Files", description: "Uploaded files" },
     ],
     prompts: [
-      { name: "ai_assistant", description: "AI assistant", arguments: [{ name: "task", description: "Task description", required: true }] },
-      { name: "code_review", description: "Code review assistant", arguments: [{ name: "code", description: "Code to review", required: true }] },
-      { name: "summarize", description: "Summarize text", arguments: [{ name: "text", description: "Text to summarize", required: true }] },
+      {
+        name: "ai_assistant",
+        description: "AI assistant",
+        arguments: [
+          { name: "task", description: "Task description", required: true },
+        ],
+      },
+      {
+        name: "code_review",
+        description: "Code review assistant",
+        arguments: [
+          { name: "code", description: "Code to review", required: true },
+        ],
+      },
+      {
+        name: "summarize",
+        description: "Summarize text",
+        arguments: [
+          { name: "text", description: "Text to summarize", required: true },
+        ],
+      },
     ],
     execute: async (tool, params) => {
       const { executeOpenAITool } = await import("./openai-tools");
@@ -1464,38 +3130,214 @@ AVOID: Use Anthropic MCP for Claude models. Use OpenAI MCP for GPT models and Op
     supportsSampling: true,
     tools: [
       // Messages (5 tools)
-      { name: "chat", description: "Chat with Claude", inputSchema: { type: "object", properties: { model: { type: "string" }, messages: { type: "array" }, max_tokens: { type: "number" }, temperature: { type: "number" }, system: { type: "string" } }, required: ["messages"] } },
-      { name: "chatStreaming", description: "Chat with streaming", inputSchema: { type: "object", properties: { model: { type: "string" }, messages: { type: "array" }, max_tokens: { type: "number" }, system: { type: "string" } }, required: ["messages"] } },
-      { name: "chatWithTools", description: "Chat with tool use", inputSchema: { type: "object", properties: { model: { type: "string" }, messages: { type: "array" }, tools: { type: "array" }, tool_choice: { type: "object" }, max_tokens: { type: "number" } }, required: ["messages", "tools"] } },
-      { name: "chatWithVision", description: "Chat with vision (images)", inputSchema: { type: "object", properties: { model: { type: "string" }, messages: { type: "array" }, max_tokens: { type: "number" } }, required: ["messages"] } },
-      { name: "chatWithCaching", description: "Chat with prompt caching", inputSchema: { type: "object", properties: { model: { type: "string" }, messages: { type: "array" }, system: { type: "string" }, max_tokens: { type: "number" } }, required: ["messages"] } },
-      
+      {
+        name: "chat",
+        description: "Chat with Claude",
+        inputSchema: {
+          type: "object",
+          properties: {
+            model: { type: "string" },
+            messages: { type: "array" },
+            max_tokens: { type: "number" },
+            temperature: { type: "number" },
+            system: { type: "string" },
+          },
+          required: ["messages"],
+        },
+      },
+      {
+        name: "chatStreaming",
+        description: "Chat with streaming",
+        inputSchema: {
+          type: "object",
+          properties: {
+            model: { type: "string" },
+            messages: { type: "array" },
+            max_tokens: { type: "number" },
+            system: { type: "string" },
+          },
+          required: ["messages"],
+        },
+      },
+      {
+        name: "chatWithTools",
+        description: "Chat with tool use",
+        inputSchema: {
+          type: "object",
+          properties: {
+            model: { type: "string" },
+            messages: { type: "array" },
+            tools: { type: "array" },
+            tool_choice: { type: "object" },
+            max_tokens: { type: "number" },
+          },
+          required: ["messages", "tools"],
+        },
+      },
+      {
+        name: "chatWithVision",
+        description: "Chat with vision (images)",
+        inputSchema: {
+          type: "object",
+          properties: {
+            model: { type: "string" },
+            messages: { type: "array" },
+            max_tokens: { type: "number" },
+          },
+          required: ["messages"],
+        },
+      },
+      {
+        name: "chatWithCaching",
+        description: "Chat with prompt caching",
+        inputSchema: {
+          type: "object",
+          properties: {
+            model: { type: "string" },
+            messages: { type: "array" },
+            system: { type: "string" },
+            max_tokens: { type: "number" },
+          },
+          required: ["messages"],
+        },
+      },
+
       // Legacy (1 tool)
-      { name: "completion", description: "Text completion", inputSchema: { type: "object", properties: { prompt: { type: "string" }, model: { type: "string" }, max_tokens: { type: "number" } }, required: ["prompt"] } },
-      
+      {
+        name: "completion",
+        description: "Text completion",
+        inputSchema: {
+          type: "object",
+          properties: {
+            prompt: { type: "string" },
+            model: { type: "string" },
+            max_tokens: { type: "number" },
+          },
+          required: ["prompt"],
+        },
+      },
+
       // Batch (1 tool)
-      { name: "batchMessages", description: "Process multiple messages", inputSchema: { type: "object", properties: { messages_batch: { type: "array" }, model: { type: "string" }, max_tokens: { type: "number" } }, required: ["messages_batch"] } },
-      
+      {
+        name: "batchMessages",
+        description: "Process multiple messages",
+        inputSchema: {
+          type: "object",
+          properties: {
+            messages_batch: { type: "array" },
+            model: { type: "string" },
+            max_tokens: { type: "number" },
+          },
+          required: ["messages_batch"],
+        },
+      },
+
       // Token Counting (1 tool)
-      { name: "countTokens", description: "Count tokens", inputSchema: { type: "object", properties: { model: { type: "string" }, messages: { type: "array" }, system: { type: "string" } }, required: ["messages"] } },
-      
+      {
+        name: "countTokens",
+        description: "Count tokens",
+        inputSchema: {
+          type: "object",
+          properties: {
+            model: { type: "string" },
+            messages: { type: "array" },
+            system: { type: "string" },
+          },
+          required: ["messages"],
+        },
+      },
+
       // Models (2 tools)
-      { name: "listModels", description: "List Claude models", inputSchema: { type: "object", properties: {} } },
-      { name: "getModel", description: "Get model info", inputSchema: { type: "object", properties: { model: { type: "string" } }, required: ["model"] } },
-      
+      {
+        name: "listModels",
+        description: "List Claude models",
+        inputSchema: { type: "object", properties: {} },
+      },
+      {
+        name: "getModel",
+        description: "Get model info",
+        inputSchema: {
+          type: "object",
+          properties: { model: { type: "string" } },
+          required: ["model"],
+        },
+      },
+
       // Advanced (4 tools)
-      { name: "extractStructuredData", description: "Extract structured data from text", inputSchema: { type: "object", properties: { text: { type: "string" }, schema: { type: "object" }, model: { type: "string" } }, required: ["text", "schema"] } },
-      { name: "analyzeImage", description: "Analyze image with vision", inputSchema: { type: "object", properties: { image_data: { type: "string" }, prompt: { type: "string" }, media_type: { type: "string" }, model: { type: "string" } }, required: ["image_data"] } },
-      { name: "continueConversation", description: "Continue multi-turn conversation", inputSchema: { type: "object", properties: { message: { type: "string" }, history: { type: "array" }, system: { type: "string" }, model: { type: "string" } }, required: ["message"] } },
+      {
+        name: "extractStructuredData",
+        description: "Extract structured data from text",
+        inputSchema: {
+          type: "object",
+          properties: {
+            text: { type: "string" },
+            schema: { type: "object" },
+            model: { type: "string" },
+          },
+          required: ["text", "schema"],
+        },
+      },
+      {
+        name: "analyzeImage",
+        description: "Analyze image with vision",
+        inputSchema: {
+          type: "object",
+          properties: {
+            image_data: { type: "string" },
+            prompt: { type: "string" },
+            media_type: { type: "string" },
+            model: { type: "string" },
+          },
+          required: ["image_data"],
+        },
+      },
+      {
+        name: "continueConversation",
+        description: "Continue multi-turn conversation",
+        inputSchema: {
+          type: "object",
+          properties: {
+            message: { type: "string" },
+            history: { type: "array" },
+            system: { type: "string" },
+            model: { type: "string" },
+          },
+          required: ["message"],
+        },
+      },
     ],
     resources: [
-      { uri: "anthropic://models", name: "Models", description: "Claude models" },
-      { uri: "anthropic://capabilities", name: "Capabilities", description: "Model capabilities" },
+      {
+        uri: "anthropic://models",
+        name: "Models",
+        description: "Claude models",
+      },
+      {
+        uri: "anthropic://capabilities",
+        name: "Capabilities",
+        description: "Model capabilities",
+      },
     ],
     prompts: [
-      { name: "claude_assistant", description: "Claude assistant", arguments: [{ name: "task", description: "Task", required: true }] },
-      { name: "code_review", description: "Code review with Claude", arguments: [{ name: "code", description: "Code to review", required: true }] },
-      { name: "analyze_data", description: "Data analysis", arguments: [{ name: "data", description: "Data to analyze", required: true }] },
+      {
+        name: "claude_assistant",
+        description: "Claude assistant",
+        arguments: [{ name: "task", description: "Task", required: true }],
+      },
+      {
+        name: "code_review",
+        description: "Code review with Claude",
+        arguments: [
+          { name: "code", description: "Code to review", required: true },
+        ],
+      },
+      {
+        name: "analyze_data",
+        description: "Data analysis",
+        arguments: [
+          { name: "data", description: "Data to analyze", required: true },
+        ],
+      },
     ],
     execute: async (tool, params) => {
       const { executeAnthropicTool } = await import("./anthropic-tools");
@@ -2140,8 +3982,12 @@ AVOID: Use MongoDB/SQLite MCP for non-relational data. Use Postgres MCP for rela
     ],
     execute: async (tool, params) => {
       // Import the full sqlite tools implementation
-      const { executeSqliteTool } = await import("./sqlite-tools");
-      return executeSqliteTool(tool, params);
+      if (!process.env.SQLITE_DB_PATH)
+        throw new Error("SQLITE_DB_PATH not configured");
+      const Database = (await import("better-sqlite3")).default;
+      const db = new Database(process.env.SQLITE_DB_PATH);
+      const { executeSQLiteTool } = await import("./sqlite-tools");
+      return executeSQLiteTool(db, tool, params);
     },
     agentBriefing: `SQLITE MCP - Use for ALL SQLite database operations (lightweight, file-based).
 
@@ -2950,38 +4796,285 @@ AVOID: Use other MCPs for non-Slack operations. Use Slack MCP for all Slack work
     enabled: true,
     tools: [
       // Record Operations (5 tools)
-      { name: "listRecords", description: "List records", inputSchema: { type: "object", properties: { baseId: { type: "string" }, table: { type: "string" }, maxRecords: { type: "number" }, view: { type: "string" }, filterByFormula: { type: "string" }, sort: { type: "array" } }, required: ["baseId", "table"] } },
-      { name: "getRecord", description: "Get record", inputSchema: { type: "object", properties: { baseId: { type: "string" }, table: { type: "string" }, recordId: { type: "string" } }, required: ["baseId", "table", "recordId"] } },
-      { name: "createRecord", description: "Create record", inputSchema: { type: "object", properties: { baseId: { type: "string" }, table: { type: "string" }, fields: { type: "object" }, typecast: { type: "boolean" } }, required: ["baseId", "table", "fields"] } },
-      { name: "updateRecord", description: "Update record", inputSchema: { type: "object", properties: { baseId: { type: "string" }, table: { type: "string" }, recordId: { type: "string" }, fields: { type: "object" }, typecast: { type: "boolean" } }, required: ["baseId", "table", "recordId", "fields"] } },
-      { name: "deleteRecord", description: "Delete record", inputSchema: { type: "object", properties: { baseId: { type: "string" }, table: { type: "string" }, recordId: { type: "string" } }, required: ["baseId", "table", "recordId"] } },
-      
+      {
+        name: "listRecords",
+        description: "List records",
+        inputSchema: {
+          type: "object",
+          properties: {
+            baseId: { type: "string" },
+            table: { type: "string" },
+            maxRecords: { type: "number" },
+            view: { type: "string" },
+            filterByFormula: { type: "string" },
+            sort: { type: "array" },
+          },
+          required: ["baseId", "table"],
+        },
+      },
+      {
+        name: "getRecord",
+        description: "Get record",
+        inputSchema: {
+          type: "object",
+          properties: {
+            baseId: { type: "string" },
+            table: { type: "string" },
+            recordId: { type: "string" },
+          },
+          required: ["baseId", "table", "recordId"],
+        },
+      },
+      {
+        name: "createRecord",
+        description: "Create record",
+        inputSchema: {
+          type: "object",
+          properties: {
+            baseId: { type: "string" },
+            table: { type: "string" },
+            fields: { type: "object" },
+            typecast: { type: "boolean" },
+          },
+          required: ["baseId", "table", "fields"],
+        },
+      },
+      {
+        name: "updateRecord",
+        description: "Update record",
+        inputSchema: {
+          type: "object",
+          properties: {
+            baseId: { type: "string" },
+            table: { type: "string" },
+            recordId: { type: "string" },
+            fields: { type: "object" },
+            typecast: { type: "boolean" },
+          },
+          required: ["baseId", "table", "recordId", "fields"],
+        },
+      },
+      {
+        name: "deleteRecord",
+        description: "Delete record",
+        inputSchema: {
+          type: "object",
+          properties: {
+            baseId: { type: "string" },
+            table: { type: "string" },
+            recordId: { type: "string" },
+          },
+          required: ["baseId", "table", "recordId"],
+        },
+      },
+
       // Bulk Operations (3 tools)
-      { name: "bulkCreate", description: "Bulk create records", inputSchema: { type: "object", properties: { baseId: { type: "string" }, table: { type: "string" }, records: { type: "array" }, typecast: { type: "boolean" } }, required: ["baseId", "table", "records"] } },
-      { name: "bulkUpdate", description: "Bulk update records", inputSchema: { type: "object", properties: { baseId: { type: "string" }, table: { type: "string" }, records: { type: "array" }, typecast: { type: "boolean" } }, required: ["baseId", "table", "records"] } },
-      { name: "bulkDelete", description: "Bulk delete records", inputSchema: { type: "object", properties: { baseId: { type: "string" }, table: { type: "string" }, recordIds: { type: "array" } }, required: ["baseId", "table", "recordIds"] } },
-      
+      {
+        name: "bulkCreate",
+        description: "Bulk create records",
+        inputSchema: {
+          type: "object",
+          properties: {
+            baseId: { type: "string" },
+            table: { type: "string" },
+            records: { type: "array" },
+            typecast: { type: "boolean" },
+          },
+          required: ["baseId", "table", "records"],
+        },
+      },
+      {
+        name: "bulkUpdate",
+        description: "Bulk update records",
+        inputSchema: {
+          type: "object",
+          properties: {
+            baseId: { type: "string" },
+            table: { type: "string" },
+            records: { type: "array" },
+            typecast: { type: "boolean" },
+          },
+          required: ["baseId", "table", "records"],
+        },
+      },
+      {
+        name: "bulkDelete",
+        description: "Bulk delete records",
+        inputSchema: {
+          type: "object",
+          properties: {
+            baseId: { type: "string" },
+            table: { type: "string" },
+            recordIds: { type: "array" },
+          },
+          required: ["baseId", "table", "recordIds"],
+        },
+      },
+
       // Search & Filter (3 tools)
-      { name: "filterRecords", description: "Filter records by formula", inputSchema: { type: "object", properties: { baseId: { type: "string" }, table: { type: "string" }, formula: { type: "string" }, maxRecords: { type: "number" }, view: { type: "string" } }, required: ["baseId", "table", "formula"] } },
-      { name: "sortRecords", description: "Sort records", inputSchema: { type: "object", properties: { baseId: { type: "string" }, table: { type: "string" }, sort: { type: "array" }, maxRecords: { type: "number" } }, required: ["baseId", "table", "sort"] } },
-      { name: "searchRecords", description: "Search records", inputSchema: { type: "object", properties: { baseId: { type: "string" }, table: { type: "string" }, searchTerm: { type: "string" }, searchFields: { type: "array" }, maxRecords: { type: "number" } }, required: ["baseId", "table", "searchTerm"] } },
-      
+      {
+        name: "filterRecords",
+        description: "Filter records by formula",
+        inputSchema: {
+          type: "object",
+          properties: {
+            baseId: { type: "string" },
+            table: { type: "string" },
+            formula: { type: "string" },
+            maxRecords: { type: "number" },
+            view: { type: "string" },
+          },
+          required: ["baseId", "table", "formula"],
+        },
+      },
+      {
+        name: "sortRecords",
+        description: "Sort records",
+        inputSchema: {
+          type: "object",
+          properties: {
+            baseId: { type: "string" },
+            table: { type: "string" },
+            sort: { type: "array" },
+            maxRecords: { type: "number" },
+          },
+          required: ["baseId", "table", "sort"],
+        },
+      },
+      {
+        name: "searchRecords",
+        description: "Search records",
+        inputSchema: {
+          type: "object",
+          properties: {
+            baseId: { type: "string" },
+            table: { type: "string" },
+            searchTerm: { type: "string" },
+            searchFields: { type: "array" },
+            maxRecords: { type: "number" },
+          },
+          required: ["baseId", "table", "searchTerm"],
+        },
+      },
+
       // Fields (2 tools)
-      { name: "listFields", description: "List table fields", inputSchema: { type: "object", properties: { baseId: { type: "string" }, table: { type: "string" } }, required: ["baseId", "table"] } },
-      { name: "getFieldInfo", description: "Get field info", inputSchema: { type: "object", properties: { baseId: { type: "string" }, table: { type: "string" }, fieldName: { type: "string" } }, required: ["baseId", "table", "fieldName"] } },
-      
+      {
+        name: "listFields",
+        description: "List table fields",
+        inputSchema: {
+          type: "object",
+          properties: { baseId: { type: "string" }, table: { type: "string" } },
+          required: ["baseId", "table"],
+        },
+      },
+      {
+        name: "getFieldInfo",
+        description: "Get field info",
+        inputSchema: {
+          type: "object",
+          properties: {
+            baseId: { type: "string" },
+            table: { type: "string" },
+            fieldName: { type: "string" },
+          },
+          required: ["baseId", "table", "fieldName"],
+        },
+      },
+
       // Views (2 tools)
-      { name: "listViews", description: "List views", inputSchema: { type: "object", properties: { baseId: { type: "string" }, table: { type: "string" }, view: { type: "string" }, maxRecords: { type: "number" } }, required: ["baseId", "table", "view"] } },
-      { name: "getView", description: "Get view data", inputSchema: { type: "object", properties: { baseId: { type: "string" }, table: { type: "string" }, view: { type: "string" }, maxRecords: { type: "number" } }, required: ["baseId", "table", "view"] } },
-      
+      {
+        name: "listViews",
+        description: "List views",
+        inputSchema: {
+          type: "object",
+          properties: {
+            baseId: { type: "string" },
+            table: { type: "string" },
+            view: { type: "string" },
+            maxRecords: { type: "number" },
+          },
+          required: ["baseId", "table", "view"],
+        },
+      },
+      {
+        name: "getView",
+        description: "Get view data",
+        inputSchema: {
+          type: "object",
+          properties: {
+            baseId: { type: "string" },
+            table: { type: "string" },
+            view: { type: "string" },
+            maxRecords: { type: "number" },
+          },
+          required: ["baseId", "table", "view"],
+        },
+      },
+
       // Tables (2 tools)
-      { name: "listTables", description: "List tables", inputSchema: { type: "object", properties: { baseId: { type: "string" } }, required: ["baseId"] } },
-      { name: "getTableInfo", description: "Get table info", inputSchema: { type: "object", properties: { baseId: { type: "string" }, table: { type: "string" } }, required: ["baseId", "table"] } },
-      
+      {
+        name: "listTables",
+        description: "List tables",
+        inputSchema: {
+          type: "object",
+          properties: { baseId: { type: "string" } },
+          required: ["baseId"],
+        },
+      },
+      {
+        name: "getTableInfo",
+        description: "Get table info",
+        inputSchema: {
+          type: "object",
+          properties: { baseId: { type: "string" }, table: { type: "string" } },
+          required: ["baseId", "table"],
+        },
+      },
+
       // Advanced (3 tools)
-      { name: "getPage", description: "Get paginated records", inputSchema: { type: "object", properties: { baseId: { type: "string" }, table: { type: "string" }, pageSize: { type: "number" }, offset: { type: "string" }, view: { type: "string" } }, required: ["baseId", "table"] } },
-      { name: "replaceRecord", description: "Replace record (PUT)", inputSchema: { type: "object", properties: { baseId: { type: "string" }, table: { type: "string" }, recordId: { type: "string" }, fields: { type: "object" } }, required: ["baseId", "table", "recordId", "fields"] } },
-      { name: "upsertRecord", description: "Upsert record", inputSchema: { type: "object", properties: { baseId: { type: "string" }, table: { type: "string" }, recordId: { type: "string" }, fields: { type: "object" } }, required: ["baseId", "table", "recordId", "fields"] } },
+      {
+        name: "getPage",
+        description: "Get paginated records",
+        inputSchema: {
+          type: "object",
+          properties: {
+            baseId: { type: "string" },
+            table: { type: "string" },
+            pageSize: { type: "number" },
+            offset: { type: "string" },
+            view: { type: "string" },
+          },
+          required: ["baseId", "table"],
+        },
+      },
+      {
+        name: "replaceRecord",
+        description: "Replace record (PUT)",
+        inputSchema: {
+          type: "object",
+          properties: {
+            baseId: { type: "string" },
+            table: { type: "string" },
+            recordId: { type: "string" },
+            fields: { type: "object" },
+          },
+          required: ["baseId", "table", "recordId", "fields"],
+        },
+      },
+      {
+        name: "upsertRecord",
+        description: "Upsert record",
+        inputSchema: {
+          type: "object",
+          properties: {
+            baseId: { type: "string" },
+            table: { type: "string" },
+            recordId: { type: "string" },
+            fields: { type: "object" },
+          },
+          required: ["baseId", "table", "recordId", "fields"],
+        },
+      },
     ],
     resources: [
       { uri: "airtable://bases", name: "Bases", description: "All bases" },
@@ -2989,8 +5082,20 @@ AVOID: Use other MCPs for non-Slack operations. Use Slack MCP for all Slack work
       { uri: "airtable://views", name: "Views", description: "All views" },
     ],
     prompts: [
-      { name: "create_record", description: "Help create record", arguments: [{ name: "table", description: "Table name", required: true }] },
-      { name: "query_data", description: "Help query data", arguments: [{ name: "query", description: "Query description", required: true }] },
+      {
+        name: "create_record",
+        description: "Help create record",
+        arguments: [
+          { name: "table", description: "Table name", required: true },
+        ],
+      },
+      {
+        name: "query_data",
+        description: "Help query data",
+        arguments: [
+          { name: "query", description: "Query description", required: true },
+        ],
+      },
     ],
     execute: async (tool, params) => {
       const { executeAirtableTool } = await import("./airtable-tools");
@@ -3031,58 +5136,409 @@ AVOID: Use other MCPs for non-Airtable operations. Use Airtable MCP for all Airt
     enabled: true,
     tools: [
       // Projects (5 tools)
-      { name: "listProjects", description: "List all projects", inputSchema: { type: "object", properties: {} } },
-      { name: "getProject", description: "Get project details", inputSchema: { type: "object", properties: { project: { type: "string" } }, required: ["project"] } },
-      { name: "createProject", description: "Create new project", inputSchema: { type: "object", properties: { name: { type: "string" }, description: { type: "string" } }, required: ["name"] } },
-      { name: "updateProject", description: "Update project", inputSchema: { type: "object", properties: { project: { type: "string" }, name: { type: "string" }, description: { type: "string" } }, required: ["project"] } },
-      { name: "deleteProject", description: "Delete project", inputSchema: { type: "object", properties: { project: { type: "string" } }, required: ["project"] } },
-      
+      {
+        name: "listProjects",
+        description: "List all projects",
+        inputSchema: { type: "object", properties: {} },
+      },
+      {
+        name: "getProject",
+        description: "Get project details",
+        inputSchema: {
+          type: "object",
+          properties: { project: { type: "string" } },
+          required: ["project"],
+        },
+      },
+      {
+        name: "createProject",
+        description: "Create new project",
+        inputSchema: {
+          type: "object",
+          properties: {
+            name: { type: "string" },
+            description: { type: "string" },
+          },
+          required: ["name"],
+        },
+      },
+      {
+        name: "updateProject",
+        description: "Update project",
+        inputSchema: {
+          type: "object",
+          properties: {
+            project: { type: "string" },
+            name: { type: "string" },
+            description: { type: "string" },
+          },
+          required: ["project"],
+        },
+      },
+      {
+        name: "deleteProject",
+        description: "Delete project",
+        inputSchema: {
+          type: "object",
+          properties: { project: { type: "string" } },
+          required: ["project"],
+        },
+      },
+
       // Configs/Environments (8 tools)
-      { name: "listConfigs", description: "List configs in project", inputSchema: { type: "object", properties: { project: { type: "string" } }, required: ["project"] } },
-      { name: "getConfig", description: "Get config details", inputSchema: { type: "object", properties: { project: { type: "string" }, config: { type: "string" } }, required: ["project", "config"] } },
-      { name: "createConfig", description: "Create new config", inputSchema: { type: "object", properties: { project: { type: "string" }, name: { type: "string" }, environment: { type: "string" } }, required: ["project", "name", "environment"] } },
-      { name: "updateConfig", description: "Update config", inputSchema: { type: "object", properties: { project: { type: "string" }, config: { type: "string" }, name: { type: "string" } }, required: ["project", "config", "name"] } },
-      { name: "deleteConfig", description: "Delete config", inputSchema: { type: "object", properties: { project: { type: "string" }, config: { type: "string" } }, required: ["project", "config"] } },
-      { name: "cloneConfig", description: "Clone config", inputSchema: { type: "object", properties: { project: { type: "string" }, config: { type: "string" }, newName: { type: "string" } }, required: ["project", "config", "newName"] } },
-      { name: "lockConfig", description: "Lock config (prevent changes)", inputSchema: { type: "object", properties: { project: { type: "string" }, config: { type: "string" } }, required: ["project", "config"] } },
-      { name: "unlockConfig", description: "Unlock config", inputSchema: { type: "object", properties: { project: { type: "string" }, config: { type: "string" } }, required: ["project", "config"] } },
-      
+      {
+        name: "listConfigs",
+        description: "List configs in project",
+        inputSchema: {
+          type: "object",
+          properties: { project: { type: "string" } },
+          required: ["project"],
+        },
+      },
+      {
+        name: "getConfig",
+        description: "Get config details",
+        inputSchema: {
+          type: "object",
+          properties: {
+            project: { type: "string" },
+            config: { type: "string" },
+          },
+          required: ["project", "config"],
+        },
+      },
+      {
+        name: "createConfig",
+        description: "Create new config",
+        inputSchema: {
+          type: "object",
+          properties: {
+            project: { type: "string" },
+            name: { type: "string" },
+            environment: { type: "string" },
+          },
+          required: ["project", "name", "environment"],
+        },
+      },
+      {
+        name: "updateConfig",
+        description: "Update config",
+        inputSchema: {
+          type: "object",
+          properties: {
+            project: { type: "string" },
+            config: { type: "string" },
+            name: { type: "string" },
+          },
+          required: ["project", "config", "name"],
+        },
+      },
+      {
+        name: "deleteConfig",
+        description: "Delete config",
+        inputSchema: {
+          type: "object",
+          properties: {
+            project: { type: "string" },
+            config: { type: "string" },
+          },
+          required: ["project", "config"],
+        },
+      },
+      {
+        name: "cloneConfig",
+        description: "Clone config",
+        inputSchema: {
+          type: "object",
+          properties: {
+            project: { type: "string" },
+            config: { type: "string" },
+            newName: { type: "string" },
+          },
+          required: ["project", "config", "newName"],
+        },
+      },
+      {
+        name: "lockConfig",
+        description: "Lock config (prevent changes)",
+        inputSchema: {
+          type: "object",
+          properties: {
+            project: { type: "string" },
+            config: { type: "string" },
+          },
+          required: ["project", "config"],
+        },
+      },
+      {
+        name: "unlockConfig",
+        description: "Unlock config",
+        inputSchema: {
+          type: "object",
+          properties: {
+            project: { type: "string" },
+            config: { type: "string" },
+          },
+          required: ["project", "config"],
+        },
+      },
+
       // Secrets (8 tools)
-      { name: "listSecrets", description: "List all secrets in config", inputSchema: { type: "object", properties: { project: { type: "string" }, config: { type: "string" } }, required: ["project", "config"] } },
-      { name: "getSecret", description: "Get secret value", inputSchema: { type: "object", properties: { project: { type: "string" }, config: { type: "string" }, name: { type: "string" } }, required: ["project", "config", "name"] } },
-      { name: "setSecret", description: "Set secret value", inputSchema: { type: "object", properties: { project: { type: "string" }, config: { type: "string" }, name: { type: "string" }, value: { type: "string" } }, required: ["project", "config", "name", "value"] } },
-      { name: "updateSecret", description: "Update secret", inputSchema: { type: "object", properties: { project: { type: "string" }, config: { type: "string" }, name: { type: "string" }, value: { type: "string" } }, required: ["project", "config", "name", "value"] } },
-      { name: "deleteSecret", description: "Delete secret", inputSchema: { type: "object", properties: { project: { type: "string" }, config: { type: "string" }, name: { type: "string" } }, required: ["project", "config", "name"] } },
-      { name: "bulkSetSecrets", description: "Set multiple secrets at once", inputSchema: { type: "object", properties: { project: { type: "string" }, config: { type: "string" }, secrets: { type: "object" } }, required: ["project", "config", "secrets"] } },
-      { name: "downloadSecrets", description: "Download secrets (json, env, yaml)", inputSchema: { type: "object", properties: { project: { type: "string" }, config: { type: "string" }, format: { type: "string", enum: ["json", "env", "yaml"] } }, required: ["project", "config"] } },
-      
+      {
+        name: "listSecrets",
+        description: "List all secrets in config",
+        inputSchema: {
+          type: "object",
+          properties: {
+            project: { type: "string" },
+            config: { type: "string" },
+          },
+          required: ["project", "config"],
+        },
+      },
+      {
+        name: "getSecret",
+        description: "Get secret value",
+        inputSchema: {
+          type: "object",
+          properties: {
+            project: { type: "string" },
+            config: { type: "string" },
+            name: { type: "string" },
+          },
+          required: ["project", "config", "name"],
+        },
+      },
+      {
+        name: "setSecret",
+        description: "Set secret value",
+        inputSchema: {
+          type: "object",
+          properties: {
+            project: { type: "string" },
+            config: { type: "string" },
+            name: { type: "string" },
+            value: { type: "string" },
+          },
+          required: ["project", "config", "name", "value"],
+        },
+      },
+      {
+        name: "updateSecret",
+        description: "Update secret",
+        inputSchema: {
+          type: "object",
+          properties: {
+            project: { type: "string" },
+            config: { type: "string" },
+            name: { type: "string" },
+            value: { type: "string" },
+          },
+          required: ["project", "config", "name", "value"],
+        },
+      },
+      {
+        name: "deleteSecret",
+        description: "Delete secret",
+        inputSchema: {
+          type: "object",
+          properties: {
+            project: { type: "string" },
+            config: { type: "string" },
+            name: { type: "string" },
+          },
+          required: ["project", "config", "name"],
+        },
+      },
+      {
+        name: "bulkSetSecrets",
+        description: "Set multiple secrets at once",
+        inputSchema: {
+          type: "object",
+          properties: {
+            project: { type: "string" },
+            config: { type: "string" },
+            secrets: { type: "object" },
+          },
+          required: ["project", "config", "secrets"],
+        },
+      },
+      {
+        name: "downloadSecrets",
+        description: "Download secrets (json, env, yaml)",
+        inputSchema: {
+          type: "object",
+          properties: {
+            project: { type: "string" },
+            config: { type: "string" },
+            format: { type: "string", enum: ["json", "env", "yaml"] },
+          },
+          required: ["project", "config"],
+        },
+      },
+
       // Environments (4 tools)
-      { name: "listEnvironments", description: "List environments", inputSchema: { type: "object", properties: { project: { type: "string" } }, required: ["project"] } },
-      { name: "createEnvironment", description: "Create environment", inputSchema: { type: "object", properties: { project: { type: "string" }, name: { type: "string" }, slug: { type: "string" } }, required: ["project", "name", "slug"] } },
-      { name: "renameEnvironment", description: "Rename environment", inputSchema: { type: "object", properties: { project: { type: "string" }, slug: { type: "string" }, name: { type: "string" } }, required: ["project", "slug", "name"] } },
-      { name: "deleteEnvironment", description: "Delete environment", inputSchema: { type: "object", properties: { project: { type: "string" }, slug: { type: "string" } }, required: ["project", "slug"] } },
-      
+      {
+        name: "listEnvironments",
+        description: "List environments",
+        inputSchema: {
+          type: "object",
+          properties: { project: { type: "string" } },
+          required: ["project"],
+        },
+      },
+      {
+        name: "createEnvironment",
+        description: "Create environment",
+        inputSchema: {
+          type: "object",
+          properties: {
+            project: { type: "string" },
+            name: { type: "string" },
+            slug: { type: "string" },
+          },
+          required: ["project", "name", "slug"],
+        },
+      },
+      {
+        name: "renameEnvironment",
+        description: "Rename environment",
+        inputSchema: {
+          type: "object",
+          properties: {
+            project: { type: "string" },
+            slug: { type: "string" },
+            name: { type: "string" },
+          },
+          required: ["project", "slug", "name"],
+        },
+      },
+      {
+        name: "deleteEnvironment",
+        description: "Delete environment",
+        inputSchema: {
+          type: "object",
+          properties: { project: { type: "string" }, slug: { type: "string" } },
+          required: ["project", "slug"],
+        },
+      },
+
       // Service Tokens (3 tools)
-      { name: "listServiceTokens", description: "List service tokens", inputSchema: { type: "object", properties: { project: { type: "string" }, config: { type: "string" } }, required: ["project", "config"] } },
-      { name: "createServiceToken", description: "Create service token", inputSchema: { type: "object", properties: { project: { type: "string" }, config: { type: "string" }, name: { type: "string" }, access: { type: "string", enum: ["read", "read/write"] } }, required: ["project", "config", "name"] } },
-      { name: "deleteServiceToken", description: "Delete service token", inputSchema: { type: "object", properties: { slug: { type: "string" } }, required: ["slug"] } },
-      
+      {
+        name: "listServiceTokens",
+        description: "List service tokens",
+        inputSchema: {
+          type: "object",
+          properties: {
+            project: { type: "string" },
+            config: { type: "string" },
+          },
+          required: ["project", "config"],
+        },
+      },
+      {
+        name: "createServiceToken",
+        description: "Create service token",
+        inputSchema: {
+          type: "object",
+          properties: {
+            project: { type: "string" },
+            config: { type: "string" },
+            name: { type: "string" },
+            access: { type: "string", enum: ["read", "read/write"] },
+          },
+          required: ["project", "config", "name"],
+        },
+      },
+      {
+        name: "deleteServiceToken",
+        description: "Delete service token",
+        inputSchema: {
+          type: "object",
+          properties: { slug: { type: "string" } },
+          required: ["slug"],
+        },
+      },
+
       // Integrations (3 tools)
-      { name: "listIntegrations", description: "List integrations", inputSchema: { type: "object", properties: { project: { type: "string" } }, required: ["project"] } },
-      { name: "createIntegration", description: "Create integration (AWS, Vercel, etc)", inputSchema: { type: "object", properties: { project: { type: "string" }, type: { type: "string" }, data: { type: "object" } }, required: ["project", "type", "data"] } },
-      { name: "deleteIntegration", description: "Delete integration", inputSchema: { type: "object", properties: { integration: { type: "string" } }, required: ["integration"] } },
-      
+      {
+        name: "listIntegrations",
+        description: "List integrations",
+        inputSchema: {
+          type: "object",
+          properties: { project: { type: "string" } },
+          required: ["project"],
+        },
+      },
+      {
+        name: "createIntegration",
+        description: "Create integration (AWS, Vercel, etc)",
+        inputSchema: {
+          type: "object",
+          properties: {
+            project: { type: "string" },
+            type: { type: "string" },
+            data: { type: "object" },
+          },
+          required: ["project", "type", "data"],
+        },
+      },
+      {
+        name: "deleteIntegration",
+        description: "Delete integration",
+        inputSchema: {
+          type: "object",
+          properties: { integration: { type: "string" } },
+          required: ["integration"],
+        },
+      },
+
       // Audit & Workplace (3 tools)
-      { name: "getAuditLogs", description: "Get audit logs", inputSchema: { type: "object", properties: { page: { type: "number" }, perPage: { type: "number" } } } },
-      { name: "getWorkplace", description: "Get workplace details", inputSchema: { type: "object", properties: {} } },
-      { name: "listWorkplaceUsers", description: "List workplace users", inputSchema: { type: "object", properties: {} } },
+      {
+        name: "getAuditLogs",
+        description: "Get audit logs",
+        inputSchema: {
+          type: "object",
+          properties: { page: { type: "number" }, perPage: { type: "number" } },
+        },
+      },
+      {
+        name: "getWorkplace",
+        description: "Get workplace details",
+        inputSchema: { type: "object", properties: {} },
+      },
+      {
+        name: "listWorkplaceUsers",
+        description: "List workplace users",
+        inputSchema: { type: "object", properties: {} },
+      },
     ],
     resources: [
-      { uri: "doppler://projects", name: "Projects", description: "All Doppler projects" },
-      { uri: "doppler://secrets", name: "Secrets", description: "All secrets across projects" },
-      { uri: "doppler://environments", name: "Environments", description: "All environments" },
-      { uri: "doppler://integrations", name: "Integrations", description: "All integrations" },
-      { uri: "doppler://audit", name: "Audit Logs", description: "Security audit logs" },
+      {
+        uri: "doppler://projects",
+        name: "Projects",
+        description: "All Doppler projects",
+      },
+      {
+        uri: "doppler://secrets",
+        name: "Secrets",
+        description: "All secrets across projects",
+      },
+      {
+        uri: "doppler://environments",
+        name: "Environments",
+        description: "All environments",
+      },
+      {
+        uri: "doppler://integrations",
+        name: "Integrations",
+        description: "All integrations",
+      },
+      {
+        uri: "doppler://audit",
+        name: "Audit Logs",
+        description: "Security audit logs",
+      },
     ],
     prompts: [
       {
@@ -3090,16 +5546,32 @@ AVOID: Use other MCPs for non-Airtable operations. Use Airtable MCP for all Airt
         description: "Manage secrets for a project",
         arguments: [
           { name: "project", description: "Project name", required: true },
-          { name: "config", description: "Config name (e.g. dev, prod)", required: true },
+          {
+            name: "config",
+            description: "Config name (e.g. dev, prod)",
+            required: true,
+          },
         ],
       },
       {
         name: "sync_secrets",
         description: "Sync secrets between environments",
         arguments: [
-          { name: "sourceProject", description: "Source project", required: true },
-          { name: "sourceConfig", description: "Source config", required: true },
-          { name: "targetConfig", description: "Target config", required: true },
+          {
+            name: "sourceProject",
+            description: "Source project",
+            required: true,
+          },
+          {
+            name: "sourceConfig",
+            description: "Source config",
+            required: true,
+          },
+          {
+            name: "targetConfig",
+            description: "Target config",
+            required: true,
+          },
         ],
       },
     ],
@@ -3135,7 +5607,298 @@ USE CASES:
 AVOID: Use other MCPs for non-secrets operations. Use Doppler MCP for all secrets management.`,
   },
 
-  // 17. RAINDROP - REST API
+  // 17. DOCKER - Docker API (FULLY IMPLEMENTED: 25+ tools!)
+  docker: {
+    name: "docker",
+    category: "infrastructure",
+    enabled: true,
+    tools: [
+      // Containers (9 tools)
+      {
+        name: "listContainers",
+        description: "List all containers",
+        inputSchema: {
+          type: "object",
+          properties: { all: { type: "boolean", default: false } },
+        },
+      },
+      {
+        name: "getContainer",
+        description: "Get container details",
+        inputSchema: {
+          type: "object",
+          properties: { id: { type: "string" } },
+          required: ["id"],
+        },
+      },
+      {
+        name: "createContainer",
+        description: "Create new container",
+        inputSchema: {
+          type: "object",
+          properties: { config: { type: "object" } },
+          required: ["config"],
+        },
+      },
+      {
+        name: "startContainer",
+        description: "Start container",
+        inputSchema: {
+          type: "object",
+          properties: { id: { type: "string" } },
+          required: ["id"],
+        },
+      },
+      {
+        name: "stopContainer",
+        description: "Stop container",
+        inputSchema: {
+          type: "object",
+          properties: { id: { type: "string" }, timeout: { type: "number" } },
+          required: ["id"],
+        },
+      },
+      {
+        name: "restartContainer",
+        description: "Restart container",
+        inputSchema: {
+          type: "object",
+          properties: { id: { type: "string" }, timeout: { type: "number" } },
+          required: ["id"],
+        },
+      },
+      {
+        name: "removeContainer",
+        description: "Remove container",
+        inputSchema: {
+          type: "object",
+          properties: { id: { type: "string" }, force: { type: "boolean" } },
+          required: ["id"],
+        },
+      },
+      {
+        name: "getContainerLogs",
+        description: "Get container logs",
+        inputSchema: {
+          type: "object",
+          properties: {
+            id: { type: "string" },
+            tail: { type: "number", default: 100 },
+          },
+          required: ["id"],
+        },
+      },
+      {
+        name: "execContainer",
+        description: "Execute command in container",
+        inputSchema: {
+          type: "object",
+          properties: {
+            id: { type: "string" },
+            command: { type: "array", items: { type: "string" } },
+          },
+          required: ["id", "command"],
+        },
+      },
+
+      // Images (5 tools)
+      {
+        name: "listImages",
+        description: "List all images",
+        inputSchema: {
+          type: "object",
+          properties: { all: { type: "boolean", default: false } },
+        },
+      },
+      {
+        name: "getImage",
+        description: "Get image details",
+        inputSchema: {
+          type: "object",
+          properties: { name: { type: "string" } },
+          required: ["name"],
+        },
+      },
+      {
+        name: "pullImage",
+        description: "Pull image from registry",
+        inputSchema: {
+          type: "object",
+          properties: { name: { type: "string" } },
+          required: ["name"],
+        },
+      },
+      {
+        name: "buildImage",
+        description: "Build image from context",
+        inputSchema: {
+          type: "object",
+          properties: {
+            tarContext: { type: "string" },
+            tag: { type: "string" },
+          },
+          required: ["tarContext", "tag"],
+        },
+      },
+      {
+        name: "removeImage",
+        description: "Remove image",
+        inputSchema: {
+          type: "object",
+          properties: { name: { type: "string" }, force: { type: "boolean" } },
+          required: ["name"],
+        },
+      },
+
+      // Networks (4 tools)
+      {
+        name: "listNetworks",
+        description: "List all networks",
+        inputSchema: { type: "object", properties: {} },
+      },
+      {
+        name: "getNetwork",
+        description: "Get network details",
+        inputSchema: {
+          type: "object",
+          properties: { id: { type: "string" } },
+          required: ["id"],
+        },
+      },
+      {
+        name: "createNetwork",
+        description: "Create network",
+        inputSchema: {
+          type: "object",
+          properties: { config: { type: "object" } },
+          required: ["config"],
+        },
+      },
+      {
+        name: "removeNetwork",
+        description: "Remove network",
+        inputSchema: {
+          type: "object",
+          properties: { id: { type: "string" } },
+          required: ["id"],
+        },
+      },
+
+      // Volumes (4 tools)
+      {
+        name: "listVolumes",
+        description: "List all volumes",
+        inputSchema: { type: "object", properties: {} },
+      },
+      {
+        name: "getVolume",
+        description: "Get volume details",
+        inputSchema: {
+          type: "object",
+          properties: { name: { type: "string" } },
+          required: ["name"],
+        },
+      },
+      {
+        name: "createVolume",
+        description: "Create volume",
+        inputSchema: {
+          type: "object",
+          properties: { config: { type: "object" } },
+          required: ["config"],
+        },
+      },
+      {
+        name: "removeVolume",
+        description: "Remove volume",
+        inputSchema: {
+          type: "object",
+          properties: { name: { type: "string" } },
+          required: ["name"],
+        },
+      },
+
+      // System (2 tools)
+      {
+        name: "getSystemInfo",
+        description: "Get Docker system information",
+        inputSchema: { type: "object", properties: {} },
+      },
+      {
+        name: "getSystemVersion",
+        description: "Get Docker version",
+        inputSchema: { type: "object", properties: {} },
+      },
+    ],
+    resources: [
+      {
+        uri: "docker://containers",
+        name: "Containers",
+        description: "All Docker containers",
+      },
+      {
+        uri: "docker://images",
+        name: "Images",
+        description: "All Docker images",
+      },
+      {
+        uri: "docker://networks",
+        name: "Networks",
+        description: "All Docker networks",
+      },
+      {
+        uri: "docker://volumes",
+        name: "Volumes",
+        description: "All Docker volumes",
+      },
+    ],
+    prompts: [
+      {
+        name: "manage_containers",
+        description: "Manage Docker containers",
+        arguments: [
+          {
+            name: "action",
+            description: "Action: list, start, stop, restart, remove",
+            required: true,
+          },
+        ],
+      },
+    ],
+    execute: async (tool, params) => {
+      const { executeDockerTool } = await import("./docker-tools");
+      return await executeDockerTool(tool, params);
+    },
+    agentBriefing: `DOCKER MCP - Use for ALL Docker container and infrastructure management.
+
+WHEN TO USE:
+- Managing Docker containers (start, stop, restart, remove)
+- Image management (pull, build, remove)
+- Network and volume management
+- Container orchestration and deployment
+- Docker system information and monitoring
+
+KEY TOOLS:
+- listContainers/getContainer/createContainer: Container management
+- startContainer/stopContainer/restartContainer: Container lifecycle
+- getContainerLogs/execContainer: Container operations
+- listImages/pullImage/buildImage: Image management
+- listNetworks/createNetwork: Network management
+- listVolumes/createVolume: Volume management
+- getSystemInfo/getSystemVersion: System information
+
+USE CASES:
+- "List all running containers"
+- "Start the database container"
+- "Pull the latest nginx image"
+- "Get logs from the web container"
+- "Create a new network for microservices"
+- "Build image from Dockerfile"
+
+AVOID: Use Railway MCP for cloud deployments. Use Docker MCP for local/self-hosted container management.`,
+  },
+
+  // 18. RAINDROP - REST API
   raindrop: {
     name: "raindrop",
     category: "productivity",
@@ -3184,7 +5947,7 @@ INTEGRATION NOTES:
           "https://api.raindrop.io/rest/v1/raindrops/0",
           {
             headers: { Authorization: `Bearer ${process.env.RAINDROP_TOKEN}` },
-          }
+          },
         );
         return data.items;
       }
@@ -3242,7 +6005,7 @@ INTEGRATION NOTES:
           "https://api.getpostman.com/collections",
           {
             headers: { "X-Api-Key": process.env.POSTMAN_API_KEY },
-          }
+          },
         );
         return data.collections;
       }
@@ -3414,149 +6177,188 @@ INTEGRATION NOTES:
 - Useful for research, content discovery, and information gathering tasks`,
     tools: [
       // Web Search (enhanced)
-      { 
-        name: "webSearch", 
-        description: "Search web with Brave (privacy-focused, independent index)", 
-        inputSchema: { 
-          type: "object", 
-          properties: { 
+      {
+        name: "webSearch",
+        description:
+          "Search web with Brave (privacy-focused, independent index)",
+        inputSchema: {
+          type: "object",
+          properties: {
             query: { type: "string" },
-            country: { type: "string", description: "Country code (US, GB, etc)" },
-            searchLang: { type: "string", description: "Search language (en, es, etc)" },
-            count: { type: "number", description: "Number of results (max 20)" },
+            country: {
+              type: "string",
+              description: "Country code (US, GB, etc)",
+            },
+            searchLang: {
+              type: "string",
+              description: "Search language (en, es, etc)",
+            },
+            count: {
+              type: "number",
+              description: "Number of results (max 20)",
+            },
             offset: { type: "number", description: "Pagination offset" },
             safesearch: { type: "string", enum: ["off", "moderate", "strict"] },
-            freshness: { type: "string", enum: ["pd", "pw", "pm", "py"], description: "pd=day, pw=week, pm=month, py=year" },
-            resultFilter: { type: "string", description: "Filter: web, news, videos, images" },
-            gogglesId: { type: "string", description: "Custom search goggles ID" },
-          }, 
-          required: ["query"] 
-        } 
+            freshness: {
+              type: "string",
+              enum: ["pd", "pw", "pm", "py"],
+              description: "pd=day, pw=week, pm=month, py=year",
+            },
+            resultFilter: {
+              type: "string",
+              description: "Filter: web, news, videos, images",
+            },
+            gogglesId: {
+              type: "string",
+              description: "Custom search goggles ID",
+            },
+          },
+          required: ["query"],
+        },
       },
-      
+
       // Image Search
-      { 
-        name: "imageSearch", 
-        description: "Search images", 
-        inputSchema: { 
-          type: "object", 
-          properties: { 
+      {
+        name: "imageSearch",
+        description: "Search images",
+        inputSchema: {
+          type: "object",
+          properties: {
             query: { type: "string" },
             country: { type: "string" },
             count: { type: "number" },
             offset: { type: "number" },
             safesearch: { type: "string", enum: ["off", "moderate", "strict"] },
-          }, 
-          required: ["query"] 
-        } 
+          },
+          required: ["query"],
+        },
       },
-      
+
       // Video Search
-      { 
-        name: "videoSearch", 
-        description: "Search videos", 
-        inputSchema: { 
-          type: "object", 
-          properties: { 
+      {
+        name: "videoSearch",
+        description: "Search videos",
+        inputSchema: {
+          type: "object",
+          properties: {
             query: { type: "string" },
             country: { type: "string" },
             count: { type: "number" },
             offset: { type: "number" },
             safesearch: { type: "string", enum: ["off", "moderate", "strict"] },
             freshness: { type: "string", enum: ["pd", "pw", "pm", "py"] },
-          }, 
-          required: ["query"] 
-        } 
+          },
+          required: ["query"],
+        },
       },
-      
+
       // News Search
-      { 
-        name: "newsSearch", 
-        description: "Search news articles", 
-        inputSchema: { 
-          type: "object", 
-          properties: { 
+      {
+        name: "newsSearch",
+        description: "Search news articles",
+        inputSchema: {
+          type: "object",
+          properties: {
             query: { type: "string" },
             country: { type: "string" },
             count: { type: "number" },
             offset: { type: "number" },
             freshness: { type: "string", enum: ["pd", "pw", "pm", "py"] },
-          }, 
-          required: ["query"] 
-        } 
+          },
+          required: ["query"],
+        },
       },
-      
+
       // Local Search
-      { 
-        name: "localSearch", 
-        description: "Search local businesses/places", 
-        inputSchema: { 
-          type: "object", 
-          properties: { 
+      {
+        name: "localSearch",
+        description: "Search local businesses/places",
+        inputSchema: {
+          type: "object",
+          properties: {
             query: { type: "string" },
-            location: { type: "string", description: "Location name or address" },
+            location: {
+              type: "string",
+              description: "Location name or address",
+            },
             lat: { type: "number", description: "Latitude" },
             lon: { type: "number", description: "Longitude" },
             country: { type: "string" },
             count: { type: "number" },
-          }, 
-          required: ["query"] 
-        } 
+          },
+          required: ["query"],
+        },
       },
-      
+
       // Autocomplete Suggestions
-      { 
-        name: "suggest", 
-        description: "Get search suggestions (autocomplete)", 
-        inputSchema: { 
-          type: "object", 
-          properties: { 
+      {
+        name: "suggest",
+        description: "Get search suggestions (autocomplete)",
+        inputSchema: {
+          type: "object",
+          properties: {
             query: { type: "string" },
             country: { type: "string" },
             lang: { type: "string" },
             count: { type: "number" },
-          }, 
-          required: ["query"] 
-        } 
+          },
+          required: ["query"],
+        },
       },
-      
+
       // Spellcheck
-      { 
-        name: "spellcheck", 
-        description: "Check spelling and get corrections", 
-        inputSchema: { 
-          type: "object", 
-          properties: { 
+      {
+        name: "spellcheck",
+        description: "Check spelling and get corrections",
+        inputSchema: {
+          type: "object",
+          properties: {
             query: { type: "string" },
             country: { type: "string" },
             searchLang: { type: "string" },
-          }, 
-          required: ["query"] 
-        } 
+          },
+          required: ["query"],
+        },
       },
     ],
     resources: [
-      { uri: "brave://web", name: "Web Results", description: "Web search results" },
-      { uri: "brave://images", name: "Images", description: "Image search results" },
-      { uri: "brave://videos", name: "Videos", description: "Video search results" },
+      {
+        uri: "brave://web",
+        name: "Web Results",
+        description: "Web search results",
+      },
+      {
+        uri: "brave://images",
+        name: "Images",
+        description: "Image search results",
+      },
+      {
+        uri: "brave://videos",
+        name: "Videos",
+        description: "Video search results",
+      },
       { uri: "brave://news", name: "News", description: "News articles" },
       { uri: "brave://local", name: "Local", description: "Local businesses" },
     ],
     prompts: [
-      { 
-        name: "search_web", 
-        description: "Search the web with Brave", 
+      {
+        name: "search_web",
+        description: "Search the web with Brave",
         arguments: [
           { name: "query", description: "Search query", required: true },
-          { name: "filters", description: "Filters (freshness, safesearch, etc)", required: false },
-        ] 
+          {
+            name: "filters",
+            description: "Filters (freshness, safesearch, etc)",
+            required: false,
+          },
+        ],
       },
-      { 
-        name: "find_images", 
-        description: "Find images", 
+      {
+        name: "find_images",
+        description: "Find images",
         arguments: [
           { name: "query", description: "Image search query", required: true },
-        ] 
+        ],
       },
     ],
     execute: async (tool, params) => {
@@ -3736,7 +6538,7 @@ INTEGRATION NOTES:
           `${process.env.STRAPI_URL}/api/${params.contentType}`,
           {
             headers: { Authorization: `Bearer ${process.env.STRAPI_API_KEY}` },
-          }
+          },
         );
         return data.data;
       }
@@ -3806,174 +6608,5 @@ INTEGRATION NOTES:
       }
       throw new Error(`Unknown stripe tool: ${tool}`);
     },
-  },
-
-  // 26. DAGGER - Dagger SDK (CI/CD Pipeline-as-Code)
-  dagger: {
-    name: "dagger",
-    category: "infrastructure",
-    enabled: true,
-    tools: [
-      // Pipeline Operations (3 tools)
-      { name: "createPipeline", description: "Create CI/CD pipeline definition", inputSchema: { type: "object", properties: { name: { type: "string" }, steps: { type: "array" } }, required: ["name", "steps"] } },
-      { name: "runPipeline", description: "Execute pipeline", inputSchema: { type: "object", properties: { pipelineName: { type: "string" }, params: { type: "object" } }, required: ["pipelineName"] } },
-      { name: "listPipelines", description: "List available pipelines", inputSchema: { type: "object", properties: {} } },
-      
-      // Build Operations (2 tools)
-      { name: "buildImage", description: "Build container image with Dagger", inputSchema: { type: "object", properties: { context: { type: "string" }, dockerfile: { type: "string" }, tag: { type: "string" } }, required: ["context"] } },
-      { name: "buildWithCache", description: "Build with intelligent caching", inputSchema: { type: "object", properties: { context: { type: "string" }, cacheKey: { type: "string" } }, required: ["context", "cacheKey"] } },
-      
-      // Deploy Operations (2 tools)
-      { name: "deployToRailway", description: "Deploy to Railway via Dagger", inputSchema: { type: "object", properties: { image: { type: "string" }, serviceName: { type: "string" } }, required: ["image", "serviceName"] } },
-      { name: "deployToDocker", description: "Deploy to Docker via Dagger", inputSchema: { type: "object", properties: { image: { type: "string" }, containerName: { type: "string" } }, required: ["image", "containerName"] } },
-      
-      // Test Operations (2 tools)
-      { name: "runTests", description: "Run tests in isolated container", inputSchema: { type: "object", properties: { context: { type: "string" }, testCommand: { type: "string" } }, required: ["context"] } },
-      { name: "runLint", description: "Run linter in isolated container", inputSchema: { type: "object", properties: { context: { type: "string" } }, required: ["context"] } },
-      
-      // Cache Operations (2 tools)
-      { name: "createCache", description: "Create cache volume", inputSchema: { type: "object", properties: { key: { type: "string" } }, required: ["key"] } },
-      { name: "clearCache", description: "Clear cache volume", inputSchema: { type: "object", properties: { key: { type: "string" } }, required: ["key"] } },
-      
-      // Module Operations (2 tools)
-      { name: "listModules", description: "List Dagger modules", inputSchema: { type: "object", properties: {} } },
-      { name: "createModule", description: "Create Dagger module", inputSchema: { type: "object", properties: { name: { type: "string" }, definition: { type: "object" } }, required: ["name", "definition"] } },
-    ],
-    resources: [
-      { uri: "dagger://pipelines", name: "Pipelines", description: "All CI/CD pipelines" },
-      { uri: "dagger://modules", name: "Modules", description: "Dagger modules" },
-      { uri: "dagger://cache", name: "Cache", description: "Build cache volumes" },
-    ],
-    prompts: [
-      {
-        name: "build_and_deploy",
-        description: "Build and deploy application",
-        arguments: [
-          { name: "context", description: "Build context path", required: true },
-          { name: "target", description: "Deployment target (railway/docker)", required: true },
-        ],
-      },
-    ],
-    execute: async (tool, params) => {
-      const { executeDaggerTool } = await import("./dagger-tools");
-      return await executeDaggerTool(tool, params);
-    },
-    agentBriefing: `DAGGER MCP - Use for ALL CI/CD pipeline operations and DevOps automation.
-
-WHEN TO USE:
-- Building CI/CD pipelines as code
-- Container builds with intelligent caching
-- Automated deployments to Railway/Docker
-- Running tests in isolated environments
-- Managing build cache for faster builds
-- Creating reusable pipeline modules
-- DevOps automation and orchestration
-
-KEY TOOLS:
-- createPipeline/runPipeline: Pipeline management
-- buildImage/buildWithCache: Container builds with caching
-- deployToRailway/deployToDocker: Automated deployments
-- runTests/runLint: Isolated test execution
-- createCache/clearCache: Build cache management
-- listModules/createModule: Module management
-
-USE CASES:
-- "Build the app with Dagger caching"
-- "Create a pipeline for build, test, and deploy"
-- "Deploy the latest build to Railway"
-- "Run tests in an isolated container"
-- "Clear the build cache and rebuild"
-
-BENEFITS:
-- 10x faster than traditional CI/CD (intelligent caching)
-- Pipeline-as-code (version controlled)
-- Local testing before CI
-- Consistent environments
-- Automatic artifact caching
-
-AVOID: Use Docker MCP for simple container operations. Use Dagger MCP for CI/CD pipelines and DevOps automation.`,
-
-  // 27. N8N - @leonardsellem/n8n-mcp-server (Dynamic tools from n8n instance)
-  n8n: {
-    name: "n8n",
-    category: "automation",
-    enabled: true,
-    // Tools are loaded dynamically from @leonardsellem/n8n-mcp-server
-    // Common tools: listWorkflows, getWorkflow, createWorkflow, updateWorkflow, 
-    // executeWorkflow, getExecution, listExecutions, buildWorkflowFromDescription
-    tools: [], // Will be populated dynamically via getN8NCommunityTools()
-    resources: [
-      { uri: "n8n://workflows", name: "Workflows", description: "All n8n workflows" },
-      { uri: "n8n://executions", name: "Executions", description: "Workflow executions" },
-      { uri: "n8n://nodes", name: "Nodes", description: "Available n8n nodes" },
-    ],
-    prompts: [
-      {
-        name: "build_workflow",
-        description: "Build n8n workflow from natural language description",
-        arguments: [
-          { name: "description", description: "Workflow description in natural language", required: true },
-        ],
-      },
-      {
-        name: "optimize_workflow",
-        description: "Optimize existing n8n workflow",
-        arguments: [
-          { name: "workflowId", description: "Workflow ID to optimize", required: true },
-        ],
-      },
-    ],
-    execute: async (tool, params) => {
-      // Use n8n-community MCP server proxy
-      const { executeN8NCommunityTool } = await import("./n8n/proxy");
-      return await executeN8NCommunityTool(tool, params);
-    },
-    agentBriefing: `N8N MCP - Use for ALL n8n workflow automation and orchestration.
-
-WHEN TO USE:
-- Creating, updating, or managing n8n workflows
-- Executing workflows programmatically
-- Building workflows from natural language descriptions
-- Monitoring workflow executions and results
-- Integrating n8n workflows with other MCP servers
-- Automating complex multi-step business processes
-- Building Main and Sub-Workflows for fullstack applications
-
-KEY TOOLS (dynamically loaded from @leonardsellem/n8n-mcp-server):
-- listWorkflows: Get all workflows from n8n instance
-- getWorkflow: Retrieve specific workflow details
-- createWorkflow: Create new workflow from JSON schema
-- updateWorkflow: Update existing workflow
-- executeWorkflow: Trigger workflow execution
-- getExecution: Get execution status and results
-- listExecutions: List all workflow executions
-- buildWorkflowFromDescription: AI-powered workflow builder from natural language
-
-USE CASES:
-- "List all n8n workflows"
-- "Create a workflow that sends Slack notification when GitHub issue is created"
-- "Execute the 'Daily Report' workflow"
-- "Build a workflow from description: 'When new user signs up, create Notion page and send welcome email'"
-- "Get execution status for workflow run ID 123"
-- "Update workflow to add Linear issue creation step"
-
-N8N WORKFLOW INTEGRATION:
-- Main Workflows: Primary automation flows
-- Sub-Workflows: Reusable workflow components
-- HTTP Nodes: Call MCP Bridge endpoints (/api/mcp/:server/:tool)
-- Agent Nodes: Embed agentic AI agents for multi-step MCP orchestration
-- Bidirectional Sync: Backend services → n8n workflows, n8n workflows → backend code
-
-BIDIRECTIONAL INTEGRATION:
-- Backend → n8n: MCP servers automatically generate n8n workflow JSON schemas
-- n8n → Backend: Workflows built in n8n generate corresponding API routes
-- Sync Engine: Keeps backend and n8n workflows in sync with conflict resolution
-
-CONFIGURATION:
-- Requires N8N_INSTANCE_APIKEY or N8N_API_KEY environment variable
-- N8N_BASE_URL defaults to https://mmc-n8n-instance.up.railway.app
-- Uses @leonardsellem/n8n-mcp-server (BEST IN THE WORLD! 🌍)
-
-AVOID: Don't use for simple HTTP requests (use axios directly). Use n8n MCP for workflow automation and orchestration.`,
   },
 };

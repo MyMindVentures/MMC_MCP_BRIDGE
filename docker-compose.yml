@@ -1,36 +1,67 @@
+# ============================================================================
+# Docker Compose Configuration - OPTIONEEL
+# ============================================================================
+#
+# ⚠️ BELANGRIJK: Deze Docker Compose configuratie is OPTIONEEL
+#
+# PRIMAIRE DEVELOPMENT METHODE: DevContainer
+# - Wanneer je het project opent in VS Code/Cursor, start de devcontainer automatisch
+# - Gebruik: npm install → npm run dev:host (in devcontainer terminal)
+# - Hot reload werkt automatisch - geen container rebuilds nodig
+#
+# WANNEER DOCKER COMPOSE GEBRUIKEN:
+# - Docker-in-Docker testing (bijv. CI/CD workflows)
+# - Specifieke Docker functionaliteit testen
+# - Niet nodig voor normale development!
+#
+# Zie: Agent Suite/DEVCONTAINER_WORKFLOW.md voor correcte workflow
+# ============================================================================
+
 name: mmc-mcp-bridge
 
 services:
-  # Development Container - Voor app development met hot-reload
-  dev:
+  # Full Stack Integrated App - MMC MCP Bridge Platform
+  # Enterprise MCP Orchestration Platform: 26+ MCP Servers, n8n Integration, Agentic AI, Agent Suite
+  # Dit is de ENIGE container - alle features geïntegreerd in één app
+  #
+  # ⚠️ OPTIONEEL: Gebruik devcontainer voor normale development
+  # Deze service gebruikt .devcontainer/Dockerfile (zelfde als devcontainer)
+  app:
     build:
       context: .
-      dockerfile: containers/dev/Dockerfile
+      dockerfile: .devcontainer/Dockerfile
       args:
         VERSION: ${VERSION:-2.0.0}
-        BUILD_DATE: ${BUILD_DATE:-}
-        VCS_REF: ${VCS_REF:-}
-    image: mmc-mcp-bridge-dev:latest
-    container_name: MMC_MCP_Bridge_Dev
+        BUILD_DATE: ${BUILD_DATE:-$(date -u +'%Y-%m-%dT%H:%M:%SZ')}
+        VCS_REF: ${VCS_REF:-$(git rev-parse --short HEAD 2>/dev/null || echo "unknown")}
+    image: mmc-mcp-bridge-app:latest
+    container_name: MMC_MCP_Bridge_App
     labels:
       - "com.mmc.project=mmc-mcp-bridge"
-      - "com.mmc.component=dev"
-      - "com.mmc.container.type=development"
-      - "com.mmc.description=Development Container - Hot-reload enabled"
-      - "com.docker.desktop.service.name=MMC MCP Bridge - Dev"
-      - "com.docker.compose.service=dev"
+      - "com.mmc.component=fullstack-app"
+      - "com.mmc.container.type=fullstack-integrated"
+      - "com.mmc.app.type=mcp-orchestration-platform"
+      - "com.mmc.features=26-mcp-servers,n8n-integration,agentic-ai,frontend-i18n,agent-suite"
+      - "com.mmc.description=Full Stack Integrated App - 26+ MCP Servers, n8n Integration, Agentic AI, Agent Suite - Hot Reload + Docker Watch enabled"
+      - "com.docker.desktop.service.name=MMC MCP Bridge - Full Stack Integrated App"
+      - "com.docker.compose.service=app"
     ports:
       - "3000:3000"
     volumes:
+      # Bind mount voor hot reload - gebruik relatief path (werkt beter in devcontainer context)
       - .:/workspaces/MMC_MCP_BRIDGE
-      - /workspaces/MMC_MCP_BRIDGE/node_modules
-      - /workspaces/MMC_MCP_BRIDGE/.next
-      - /var/run/docker.sock:/var/run/docker.sock:ro
+      # Named volumes tijdelijk uitgeschakeld - bind mount werkt niet met named volumes in Docker-in-Docker
+      # - mmc-node-modules:/workspaces/MMC_MCP_BRIDGE/node_modules
+      # - mmc-next-build:/workspaces/MMC_MCP_BRIDGE/.next
     environment:
       - NODE_ENV=development
       - PORT=3000
       - NEXT_TELEMETRY_DISABLED=1
-      - DOCKER_HOST=unix:///var/run/docker.sock
+      # Hot reload environment variables
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
+      # Next.js development optimizations
+      - WATCHPACK_WATCHER_LIMIT=10000
     healthcheck:
       test:
         [
@@ -45,82 +76,90 @@ services:
       timeout: 10s
       start_period: 40s
       retries: 3
+    # Docker Compose Watch configuratie voor automatische hot reload
+    develop:
+      watch:
+        # Sync source code changes - triggert geen rebuild, alleen file sync
+        - action: sync
+          path: ./app
+          target: /workspaces/MMC_MCP_BRIDGE/app
+          ignore:
+            - node_modules/
+            - .next/
+        - action: sync
+          path: ./public
+          target: /workspaces/MMC_MCP_BRIDGE/public
+        - action: sync
+          path: ./messages
+          target: /workspaces/MMC_MCP_BRIDGE/messages
+        - action: sync
+          path: ./middleware.ts
+          target: /workspaces/MMC_MCP_BRIDGE/middleware.ts
+        # Rebuild container alleen bij dependency changes
+        - action: rebuild
+          path: ./package.json
+        - action: rebuild
+          path: ./package-lock.json
+        - action: rebuild
+          path: ./.devcontainer/Dockerfile
+        # Sync config files zonder rebuild
+        - action: sync
+          path: ./tsconfig.json
+          target: /workspaces/MMC_MCP_BRIDGE/tsconfig.json
+        - action: sync
+          path: ./turbo.json
+          target: /workspaces/MMC_MCP_BRIDGE/turbo.json
+    command: >
+      sh -c
+      "cd /workspaces/MMC_MCP_BRIDGE &&
+      if [ ! -f package.json ]; then
+        echo 'ERROR: package.json not found!';
+        ls -la /workspaces/MMC_MCP_BRIDGE/ | head -10;
+        exit 1;
+      fi &&
+      if [ ! -d node_modules ]; then
+        echo 'Installing dependencies...';
+        npm install;
+      fi &&
+      npm run dev:host"
     networks:
       - default
     restart: unless-stopped
 
-  # E2E Test Container - Voor testing, validatie en debugging met Dagger
+  # E2E Test Container - Optioneel voor CI/CD workflows
+  # Gebruikt containers/e2e/Dockerfile voor end-to-end testing
   e2e:
     build:
       context: .
       dockerfile: containers/e2e/Dockerfile
       args:
         VERSION: ${VERSION:-2.0.0}
-        BUILD_DATE: ${BUILD_DATE:-}
-        VCS_REF: ${VCS_REF:-}
+        BUILD_DATE: ${BUILD_DATE:-$(date -u +'%Y-%m-%dT%H:%M:%SZ')}
+        VCS_REF: ${VCS_REF:-$(git rev-parse --short HEAD 2>/dev/null || echo "unknown")}
     image: mmc-mcp-bridge-e2e:latest
     container_name: MMC_MCP_Bridge_E2E
     labels:
       - "com.mmc.project=mmc-mcp-bridge"
       - "com.mmc.component=e2e"
       - "com.mmc.container.type=testing"
-      - "com.mmc.description=E2E Test Container - Dagger CI/CD"
-      - "com.docker.desktop.service.name=MMC MCP Bridge - E2E"
+      - "com.docker.desktop.service.name=MMC MCP Bridge - E2E Test Container"
       - "com.docker.compose.service=e2e"
     volumes:
       - .:/workspaces/MMC_MCP_BRIDGE
-      - /workspaces/MMC_MCP_BRIDGE/node_modules
-      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - NODE_ENV=test
-      - CI=true
-      - DOCKER_HOST=unix:///var/run/docker.sock
     networks:
       - default
-    command: npm run test:e2e
-    restart: unless-stopped
+    restart: "no"
+    profiles:
+      - e2e
 
-  # Full Stack App Container - Productie-ready applicatie
-  app:
-    build:
-      context: .
-      dockerfile: containers/app/Dockerfile
-      args:
-        VERSION: ${VERSION:-2.0.0}
-        BUILD_DATE: ${BUILD_DATE:-}
-        VCS_REF: ${VCS_REF:-}
-    image: mmc-mcp-bridge-app:latest
-    container_name: MMC_MCP_Bridge_App
-    labels:
-      - "com.mmc.project=mmc-mcp-bridge"
-      - "com.mmc.component=app"
-      - "com.mmc.container.type=production"
-      - "com.mmc.description=Production App Container - Full Stack"
-      - "com.docker.desktop.service.name=MMC MCP Bridge - App"
-      - "com.docker.compose.service=app"
-    ports:
-      - "3001:3000"
-    environment:
-      - NODE_ENV=production
-      - PORT=3000
-      - NEXT_TELEMETRY_DISABLED=1
-    healthcheck:
-      test:
-        [
-          "CMD",
-          "wget",
-          "--no-verbose",
-          "--tries=1",
-          "--spider",
-          "http://localhost:3000/api/health",
-        ]
-      interval: 30s
-      timeout: 10s
-      start_period: 40s
-      retries: 3
-    networks:
-      - default
-    restart: unless-stopped
+# volumes:
+#   mmc-node-modules:
+#     name: mmc-mcp-bridge-node-modules
+#   mmc-next-build:
+#     name: mmc-mcp-bridge-next-build
 
 networks:
   default:

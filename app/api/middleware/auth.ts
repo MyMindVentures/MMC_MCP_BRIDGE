@@ -2,7 +2,31 @@
 // Industry Standard: API Keys + Bearer Token + Rate Limiting + Audit Logging
 // RFC 6750 (Bearer Token) + RFC 6749 (OAuth 2.0 patterns)
 
-import { Redis } from 'ioredis';
+import { Redis } from "ioredis";
+import { appendFile } from "fs/promises";
+
+// Debug logging helper (file-based fallback)
+async function debugLog(data: any) {
+  const logPath = process.cwd() + "/.cursor/debug.log";
+  const logLine = JSON.stringify({ ...data, timestamp: Date.now() }) + "\n";
+  try {
+    // Ensure directory exists
+    const { mkdir } = await import("fs/promises");
+    try {
+      await mkdir(process.cwd() + "/.cursor", { recursive: true });
+    } catch {}
+    await appendFile(logPath, logLine).catch((err) => {
+      console.error("[Debug] Failed to write log:", err);
+    });
+    fetch("http://127.0.0.1:7242/ingest/030eea83-1f2d-447b-8780-b95a991da708", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    }).catch(() => {});
+  } catch (err: any) {
+    console.error("[Debug] Logging error:", err?.message);
+  }
+}
 
 // Redis client for rate limiting & key validation
 let redis: Redis | null = null;
@@ -12,7 +36,7 @@ function getRedis(): Redis | null {
   if (!redis) {
     redis = new Redis(process.env.REDIS_URL, {
       maxRetriesPerRequest: 3,
-      retryStrategy: (times) => Math.min(times * 50, 2000)
+      retryStrategy: (times) => Math.min(times * 50, 2000),
     });
   }
   return redis;
@@ -30,100 +54,146 @@ interface ApiKeyConfig {
 // Parse API keys from environment
 function getApiKeys(): ApiKeyConfig[] {
   const keys: ApiKeyConfig[] = [];
-  
+
   // Primary key (backward compatible)
   if (process.env.MCP_BRIDGE_API_KEY) {
     keys.push({
       key: process.env.MCP_BRIDGE_API_KEY,
-      name: 'primary',
-      scopes: ['*'], // Full access
+      name: "primary",
+      scopes: ["*"], // Full access
       rateLimit: 1000,
-      enabled: true
+      enabled: true,
     });
   }
-  
+
   // Additional keys (format: KEY:NAME:SCOPES:RATE_LIMIT)
-  const additionalKeys = process.env.MCP_BRIDGE_API_KEYS?.split(',') || [];
+  const additionalKeys = process.env.MCP_BRIDGE_API_KEYS?.split(",") || [];
   for (const keyConfig of additionalKeys) {
-    const [key, name, scopes, rateLimit] = keyConfig.split(':');
+    const [key, name, scopes, rateLimit] = keyConfig.split(":");
     if (key && name) {
       keys.push({
         key: key.trim(),
         name: name.trim(),
-        scopes: scopes ? scopes.split('|') : ['*'],
+        scopes: scopes ? scopes.split("|") : ["*"],
         rateLimit: parseInt(rateLimit) || 100,
-        enabled: true
+        enabled: true,
       });
     }
   }
-  
+
   return keys;
 }
 
 // Validate API key
 function validateApiKey(token: string): ApiKeyConfig | null {
   const keys = getApiKeys();
-  return keys.find(k => k.enabled && k.key === token) || null;
+  return keys.find((k) => k.enabled && k.key === token) || null;
 }
 
 // Rate limiting (Redis-based)
-async function checkRateLimit(keyConfig: ApiKeyConfig, ip: string): Promise<{ allowed: boolean; remaining: number; reset: number }> {
+async function checkRateLimit(
+  keyConfig: ApiKeyConfig,
+  ip: string,
+): Promise<{ allowed: boolean; remaining: number; reset: number }> {
+  // #region agent log
+  await debugLog({
+    location: "middleware/auth.ts:70",
+    message: "checkRateLimit entry",
+    data: { keyName: keyConfig.name, ip, hasRedis: !!getRedis() },
+    sessionId: "debug-session",
+    runId: "run1",
+    hypothesisId: "C",
+  });
+  // #endregion agent log
   const redisClient = getRedis();
   if (!redisClient) {
-    return { allowed: true, remaining: keyConfig.rateLimit, reset: Date.now() + 60000 };
+    return {
+      allowed: true,
+      remaining: keyConfig.rateLimit,
+      reset: Date.now() + 60000,
+    };
   }
-  
+
   const key = `ratelimit:${keyConfig.name}:${ip}`;
   const now = Date.now();
   const windowMs = 60000; // 1 minute
-  
+
   try {
     // Add current request timestamp
     await redisClient.zadd(key, now, `${now}`);
-    
+
     // Remove old entries outside the window
     await redisClient.zremrangebyscore(key, 0, now - windowMs);
-    
+
     // Count requests in current window
     const count = await redisClient.zcard(key);
-    
+
     // Set expiry
     await redisClient.expire(key, 60);
-    
+
     const remaining = Math.max(0, keyConfig.rateLimit - count);
     const reset = now + windowMs;
-    
-    return {
+
+    const result = {
       allowed: count <= keyConfig.rateLimit,
       remaining,
-      reset
+      reset,
     };
-  } catch (error) {
-    console.error('[Auth] Rate limit check failed:', error);
-    return { allowed: true, remaining: keyConfig.rateLimit, reset: Date.now() + 60000 }; // Fail open
+    // #region agent log
+    await debugLog({
+      location: "middleware/auth.ts:96",
+      message: "checkRateLimit result",
+      data: { ...result, count },
+      sessionId: "debug-session",
+      runId: "run1",
+      hypothesisId: "C",
+    });
+    // #endregion agent log
+    return result;
+  } catch (error: any) {
+    console.error("[Auth] Rate limit check failed:", error);
+    // #region agent log
+    await debugLog({
+      location: "middleware/auth.ts:102",
+      message: "checkRateLimit error",
+      data: { errorMessage: error?.message },
+      sessionId: "debug-session",
+      runId: "run1",
+      hypothesisId: "B",
+    });
+    // #endregion agent log
+    return {
+      allowed: true,
+      remaining: keyConfig.rateLimit,
+      reset: Date.now() + 60000,
+    }; // Fail open
   }
 }
 
 // Audit logging
-async function logRequest(keyConfig: ApiKeyConfig | null, request: Request, allowed: boolean) {
+async function logRequest(
+  keyConfig: ApiKeyConfig | null,
+  request: Request,
+  allowed: boolean,
+) {
   const redisClient = getRedis();
   if (!redisClient) return;
-  
+
   const log = {
     timestamp: new Date().toISOString(),
-    key: keyConfig?.name || 'anonymous',
+    key: keyConfig?.name || "anonymous",
     method: request.method,
     url: new URL(request.url).pathname,
-    ip: request.headers.get('x-forwarded-for') || 'unknown',
-    userAgent: request.headers.get('user-agent') || 'unknown',
-    allowed
+    ip: request.headers.get("x-forwarded-for") || "unknown",
+    userAgent: request.headers.get("user-agent") || "unknown",
+    allowed,
   };
-  
+
   try {
-    await redisClient.lpush('audit:requests', JSON.stringify(log));
-    await redisClient.ltrim('audit:requests', 0, 9999); // Keep last 10k requests
+    await redisClient.lpush("audit:requests", JSON.stringify(log));
+    await redisClient.ltrim("audit:requests", 0, 9999); // Keep last 10k requests
   } catch (error) {
-    console.error('[Auth] Audit logging failed:', error);
+    console.error("[Auth] Audit logging failed:", error);
   }
 }
 
@@ -132,120 +202,136 @@ export async function verifyAuth(request: Request): Promise<{
   allowed: boolean;
   keyConfig?: ApiKeyConfig;
   reason?: string;
+  rateLimit?: {
+    limit: number;
+    remaining: number;
+    reset: number;
+  };
 }> {
-  const authHeader = request.headers.get('Authorization');
-  const ip = request.headers.get('x-forwarded-for') || 'unknown';
-  
+  const authHeader = request.headers.get("Authorization");
+  const ip = request.headers.get("x-forwarded-for") || "unknown";
+
   // If no API keys configured, allow all (development mode)
   const apiKeys = getApiKeys();
   if (apiKeys.length === 0) {
-    console.log('[Auth] No API keys configured - allowing all requests (DEVELOPMENT MODE)');
+    console.log(
+      "[Auth] No API keys configured - allowing all requests (DEVELOPMENT MODE)",
+    );
     return { allowed: true };
   }
-  
+
   // Check Authorization header
   if (!authHeader) {
     await logRequest(null, request, false);
-    return { allowed: false, reason: 'Missing Authorization header' };
+    return { allowed: false, reason: "Missing Authorization header" };
   }
-  
+
   // Verify Bearer token format
-  if (!authHeader.startsWith('Bearer ')) {
+  if (!authHeader.startsWith("Bearer ")) {
     await logRequest(null, request, false);
-    return { allowed: false, reason: 'Invalid Authorization format (expected: Bearer <token>)' };
+    return {
+      allowed: false,
+      reason: "Invalid Authorization format (expected: Bearer <token>)",
+    };
   }
-  
+
   const token = authHeader.substring(7).trim();
-  
+
   // Check if it's an OAuth2 token (starts with mmc_oauth2_)
-  if (token.startsWith('mmc_oauth2_')) {
-    const { getAccessToken } = await import('../oauth/model');
+  if (token.startsWith("mmc_oauth2_")) {
+    const { getAccessToken } = await import("../oauth/model");
     const oauthToken = await getAccessToken(token);
-    
+
     if (!oauthToken) {
       await logRequest(null, request, false);
-      return { allowed: false, reason: 'Invalid or expired OAuth2 token' };
+      return { allowed: false, reason: "Invalid or expired OAuth2 token" };
     }
-    
+
     // Check token expiration
     if (oauthToken.accessTokenExpiresAt < new Date()) {
       await logRequest(null, request, false);
-      return { allowed: false, reason: 'OAuth2 token has expired' };
+      return { allowed: false, reason: "OAuth2 token has expired" };
     }
-    
+
     // OAuth2 tokens don't have rate limiting (handled by client)
     await logRequest(null, request, true);
     return { allowed: true };
   }
-  
+
   // Validate API key
   const keyConfig = validateApiKey(token);
   if (!keyConfig) {
     await logRequest(null, request, false);
-    return { allowed: false, reason: 'Invalid or expired API key' };
+    return { allowed: false, reason: "Invalid or expired API key" };
   }
-  
+
   // Check rate limit
   const rateLimitResult = await checkRateLimit(keyConfig, ip);
   if (!rateLimitResult.allowed) {
     await logRequest(keyConfig, request, false);
-    return { 
-      allowed: false, 
+    return {
+      allowed: false,
       keyConfig,
       reason: `Rate limit exceeded (${keyConfig.rateLimit} requests/minute)`,
       rateLimit: {
         limit: keyConfig.rateLimit,
         remaining: rateLimitResult.remaining,
-        reset: rateLimitResult.reset
-      }
+        reset: rateLimitResult.reset,
+      },
     };
   }
-  
+
   // Success!
   await logRequest(keyConfig, request, true);
-  return { 
-    allowed: true, 
+  return {
+    allowed: true,
     keyConfig,
     rateLimit: {
       limit: keyConfig.rateLimit,
       remaining: rateLimitResult.remaining,
-      reset: rateLimitResult.reset
-    }
+      reset: rateLimitResult.reset,
+    },
   };
 }
 
 // Error responses with rate limit headers
-export function authErrorResponse(reason: string, status: number = 401, rateLimit?: { limit: number; remaining: number; reset: number }) {
-  const headers: Record<string, string> = { 
-    'Content-Type': 'application/json',
-    'WWW-Authenticate': 'Bearer realm="MCP Bridge", charset="UTF-8"'
+export function authErrorResponse(
+  reason: string,
+  status: number = 401,
+  rateLimit?: { limit: number; remaining: number; reset: number },
+) {
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+    "WWW-Authenticate": 'Bearer realm="MCP Bridge", charset="UTF-8"',
   };
 
   // Add rate limit headers if provided
   if (rateLimit) {
-    headers['X-RateLimit-Limit'] = rateLimit.limit.toString();
-    headers['X-RateLimit-Remaining'] = rateLimit.remaining.toString();
-    headers['X-RateLimit-Reset'] = rateLimit.reset.toString();
-    headers['Retry-After'] = Math.ceil((rateLimit.reset - Date.now()) / 1000).toString();
+    headers["X-RateLimit-Limit"] = rateLimit.limit.toString();
+    headers["X-RateLimit-Remaining"] = rateLimit.remaining.toString();
+    headers["X-RateLimit-Reset"] = rateLimit.reset.toString();
+    headers["Retry-After"] = Math.ceil(
+      (rateLimit.reset - Date.now()) / 1000,
+    ).toString();
   }
 
   return new Response(
     JSON.stringify({
-      jsonrpc: '2.0',
-      error: { 
-        code: status === 401 ? -32001 : -32002, 
+      jsonrpc: "2.0",
+      error: {
+        code: status === 401 ? -32001 : -32002,
         message: reason,
         data: {
-          hint: 'Add header: Authorization: Bearer <your-api-key>',
-          docs: 'https://github.com/MyMindVentures/MMC_MCP_BRIDGE#authentication',
-          ...(rateLimit && { rateLimit })
-        }
-      }
+          hint: "Add header: Authorization: Bearer <your-api-key>",
+          docs: "https://github.com/MyMindVentures/MMC_MCP_BRIDGE#authentication",
+          ...(rateLimit && { rateLimit }),
+        },
+      },
     }),
-    { 
+    {
       status,
-      headers
-    }
+      headers,
+    },
   );
 }
 
@@ -253,26 +339,26 @@ export function authErrorResponse(reason: string, status: number = 401, rateLimi
 export async function getApiKeyStats(): Promise<any[]> {
   const redisClient = getRedis();
   if (!redisClient) return [];
-  
+
   const keys = getApiKeys();
   const stats = [];
-  
+
   for (const key of keys) {
     try {
       const rateLimitKey = `ratelimit:${key.name}:*`;
       const currentRequests = await redisClient.keys(rateLimitKey);
-      
+
       stats.push({
         name: key.name,
         scopes: key.scopes,
         rateLimit: key.rateLimit,
         enabled: key.enabled,
-        currentRequests: currentRequests.length
+        currentRequests: currentRequests.length,
       });
     } catch (error) {
       console.error(`[Auth] Failed to get stats for ${key.name}:`, error);
     }
   }
-  
+
   return stats;
 }

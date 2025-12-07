@@ -251,7 +251,7 @@ export async function POST(request: NextRequest) {
           reason: "Not due yet",
           nextSync: new Date(
             new Date(config.linear.lastSync || 0).getTime() +
-              config.linear.interval * 60 * 1000
+              config.linear.interval * 60 * 1000,
           ).toISOString(),
         };
       }
@@ -262,7 +262,7 @@ export async function POST(request: NextRequest) {
       if (force || isSyncDue(config.notion.lastSync, config.notion.interval)) {
         const result = await executeNotionSync(
           config.notion.direction,
-          config.notion.pageId
+          config.notion.pageId,
         );
         results.notion = result;
         if (result.success) {
@@ -274,7 +274,7 @@ export async function POST(request: NextRequest) {
           reason: "Not due yet",
           nextSync: new Date(
             new Date(config.notion.lastSync || 0).getTime() +
-              config.notion.interval * 60 * 1000
+              config.notion.interval * 60 * 1000,
           ).toISOString(),
         };
       }
@@ -309,7 +309,7 @@ export async function GET() {
           nextSync: config.linear.lastSync
             ? new Date(
                 new Date(config.linear.lastSync).getTime() +
-                  config.linear.interval * 60 * 1000
+                  config.linear.interval * 60 * 1000,
               ).toISOString()
             : "Immediately",
           interval: `${config.linear.interval} minutes`,
@@ -320,7 +320,7 @@ export async function GET() {
           nextSync: config.notion.lastSync
             ? new Date(
                 new Date(config.notion.lastSync).getTime() +
-                  config.notion.interval * 60 * 1000
+                  config.notion.interval * 60 * 1000,
               ).toISOString()
             : "Immediately",
           interval: `${config.notion.interval} minutes`,

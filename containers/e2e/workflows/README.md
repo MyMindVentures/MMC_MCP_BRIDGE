@@ -231,9 +231,7 @@ PUSH_HUB=true PUSH_GHCR=true npm run workflow:docker-build
 
 **Containers:**
 
-- dev
-- app
-- e2e
+- e2e (only remaining - dev and app were removed, replaced by devcontainer)
 
 ### 12. **dagger-pipeline.sh** - Dagger Pipeline
 

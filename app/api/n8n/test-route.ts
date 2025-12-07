@@ -133,7 +133,7 @@ export async function GET() {
   try {
     const tools = await getN8NCommunityTools();
     const listWorkflowsTool = tools.find(
-      (t: any) => t.name === "listWorkflows"
+      (t: any) => t.name === "listWorkflows",
     );
 
     if (listWorkflowsTool) {

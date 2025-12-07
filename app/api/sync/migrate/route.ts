@@ -95,7 +95,7 @@ function parseMarkdown(content: string): {
 // Migrate markdown to Linear issues
 async function migrateToLinear(
   filePath: string,
-  content: string
+  content: string,
 ): Promise<any> {
   const teamId = await getLinearTeamId();
   if (!teamId) {
@@ -134,7 +134,7 @@ async function migrateToLinear(
 async function migrateToNotion(
   filePath: string,
   content: string,
-  parentPageId?: string
+  parentPageId?: string,
 ): Promise<any> {
   const client = getNotionClient();
   if (!client) {
@@ -270,7 +270,7 @@ export async function POST(request: NextRequest) {
         results.notion = await migrateToNotion(
           filePath,
           content,
-          notionParentPageId
+          notionParentPageId,
         );
       } catch (error: any) {
         results.notion = { error: error.message };

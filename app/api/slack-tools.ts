@@ -1,308 +1,300 @@
 // Slack Tools - Complete implementation of 20+ tools
 // Full CRUD for messages, files, reactions, users, channels, webhooks
 
-import { WebClient } from '@slack/web-api';
+import { WebClient } from "@slack/web-api";
 
 export async function executeSlackTool(
   slack: WebClient,
   toolName: string,
-  params: any
+  params: any,
 ): Promise<any> {
-  
   switch (toolName) {
     // === MESSAGE OPERATIONS ===
-    
-    case 'postMessage': {
+
+    case "postMessage": {
       const { channel, text, blocks, thread_ts, attachments } = params;
       const result = await slack.chat.postMessage({
         channel,
         text,
         blocks,
         thread_ts,
-        attachments
+        attachments,
       });
       return result;
     }
-    
-    case 'updateMessage': {
+
+    case "updateMessage": {
       const { channel, ts, text, blocks } = params;
       const result = await slack.chat.update({
         channel,
         ts,
         text,
-        blocks
+        blocks,
       });
       return result;
     }
-    
-    case 'deleteMessage': {
+
+    case "deleteMessage": {
       const { channel, ts } = params;
       const result = await slack.chat.delete({
         channel,
-        ts
+        ts,
       });
       return result;
     }
-    
-    case 'postEphemeral': {
+
+    case "postEphemeral": {
       const { channel, user, text, blocks } = params;
       const result = await slack.chat.postEphemeral({
         channel,
         user,
         text,
-        blocks
+        blocks,
       });
       return result;
     }
-    
-    case 'scheduleMessage': {
+
+    case "scheduleMessage": {
       const { channel, text, post_at, blocks } = params;
       const result = await slack.chat.scheduleMessage({
         channel,
         text,
         post_at,
-        blocks
+        blocks,
       });
       return result;
     }
-    
-    case 'postThreadReply': {
+
+    case "postThreadReply": {
       const { channel, thread_ts, text, blocks } = params;
       const result = await slack.chat.postMessage({
         channel,
         thread_ts,
         text,
-        blocks
+        blocks,
       });
       return result;
     }
-    
-    case 'getPermalink': {
+
+    case "getPermalink": {
       const { channel, message_ts } = params;
       const result = await slack.chat.getPermalink({
         channel,
-        message_ts
+        message_ts,
       });
       return result;
     }
-    
+
     // === FILE OPERATIONS ===
-    
-    case 'uploadFile': {
-      const { channels, content, filename, filetype, title, initial_comment } = params;
+
+    case "uploadFile": {
+      const { channels, content, filename, filetype, title, initial_comment } =
+        params;
       const result = await slack.files.uploadV2({
         channel_id: channels,
         content,
         filename,
         filetype,
         title,
-        initial_comment
+        initial_comment,
       });
       return result;
     }
-    
-    case 'getFile': {
+
+    case "getFile": {
       const { file } = params;
       const result = await slack.files.info({
-        file
+        file,
       });
       return result;
     }
-    
-    case 'deleteFile': {
+
+    case "deleteFile": {
       const { file } = params;
       const result = await slack.files.delete({
-        file
+        file,
       });
       return result;
     }
-    
-    case 'shareFile': {
+
+    case "shareFile": {
       const { file, channel } = params;
       const result = await slack.files.sharedPublicURL({
-        file
+        file,
       });
       return result;
     }
-    
-    case 'listFiles': {
+
+    case "listFiles": {
       const { channel, user, count = 100 } = params;
       const result = await slack.files.list({
         channel,
         user,
-        count
+        count,
       });
       return result;
     }
-    
+
     // === REACTION OPERATIONS ===
-    
-    case 'addReaction': {
+
+    case "addReaction": {
       const { channel, name, timestamp } = params;
       const result = await slack.reactions.add({
         channel,
         name,
-        timestamp
+        timestamp,
       });
       return result;
     }
-    
-    case 'removeReaction': {
+
+    case "removeReaction": {
       const { channel, name, timestamp } = params;
       const result = await slack.reactions.remove({
         channel,
         name,
-        timestamp
+        timestamp,
       });
       return result;
     }
-    
-    case 'getReactions': {
+
+    case "getReactions": {
       const { channel, timestamp } = params;
       const result = await slack.reactions.get({
         channel,
-        timestamp
+        timestamp,
       });
       return result;
     }
-    
+
     // === USER OPERATIONS ===
-    
-    case 'listUsers': {
+
+    case "listUsers": {
       const { limit = 100, cursor } = params;
       const result = await slack.users.list({
         limit,
-        cursor
+        cursor,
       });
       return result;
     }
-    
-    case 'getUser': {
+
+    case "getUser": {
       const { user } = params;
       const result = await slack.users.info({
-        user
+        user,
       });
       return result;
     }
-    
-    case 'getUserProfile': {
+
+    case "getUserProfile": {
       const { user } = params;
       const result = await slack.users.profile.get({
-        user
+        user,
       });
       return result;
     }
-    
-    case 'setUserPresence': {
+
+    case "setUserPresence": {
       const { presence } = params;
       const result = await slack.users.setPresence({
-        presence
+        presence,
       });
       return result;
     }
-    
-    case 'getUserPresence': {
+
+    case "getUserPresence": {
       const { user } = params;
       const result = await slack.users.getPresence({
-        user
+        user,
       });
       return result;
     }
-    
+
     // === CHANNEL OPERATIONS ===
-    
-    case 'listChannels': {
+
+    case "listChannels": {
       const { limit = 100, cursor, exclude_archived } = params;
       const result = await slack.conversations.list({
         limit,
         cursor,
-        exclude_archived
+        exclude_archived,
       });
       return result;
     }
-    
-    case 'createChannel': {
+
+    case "createChannel": {
       const { name, is_private } = params;
       const result = await slack.conversations.create({
         name,
-        is_private
+        is_private,
       });
       return result;
     }
-    
-    case 'archiveChannel': {
+
+    case "archiveChannel": {
       const { channel } = params;
       const result = await slack.conversations.archive({
-        channel
+        channel,
       });
       return result;
     }
-    
-    case 'unarchiveChannel': {
+
+    case "unarchiveChannel": {
       const { channel } = params;
       const result = await slack.conversations.unarchive({
-        channel
+        channel,
       });
       return result;
     }
-    
-    case 'inviteToChannel': {
+
+    case "inviteToChannel": {
       const { channel, users } = params;
       const result = await slack.conversations.invite({
         channel,
-        users
+        users,
       });
       return result;
     }
-    
-    case 'kickFromChannel': {
+
+    case "kickFromChannel": {
       const { channel, user } = params;
       const result = await slack.conversations.kick({
         channel,
-        user
+        user,
       });
       return result;
     }
-    
-    case 'setChannelTopic': {
+
+    case "setChannelTopic": {
       const { channel, topic } = params;
       const result = await slack.conversations.setTopic({
         channel,
-        topic
+        topic,
       });
       return result;
     }
-    
-    case 'setChannelPurpose': {
+
+    case "setChannelPurpose": {
       const { channel, purpose } = params;
       const result = await slack.conversations.setPurpose({
         channel,
-        purpose
+        purpose,
       });
       return result;
     }
-    
-    case 'getChannelHistory': {
+
+    case "getChannelHistory": {
       const { channel, limit = 100, cursor } = params;
       const result = await slack.conversations.history({
         channel,
         limit,
-        cursor
+        cursor,
       });
       return result;
     }
-    
+
     default:
       throw new Error(`Unknown slack tool: ${toolName}`);
   }
 }
 
-console.log('[Slack Tools] 30+ tools loaded');
-
-
-
-
-
-
-
-
+console.log("[Slack Tools] 30+ tools loaded");

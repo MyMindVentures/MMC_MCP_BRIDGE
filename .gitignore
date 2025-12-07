@@ -54,3 +54,11 @@ docker-compose.override.yml
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+
+# Credentials and secrets (NEVER COMMIT)
+temp-*.txt
+temp-*.json
+*-tokens.txt
+*-secrets.json
+doppler-tokens.txt
+service-tokens.txt

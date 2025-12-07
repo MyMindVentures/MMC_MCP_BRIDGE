@@ -2,216 +2,156 @@
 
 ## Overzicht
 
-Deze monorepo bevat 3 onafhankelijke containers voor verschillende doeleinden:
+Deze monorepo gebruikt **één enkele Full Stack container** via de devcontainer met Docker Compose Watch voor automatische hot reload.
 
-1. **Development Container** (`containers/dev/`) - Voor app development
-2. **E2E Test Container** (`containers/e2e/`) - Voor testing en validatie
-3. **Full Stack App Container** (`containers/app/`) - Productie-ready applicatie
+**Single Container Architecture:**
+
+- **DevContainer** (`.devcontainer/Dockerfile`) - Full Stack development container met alle tools
+- **Docker Compose Watch** - Automatische hot reload zonder rebuilds
+- **Production** - Railway deployment (zie `railway.json`)
 
 ## Directory Structuur
 
 ```
 /workspaces/MMC_MCP_BRIDGE/
-├── containers/
-│   ├── dev/                    # Development Container
-│   │   ├── Dockerfile          # Development image (node:22.3.0-alpine)
-│   │   ├── build.sh            # Build script
-│   │   └── README.md           # Documentatie
-│   ├── e2e/                    # E2E Test Container
-│   │   ├── Dockerfile          # E2E test image (node:22.3.0-alpine + Playwright)
-│   │   ├── build.sh            # Build script
-│   │   └── README.md           # Documentatie
-│   └── app/                    # Full Stack App Container
-│       ├── Dockerfile          # Production image (multi-stage build, node:22.3.0-alpine)
-│       ├── build.sh            # Build script
-│       └── README.md           # Documentatie
+├── .devcontainer/
+│   ├── Dockerfile              # Full Stack development container
+│   └── devcontainer.json      # VS Code/Cursor devcontainer config
 ├── app/                        # Next.js applicatie code
 │   ├── api/                    # API routes
 │   ├── layout.tsx
 │   └── page.tsx
-├── docker-compose.yml          # Alle 3 containers configuratie
-├── package.json                # NPM scripts voor alle containers
-└── ...
+├── docker-compose.yml          # Single service met Docker Compose Watch
+├── .dockerignore              # Build optimization
+├── package.json               # Docker management scripts (npm run docker:*)
+└── containers/                # ⚠️ Legacy/Deprecated (zie containers/README.md)
+    ├── dev/                   # ❌ Verouderd - vervangen door devcontainer
+    ├── app/                   # ❌ Verouderd - vervangen door devcontainer
+    └── e2e/                   # ⚠️ Optioneel - workflows kunnen nog gebruikt worden
 ```
 
-## Containers
+## Single Container Setup
 
-### 1. Development Container (`dev`)
+### DevContainer (`.devcontainer/Dockerfile`)
 
-**Doel**: Development van de app met hot-reload en debugging
+**Doel**: Full Stack development container met alle tools
 
 **Features**:
 
-- Hot-reload tijdens development
-- Volledige debugging capabilities
+- Next.js development server met hot reload
+- Docker CLI + Docker-in-Docker feature
+- Dagger CLI voor CI/CD
 - Doppler CLI voor secrets management
-- Git support voor version control
+- 1Password CLI voor credentials
+- PowerShell Core
+- Python + build tools voor native modules
+- Playwright dependencies voor E2E testing
+- Alle VS Code extensions
 
 **Port**: 3000
 
 **Start**:
 
 ```bash
-docker compose up -d dev
+# Met Docker Watch (aanbevolen - hot reload)
+npm run docker:up:watch
 # of
-npm run docker:dev:up
-```
+docker compose watch
 
-### 2. E2E Test Container (`e2e`)
-
-**Doel**: End-to-end testing, validatie en debugging
-
-**Features**:
-
-- Playwright voor browser testing
-- Chromium browser (system)
-- CI/CD ready
-- Onafhankelijk van andere containers
-
-**Start**:
-
-```bash
-docker compose up -d e2e
+# Zonder watch (traditioneel)
+npm run docker:up
 # of
-npm run docker:e2e:up
+docker compose up -d --build app
 ```
 
-### 3. Full Stack App Container (`app`)
+## Docker Compose Watch
 
-**Doel**: Productie-ready deployment van de volledige applicatie
+**Docker Compose Watch** zorgt voor automatische hot reload:
 
-**Features**:
+- **Sync Actions**: Code wijzigingen worden direct gesynchroniseerd (geen rebuild)
+  - `./app` → `/workspaces/MMC_MCP_BRIDGE/app`
+  - `./public` → `/workspaces/MMC_MCP_BRIDGE/public`
+  - `./messages` → `/workspaces/MMC_MCP_BRIDGE/messages`
+  - Config files (`tsconfig.json`, `turbo.json`)
 
-- Multi-stage build voor optimalisatie
-- Production mode
-- Geoptimaliseerd voor performance
-- Health checks
+- **Rebuild Actions**: Container rebuild alleen bij dependency changes
+  - `package.json` wijzigingen
+  - `package-lock.json` wijzigingen
+  - `.devcontainer/Dockerfile` wijzigingen
 
-**Port**: 3001 (om conflicten met dev te voorkomen)
-
-**Start**:
-
-```bash
-docker compose up -d app
-# of
-npm run docker:app:up
-```
-
-## Docker Compose Commando's
-
-### Alle containers
-
-```bash
-docker compose up -d --build        # Start alle containers
-docker compose down                 # Stop alle containers
-docker compose logs -f              # Logs van alle containers
-```
-
-### Individuele containers
-
-```bash
-# Development
-docker compose up -d dev
-docker compose logs -f dev
-docker compose stop dev
-
-# E2E
-docker compose up -d e2e
-docker compose logs -f e2e
-docker compose stop e2e
-
-# App
-docker compose up -d app
-docker compose logs -f app
-docker compose stop app
-```
+**Zie `DOCKER_WATCH_GUIDE.md` voor volledige documentatie.**
 
 ## NPM Scripts
 
 ```bash
 # Development
-npm run docker:dev:up       # Start dev container
-npm run docker:dev:down     # Stop dev container
-npm run docker:dev:logs     # View dev logs
+npm run docker:up:watch       # Start met Docker Watch (hot reload)
+npm run docker:up             # Start zonder watch
+npm run docker:down           # Stop container
+npm run docker:logs           # View logs
+npm run docker:restart        # Restart container
 
-# E2E
-npm run docker:e2e:up       # Start e2e container
-npm run docker:e2e:down     # Stop e2e container
-npm run docker:e2e:logs     # View e2e logs
+# Build & Deploy
+npm run docker:build          # Build container
+npm run docker:tag            # Tag voor registries
+npm run docker:push:hub       # Push naar Docker Hub
+npm run docker:push:ghcr      # Push naar GHCR
 
-# App
-npm run docker:app:up       # Start app container
-npm run docker:app:down     # Stop app container
-npm run docker:app:logs     # View app logs
+# Cleanup
+npm run docker:clean:all      # Clean alle resources
+npm run docker:clean:images   # Clean images only
+npm run docker:clean:containers # Clean containers only
+npm run docker:clean:volumes  # Clean volumes only
 
-# All
-npm run docker:up           # Start alle containers
-npm run docker:down         # Stop alle containers
-npm run docker:logs         # View alle logs
-npm run docker:build:all    # Build alle containers
+# Validation
+npm run docker:validate       # Validate docker-compose.yml
+npm run docker:test           # Test container health
+npm run docker:inspect        # Inspect image labels
 ```
 
-## Container Onafhankelijkheid
+## Volume Mounts
 
-Alle 3 containers zijn volledig onafhankelijk:
+### Bind Mounts (Hot Reload)
 
-- Geen `depends_on` dependencies
-- `restart: "no"` - starten alleen handmatig
-- Eigen netwerk configuratie
-- Eigen volumes en environment variables
+- `.:/workspaces/MMC_MCP_BRIDGE` - Volledige codebase (live sync)
 
-## Ports
+### Named Volumes (Geen Sync)
 
-- **Dev Container**: 3000
-- **App Container**: 3001 (om conflicten te voorkomen)
-- **E2E Container**: Geen externe ports (alleen intern)
-
-## Dockerfiles Overzicht
-
-### Development Container (`containers/dev/Dockerfile`)
-
-- **Base Image**: `node:22.3.0-alpine`
-- **Doel**: Development met hot-reload
-- **Features**: Doppler CLI, Git, wget, curl, bash
-- **Port**: 3000
-- **Command**: `npm run dev:host`
-
-### E2E Test Container (`containers/e2e/Dockerfile`)
-
-- **Base Image**: `node:22.3.0-alpine`
-- **Doel**: End-to-end testing
-- **Features**: Playwright, Chromium (system), Git
-- **Command**: `npm run test:e2e`
-
-### Full Stack App Container (`containers/app/Dockerfile`)
-
-- **Base Image**: `node:22.3.0-alpine` (multi-stage)
-- **Doel**: Productie deployment
-- **Build Stages**:
-  - Builder: Installeert dependencies en bouwt applicatie
-  - Runner: Alleen runtime dependencies en built code
-- **Port**: 3001 (externe), 3000 (interne)
-- **Command**: `npm run start`
+- `mmc-node-modules` - `node_modules` (niet overschrijven)
+- `mmc-next-build` - `.next` build cache (niet overschrijven)
 
 ## MCP Client Configuratie
 
 De MCP client in Cursor is geconfigureerd om te verbinden met:
 
-- **Local Dev Container**: `http://localhost:3000/api/sse` (poort 3000 = dev container)
+- **Local Dev Container**: `http://localhost:3000/api/sse` (poort 3000)
 - **Railway Production**: `https://mmcmcphttpbridge-production.up.railway.app/api/sse` (fallback)
 
-**Belangrijk**: Start de dev container eerst voordat je de MCP client gebruikt:
+**Belangrijk**: Start de container eerst voordat je de MCP client gebruikt:
 
 ```bash
-docker compose up -d dev
+npm run docker:up:watch
 ```
+
+## Legacy Containers
+
+**⚠️ De `containers/` directory bevat verouderde configuraties:**
+
+- `containers/dev/` - ❌ Verouderd (vervangen door `.devcontainer/Dockerfile`)
+- `containers/app/` - ❌ Verouderd (vervangen door `.devcontainer/Dockerfile`)
+- `containers/e2e/` - ⚠️ Optioneel (workflows kunnen nog gebruikt worden voor CI/CD)
+
+**Zie `containers/README.md` voor migratie details.**
 
 ## Best Practices
 
-1. Gebruik `dev` container voor development
-2. Gebruik `e2e` container voor testing
-3. Gebruik `app` container voor productie deployments
-4. Start containers alleen wanneer nodig (niet automatisch)
-5. Gebruik build scripts voor consistente builds
-6. Start dev container voor MCP client functionaliteit
+1. **Gebruik Docker Watch** voor development (hot reload zonder rebuilds)
+2. **Start container** voordat je MCP client gebruikt
+3. **Production builds** via Railway (zie `railway.json`)
+4. **Cleanup regelmatig** met `npm run docker:clean:all`
+5. **Valideer configuratie** met `npm run docker:validate`
 
+---
+
+**Last Updated:** December 2024  
+**Status:** Single Container Architecture - DevContainer + Docker Watch

@@ -59,7 +59,10 @@ export async function searchIssues(query: string): Promise<any> {
 }
 
 // COMMENT OPERATIONS
-export async function createComment(issueId: string, body: string): Promise<any> {
+export async function createComment(
+  issueId: string,
+  body: string,
+): Promise<any> {
   const client = getClient();
   const payload = await client.createComment({ issueId, body });
   return payload.comment;
@@ -72,7 +75,10 @@ export async function listComments(issueId: string): Promise<any> {
   return await comments.nodes;
 }
 
-export async function updateComment(commentId: string, body: string): Promise<any> {
+export async function updateComment(
+  commentId: string,
+  body: string,
+): Promise<any> {
   const client = getClient();
   return await client.updateComment(commentId, { body });
 }
@@ -85,8 +91,8 @@ export async function deleteComment(commentId: string): Promise<any> {
 // PROJECT OPERATIONS
 export async function listProjects(teamId?: string): Promise<any> {
   const client = getClient();
-  const projects = teamId 
-    ? await client.team(teamId).then(t => t.projects())
+  const projects = teamId
+    ? await client.team(teamId).then((t) => t.projects())
     : await client.projects();
   return await projects.nodes;
 }
@@ -104,11 +110,17 @@ export async function createProject(data: {
   targetDate?: string;
 }): Promise<any> {
   const client = getClient();
-  const payload = await client.createProject(data);
+  const payload = await client.createProject({
+    ...data,
+    targetDate: data.targetDate ? new Date(data.targetDate) : undefined,
+  });
   return payload.project;
 }
 
-export async function updateProject(projectId: string, data: any): Promise<any> {
+export async function updateProject(
+  projectId: string,
+  data: any,
+): Promise<any> {
   const client = getClient();
   return await client.updateProject(projectId, data);
 }
@@ -138,7 +150,11 @@ export async function createCycle(data: {
   endsAt: string;
 }): Promise<any> {
   const client = getClient();
-  const payload = await client.createCycle(data);
+  const payload = await client.createCycle({
+    ...data,
+    startsAt: new Date(data.startsAt),
+    endsAt: new Date(data.endsAt),
+  });
   return payload.cycle;
 }
 
@@ -151,7 +167,7 @@ export async function updateCycle(cycleId: string, data: any): Promise<any> {
 export async function listLabels(teamId?: string): Promise<any> {
   const client = getClient();
   const labels = teamId
-    ? await client.team(teamId).then(t => t.labels())
+    ? await client.team(teamId).then((t) => t.labels())
     : await client.issueLabels();
   return await labels.nodes;
 }
@@ -230,16 +246,22 @@ export async function deleteAttachment(attachmentId: string): Promise<any> {
 }
 
 // BULK OPERATIONS
-export async function bulkUpdateIssues(issueIds: string[], data: any): Promise<any> {
+export async function bulkUpdateIssues(
+  issueIds: string[],
+  data: any,
+): Promise<any> {
   const client = getClient();
   const results = await Promise.all(
-    issueIds.map(id => client.updateIssue(id, data))
+    issueIds.map((id) => client.updateIssue(id, data)),
   );
   return { updated: results.length, results };
 }
 
 // MAIN EXECUTOR
-export async function executeLinearTool(tool: string, params: any): Promise<any> {
+export async function executeLinearTool(
+  tool: string,
+  params: any,
+): Promise<any> {
   try {
     switch (tool) {
       // Issue Operations
@@ -331,7 +353,3 @@ export async function executeLinearTool(tool: string, params: any): Promise<any>
     throw new Error(`Linear tool '${tool}' failed: ${error.message}`);
   }
 }
-
-
-
-

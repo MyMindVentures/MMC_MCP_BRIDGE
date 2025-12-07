@@ -14,7 +14,11 @@ export async function clone(url: string, path: string): Promise<any> {
   return { success: true, url, path };
 }
 
-export async function commit(message: string, files?: string[], path?: string): Promise<any> {
+export async function commit(
+  message: string,
+  files?: string[],
+  path?: string,
+): Promise<any> {
   const git = getGit(path);
   if (files && files.length > 0) {
     await git.add(files);
@@ -23,13 +27,21 @@ export async function commit(message: string, files?: string[], path?: string): 
   return result;
 }
 
-export async function push(remote: string = "origin", branch: string = "main", path?: string): Promise<any> {
+export async function push(
+  remote: string = "origin",
+  branch: string = "main",
+  path?: string,
+): Promise<any> {
   const git = getGit(path);
   const result = await git.push(remote, branch);
   return result;
 }
 
-export async function pull(remote: string = "origin", branch: string = "main", path?: string): Promise<any> {
+export async function pull(
+  remote: string = "origin",
+  branch: string = "main",
+  path?: string,
+): Promise<any> {
   const git = getGit(path);
   const result = await git.pull(remote, branch);
   return result;
@@ -46,9 +58,13 @@ export async function log(limit: number = 10, path?: string): Promise<any> {
 }
 
 // BRANCH OPERATIONS
-export async function branch(action: string, name?: string, path?: string): Promise<any> {
+export async function branch(
+  action: string,
+  name?: string,
+  path?: string,
+): Promise<any> {
   const git = getGit(path);
-  
+
   switch (action) {
     case "list":
       return await git.branch();
@@ -68,9 +84,12 @@ export async function branch(action: string, name?: string, path?: string): Prom
 }
 
 // DIFF OPERATIONS
-export async function diff(options?: { staged?: boolean; file?: string }, path?: string): Promise<any> {
+export async function diff(
+  options?: { staged?: boolean; file?: string },
+  path?: string,
+): Promise<any> {
   const git = getGit(path);
-  
+
   if (options?.staged) {
     return await git.diff(["--cached", options.file || ""]);
   } else if (options?.file) {
@@ -88,7 +107,7 @@ export async function diffSummary(path?: string): Promise<any> {
 // STASH OPERATIONS
 export async function stash(action: string, path?: string): Promise<any> {
   const git = getGit(path);
-  
+
   switch (action) {
     case "save":
     case "push":
@@ -107,9 +126,14 @@ export async function stash(action: string, path?: string): Promise<any> {
 }
 
 // TAG OPERATIONS
-export async function tag(action: string, name?: string, message?: string, path?: string): Promise<any> {
+export async function tag(
+  action: string,
+  name?: string,
+  message?: string,
+  path?: string,
+): Promise<any> {
   const git = getGit(path);
-  
+
   switch (action) {
     case "list":
       return await git.tags();
@@ -129,9 +153,14 @@ export async function tag(action: string, name?: string, message?: string, path?
 }
 
 // REMOTE OPERATIONS
-export async function remote(action: string, name?: string, url?: string, path?: string): Promise<any> {
+export async function remote(
+  action: string,
+  name?: string,
+  url?: string,
+  path?: string,
+): Promise<any> {
   const git = getGit(path);
-  
+
   switch (action) {
     case "list":
       return await git.getRemotes(true);
@@ -150,13 +179,17 @@ export async function remote(action: string, name?: string, url?: string, path?:
 }
 
 // MERGE OPERATIONS
-export async function merge(branch: string, options?: { noFf?: boolean; squash?: boolean }, path?: string): Promise<any> {
+export async function merge(
+  branch: string,
+  options?: { noFf?: boolean; squash?: boolean },
+  path?: string,
+): Promise<any> {
   const git = getGit(path);
   const args: string[] = [branch];
-  
+
   if (options?.noFf) args.unshift("--no-ff");
   if (options?.squash) args.unshift("--squash");
-  
+
   return await git.merge(args);
 }
 
@@ -167,9 +200,14 @@ export async function rebase(branch: string, path?: string): Promise<any> {
 }
 
 // RESET OPERATIONS
-export async function reset(mode: string = "mixed", commit: string = "HEAD", path?: string): Promise<any> {
+export async function reset(
+  mode: string = "mixed",
+  commit: string = "HEAD",
+  path?: string,
+): Promise<any> {
   const git = getGit(path);
-  const modeFlag = mode === "hard" ? "--hard" : mode === "soft" ? "--soft" : "--mixed";
+  const modeFlag =
+    mode === "hard" ? "--hard" : mode === "soft" ? "--soft" : "--mixed";
   return await git.reset([modeFlag, commit]);
 }
 
@@ -220,11 +258,21 @@ export async function executeGitTool(tool: string, params: any): Promise<any> {
 
       // Tag Operations
       case "tag":
-        return await tag(params.action, params.name, params.message, params.path);
+        return await tag(
+          params.action,
+          params.name,
+          params.message,
+          params.path,
+        );
 
       // Remote Operations
       case "remote":
-        return await remote(params.action, params.name, params.url, params.path);
+        return await remote(
+          params.action,
+          params.name,
+          params.url,
+          params.path,
+        );
 
       // Merge & Rebase
       case "merge":
@@ -249,5 +297,3 @@ export async function executeGitTool(tool: string, params: any): Promise<any> {
     throw new Error(`Git tool '${tool}' failed: ${error.message}`);
   }
 }
-
-

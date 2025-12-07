@@ -1,5 +1,5 @@
 {
-  "name": "MMC_MCP_Bridge_DevContainer",
+  "name": "MMC MCP Bridge - Full Stack Integrated App",
   "build": {
     "dockerfile": "Dockerfile",
     "context": "..",
@@ -38,18 +38,17 @@
             "MMC-MCP-Bridge-Local": {
               "type": "sse",
               "url": "http://localhost:3000/api/sse",
-              "description": "Local MCP Bridge on Dev Container - ALL 26 servers (Hot Reload). Start dev container: docker compose up -d dev"
+              "description": "Full Stack Integrated App - 26+ MCP Servers, n8n Integration, Agentic AI, Agent Suite. Start: npm run dev:host of docker compose watch"
             },
             "MMC-MCP-Bridge-Railway": {
               "type": "sse",
               "url": "https://mmcmcphttpbridge-production.up.railway.app/api/sse",
-              "description": "Production MCP Bridge on Railway - ALL 26 servers (Fallback)"
+              "description": "Production Full Stack App on Railway - 26+ MCP Servers (Fallback)"
             }
           }
         }
       },
       "extensions": [
-        "Anthropic.claude-code",
         "streetsidesoftware.code-spell-checker",
         "ms-azuretools.vscode-containers",
         "ms-azuretools.vscode-docker",
@@ -83,9 +82,9 @@
     }
   },
 
-  "postCreateCommand": "bash -c 'cd /workspaces/MMC_MCP_BRIDGE && mkdir -p /workspaces/.devcontainer-persist 2>/dev/null || true && if [ -S /var/run/docker.sock ]; then sudo chmod 666 /var/run/docker.sock 2>/dev/null || true; fi && cp .devcontainer/devcontainer.sh /usr/local/bin/devcontainer.sh 2>/dev/null || true && chmod +x /usr/local/bin/devcontainer.sh 2>/dev/null || true && if [ -f package-lock.json ]; then npm ci; else npm install; fi && /usr/local/bin/devcontainer.sh setup'",
-  "postStartCommand": "bash -c 'mkdir -p /workspaces/.devcontainer-persist 2>/dev/null || true && if [ -S /var/run/docker.sock ]; then sudo chmod 666 /var/run/docker.sock 2>/dev/null || true; fi && /usr/local/bin/devcontainer.sh settings restore && /usr/local/bin/devcontainer.sh feature update && /usr/local/bin/devcontainer.sh daemon git-watcher & /usr/local/bin/devcontainer.sh daemon todos-sync &'",
-  "postAttachCommand": "bash -c 'mkdir -p /workspaces/.devcontainer-persist 2>/dev/null || true && if [ -S /var/run/docker.sock ]; then sudo chmod 666 /var/run/docker.sock 2>/dev/null || true; fi && /usr/local/bin/devcontainer.sh settings restore && /usr/local/bin/devcontainer.sh git ensure-branch'",
+  "postCreateCommand": "bash -c 'cd /workspaces/MMC_MCP_BRIDGE && mkdir -p /workspaces/.devcontainer-persist 2>/dev/null || true && cp .devcontainer/devcontainer.sh /usr/local/bin/devcontainer.sh 2>/dev/null || true && chmod +x /usr/local/bin/devcontainer.sh 2>/dev/null || true && if [ -f package-lock.json ]; then npm ci; else npm install; fi && /usr/local/bin/devcontainer.sh setup'",
+  "postStartCommand": "bash -c 'mkdir -p /workspaces/.devcontainer-persist 2>/dev/null || true && /usr/local/bin/devcontainer.sh settings restore && /usr/local/bin/devcontainer.sh feature update && /usr/local/bin/devcontainer.sh daemon git-watcher & /usr/local/bin/devcontainer.sh daemon todos-sync &'",
+  "postAttachCommand": "bash -c 'mkdir -p /workspaces/.devcontainer-persist 2>/dev/null || true && /usr/local/bin/devcontainer.sh settings restore && /usr/local/bin/devcontainer.sh git ensure-branch'",
 
   "forwardPorts": [3000],
 

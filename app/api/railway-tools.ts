@@ -1,17 +1,17 @@
 // Railway MCP Tools - Full Implementation
 // Covers: Projects, Services, Deployments, Environments, Variables, Volumes, Domains, Metrics
 
-import axios from 'axios';
+import axios from "axios";
 
-const RAILWAY_API = 'https://backboard.railway.com/graphql/v2';
+const RAILWAY_API = "https://backboard.railway.com/graphql/v2";
 
 function getHeaders(): Record<string, string> {
   if (!process.env.RAILWAY_TOKEN) {
-    throw new Error('RAILWAY_TOKEN not configured');
+    throw new Error("RAILWAY_TOKEN not configured");
   }
   return {
     Authorization: `Bearer ${process.env.RAILWAY_TOKEN}`,
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   };
 }
 
@@ -19,20 +19,25 @@ async function gql(query: string, variables?: any): Promise<any> {
   const response = await axios.post(
     RAILWAY_API,
     { query, variables },
-    { headers: getHeaders() }
+    { headers: getHeaders() },
   );
-  
+
   if (response.data.errors) {
-    throw new Error(`Railway GraphQL error: ${JSON.stringify(response.data.errors)}`);
+    throw new Error(
+      `Railway GraphQL error: ${JSON.stringify(response.data.errors)}`,
+    );
   }
-  
+
   return response.data.data;
 }
 
-export async function executeRailwayTool(tool: string, params: any): Promise<any> {
+export async function executeRailwayTool(
+  tool: string,
+  params: any,
+): Promise<any> {
   switch (tool) {
     // ==================== PROJECTS ====================
-    case 'listProjects': {
+    case "listProjects": {
       const query = `
         query {
           projects {
@@ -52,7 +57,7 @@ export async function executeRailwayTool(tool: string, params: any): Promise<any
       return data.projects.edges.map((e: any) => e.node);
     }
 
-    case 'getProject': {
+    case "getProject": {
       const query = `
         query($id: String!) {
           project(id: $id) {
@@ -84,7 +89,7 @@ export async function executeRailwayTool(tool: string, params: any): Promise<any
       return data.project;
     }
 
-    case 'createProject': {
+    case "createProject": {
       const query = `
         mutation($input: ProjectCreateInput!) {
           projectCreate(input: $input) {
@@ -103,7 +108,7 @@ export async function executeRailwayTool(tool: string, params: any): Promise<any
       return data.projectCreate;
     }
 
-    case 'deleteProject': {
+    case "deleteProject": {
       const query = `
         mutation($id: String!) {
           projectDelete(id: $id)
@@ -114,7 +119,7 @@ export async function executeRailwayTool(tool: string, params: any): Promise<any
     }
 
     // ==================== SERVICES ====================
-    case 'listServices': {
+    case "listServices": {
       const query = `
         query($projectId: String!) {
           project(id: $projectId) {
@@ -135,7 +140,7 @@ export async function executeRailwayTool(tool: string, params: any): Promise<any
       return data.project.services.edges.map((e: any) => e.node);
     }
 
-    case 'getService': {
+    case "getService": {
       const query = `
         query($id: String!) {
           service(id: $id) {
@@ -159,7 +164,7 @@ export async function executeRailwayTool(tool: string, params: any): Promise<any
       return data.service;
     }
 
-    case 'createService': {
+    case "createService": {
       const query = `
         mutation($input: ServiceCreateInput!) {
           serviceCreate(input: $input) {
@@ -178,7 +183,7 @@ export async function executeRailwayTool(tool: string, params: any): Promise<any
       return data.serviceCreate;
     }
 
-    case 'deleteService': {
+    case "deleteService": {
       const query = `
         mutation($id: String!) {
           serviceDelete(id: $id)
@@ -189,7 +194,7 @@ export async function executeRailwayTool(tool: string, params: any): Promise<any
     }
 
     // ==================== DEPLOYMENTS ====================
-    case 'deployService': {
+    case "deployService": {
       const query = `
         mutation($serviceId: String!) {
           serviceInstanceRedeploy(serviceId: $serviceId) {
@@ -201,7 +206,7 @@ export async function executeRailwayTool(tool: string, params: any): Promise<any
       return data.serviceInstanceRedeploy;
     }
 
-    case 'listDeployments': {
+    case "listDeployments": {
       const query = `
         query($serviceId: String!) {
           service(id: $serviceId) {
@@ -222,7 +227,7 @@ export async function executeRailwayTool(tool: string, params: any): Promise<any
       return data.service.deployments.edges.map((e: any) => e.node);
     }
 
-    case 'getDeployment': {
+    case "getDeployment": {
       const query = `
         query($id: String!) {
           deployment(id: $id) {
@@ -238,7 +243,7 @@ export async function executeRailwayTool(tool: string, params: any): Promise<any
       return data.deployment;
     }
 
-    case 'rollbackDeployment': {
+    case "rollbackDeployment": {
       const query = `
         mutation($deploymentId: String!) {
           deploymentRollback(id: $deploymentId) {
@@ -251,7 +256,7 @@ export async function executeRailwayTool(tool: string, params: any): Promise<any
     }
 
     // ==================== ENVIRONMENT VARIABLES ====================
-    case 'listVariables': {
+    case "listVariables": {
       const query = `
         query($serviceId: String!, $environmentId: String!) {
           variables(serviceId: $serviceId, environmentId: $environmentId) {
@@ -272,7 +277,7 @@ export async function executeRailwayTool(tool: string, params: any): Promise<any
       return data.variables.edges.map((e: any) => e.node);
     }
 
-    case 'setVariable': {
+    case "setVariable": {
       const query = `
         mutation($input: VariableUpsertInput!) {
           variableUpsert(input: $input) {
@@ -292,7 +297,7 @@ export async function executeRailwayTool(tool: string, params: any): Promise<any
       return data.variableUpsert;
     }
 
-    case 'deleteVariable': {
+    case "deleteVariable": {
       const query = `
         mutation($id: String!) {
           variableDelete(id: $id)
@@ -303,7 +308,7 @@ export async function executeRailwayTool(tool: string, params: any): Promise<any
     }
 
     // ==================== VOLUMES ====================
-    case 'listVolumes': {
+    case "listVolumes": {
       const query = `
         query($serviceId: String!) {
           service(id: $serviceId) {
@@ -324,7 +329,7 @@ export async function executeRailwayTool(tool: string, params: any): Promise<any
       return data.service.volumes.edges.map((e: any) => e.node);
     }
 
-    case 'createVolume': {
+    case "createVolume": {
       const query = `
         mutation($input: VolumeCreateInput!) {
           volumeCreate(input: $input) {
@@ -344,7 +349,7 @@ export async function executeRailwayTool(tool: string, params: any): Promise<any
       return data.volumeCreate;
     }
 
-    case 'deleteVolume': {
+    case "deleteVolume": {
       const query = `
         mutation($id: String!) {
           volumeDelete(id: $id)
@@ -355,7 +360,7 @@ export async function executeRailwayTool(tool: string, params: any): Promise<any
     }
 
     // ==================== DOMAINS ====================
-    case 'listDomains': {
+    case "listDomains": {
       const query = `
         query($serviceId: String!) {
           service(id: $serviceId) {
@@ -375,7 +380,7 @@ export async function executeRailwayTool(tool: string, params: any): Promise<any
       return data.service.domains.edges.map((e: any) => e.node);
     }
 
-    case 'createDomain': {
+    case "createDomain": {
       const query = `
         mutation($input: CustomDomainCreateInput!) {
           customDomainCreate(input: $input) {
@@ -393,7 +398,7 @@ export async function executeRailwayTool(tool: string, params: any): Promise<any
       return data.customDomainCreate;
     }
 
-    case 'deleteDomain': {
+    case "deleteDomain": {
       const query = `
         mutation($id: String!) {
           customDomainDelete(id: $id)
@@ -404,7 +409,7 @@ export async function executeRailwayTool(tool: string, params: any): Promise<any
     }
 
     // ==================== LOGS & METRICS ====================
-    case 'getLogs': {
+    case "getLogs": {
       const query = `
         query($deploymentId: String!, $limit: Int) {
           deploymentLogs(deploymentId: $deploymentId, limit: $limit) {
@@ -419,7 +424,7 @@ export async function executeRailwayTool(tool: string, params: any): Promise<any
       return data.deploymentLogs;
     }
 
-    case 'getMetrics': {
+    case "getMetrics": {
       const query = `
         query($serviceId: String!, $measurementName: String!) {
           serviceMetrics(
@@ -435,13 +440,13 @@ export async function executeRailwayTool(tool: string, params: any): Promise<any
       `;
       const data = await gql(query, {
         serviceId: params.serviceId,
-        measurementName: params.measurementName || 'CPU_PERC',
+        measurementName: params.measurementName || "CPU_PERC",
       });
       return data.serviceMetrics;
     }
 
     // ==================== ENVIRONMENTS ====================
-    case 'listEnvironments': {
+    case "listEnvironments": {
       const query = `
         query($projectId: String!) {
           project(id: $projectId) {
@@ -461,7 +466,7 @@ export async function executeRailwayTool(tool: string, params: any): Promise<any
       return data.project.environments.edges.map((e: any) => e.node);
     }
 
-    case 'createEnvironment': {
+    case "createEnvironment": {
       const query = `
         mutation($input: EnvironmentCreateInput!) {
           environmentCreate(input: $input) {
@@ -483,5 +488,3 @@ export async function executeRailwayTool(tool: string, params: any): Promise<any
       throw new Error(`Unknown Railway tool: ${tool}`);
   }
 }
-
-

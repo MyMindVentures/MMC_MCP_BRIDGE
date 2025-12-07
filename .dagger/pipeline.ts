@@ -52,7 +52,7 @@ async function buildDevContainer(source: Directory): Promise<string> {
     .withFile("package-lock.json", packageLockJson)
     .withMountedCache(
       "/workspaces/MMC_MCP_BRIDGE/node_modules",
-      dag.cacheVolume("mmc-mcp-bridge-node-modules")
+      dag.cacheVolume("mmc-mcp-bridge-node-modules"),
     )
     .withExec(["npm", "ci"]);
 
@@ -70,11 +70,11 @@ async function buildDevContainer(source: Directory): Promise<string> {
 
   // Publish to Docker Hub
   const imageRef = await devcontainer.publish(
-    `${DOCKER_HUB_USERNAME}/${PROJECT_NAME}-devcontainer:${VERSION}`
+    `${DOCKER_HUB_USERNAME}/${PROJECT_NAME}-devcontainer:${VERSION}`,
   );
 
   await devcontainer.publish(
-    `${DOCKER_HUB_USERNAME}/${PROJECT_NAME}-devcontainer:latest`
+    `${DOCKER_HUB_USERNAME}/${PROJECT_NAME}-devcontainer:latest`,
   );
 
   return imageRef;
@@ -94,7 +94,7 @@ async function buildAppContainer(source: Directory): Promise<string> {
     .withFile("package-lock.json", packageLockJson)
     .withMountedCache(
       "/workspaces/MMC_MCP_BRIDGE/node_modules",
-      dag.cacheVolume("mmc-mcp-bridge-node-modules")
+      dag.cacheVolume("mmc-mcp-bridge-node-modules"),
     )
     .withExec(["npm", "ci"])
     .withDirectory("/workspaces/MMC_MCP_BRIDGE", source, {
@@ -109,20 +109,20 @@ async function buildAppContainer(source: Directory): Promise<string> {
     .withFile("package-lock.json", packageLockJson)
     .withMountedCache(
       "/workspaces/MMC_MCP_BRIDGE/node_modules",
-      dag.cacheVolume("mmc-mcp-bridge-node-modules-prod")
+      dag.cacheVolume("mmc-mcp-bridge-node-modules-prod"),
     )
     .withExec(["npm", "ci", "--omit=dev"])
     .withDirectory(
       "/workspaces/MMC_MCP_BRIDGE/.next",
-      builder.directory("/workspaces/MMC_MCP_BRIDGE/.next")
+      builder.directory("/workspaces/MMC_MCP_BRIDGE/.next"),
     )
     .withDirectory(
       "/workspaces/MMC_MCP_BRIDGE/app",
-      builder.directory("/workspaces/MMC_MCP_BRIDGE/app")
+      builder.directory("/workspaces/MMC_MCP_BRIDGE/app"),
     )
     .withDirectory(
       "/workspaces/MMC_MCP_BRIDGE/public",
-      builder.directory("/workspaces/MMC_MCP_BRIDGE/public")
+      builder.directory("/workspaces/MMC_MCP_BRIDGE/public"),
     )
     .withExposedPort(3000)
     .withEnv("NODE_ENV", "production")
@@ -134,7 +134,7 @@ async function buildAppContainer(source: Directory): Promise<string> {
 
   // Publish to Docker Hub
   const imageRef = await app.publish(
-    `${DOCKER_HUB_USERNAME}/${PROJECT_NAME}-app:${VERSION}`
+    `${DOCKER_HUB_USERNAME}/${PROJECT_NAME}-app:${VERSION}`,
   );
 
   await app.publish(`${DOCKER_HUB_USERNAME}/${PROJECT_NAME}-app:latest`);
@@ -167,7 +167,7 @@ async function buildE2EContainer(source: Directory): Promise<string> {
     .withEnv("PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD", "1")
     .withEnv(
       "PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH",
-      "/usr/bin/chromium-browser"
+      "/usr/bin/chromium-browser",
     );
 
   const packageJson = source.file("package.json");
@@ -179,7 +179,7 @@ async function buildE2EContainer(source: Directory): Promise<string> {
     .withFile("package-lock.json", packageLockJson)
     .withMountedCache(
       "/workspaces/MMC_MCP_BRIDGE/node_modules",
-      dag.cacheVolume("mmc-mcp-bridge-e2e-node-modules")
+      dag.cacheVolume("mmc-mcp-bridge-e2e-node-modules"),
     )
     .withExec(["npm", "ci"])
     .withDirectory("/workspaces/MMC_MCP_BRIDGE", source, {
@@ -191,7 +191,7 @@ async function buildE2EContainer(source: Directory): Promise<string> {
 
   // Publish to Docker Hub
   const imageRef = await e2e.publish(
-    `${DOCKER_HUB_USERNAME}/${PROJECT_NAME}-e2e:${VERSION}`
+    `${DOCKER_HUB_USERNAME}/${PROJECT_NAME}-e2e:${VERSION}`,
   );
 
   await e2e.publish(`${DOCKER_HUB_USERNAME}/${PROJECT_NAME}-e2e:latest`);
@@ -211,7 +211,7 @@ async function runTypeCheck(source: Directory): Promise<string> {
     .withFile("package-lock.json", packageLockJson)
     .withMountedCache(
       "/app/node_modules",
-      dag.cacheVolume("mmc-mcp-bridge-test-node-modules")
+      dag.cacheVolume("mmc-mcp-bridge-test-node-modules"),
     )
     .withExec(["npm", "ci"])
     .withDirectory("/app", source, {
@@ -235,7 +235,7 @@ async function runBuildValidation(source: Directory): Promise<string> {
     .withFile("package-lock.json", packageLockJson)
     .withMountedCache(
       "/app/node_modules",
-      dag.cacheVolume("mmc-mcp-bridge-build-node-modules")
+      dag.cacheVolume("mmc-mcp-bridge-build-node-modules"),
     )
     .withExec(["npm", "ci"])
     .withDirectory("/app", source, {

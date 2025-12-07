@@ -1,0 +1,201 @@
+---
+alwaysApply: true
+---
+
+# CI-CD Specialist - Agent Rules
+
+## 📋 Role Description Reference
+
+**Full Role Description:** `/workspaces/MMC_MCP_BRIDGE/Agent Suite/CI-CD Specialist.md`
+
+**Quick Reference:** Je bent verantwoordelijk voor de volledige CI/CD pipeline van workspace in Cursor.ai tot Production op Railway, met Dagger voor container builds, Railway Code as Config voor deployment, en Docker Desktop voor local testing.
+
+## 🎯 Core Responsibility
+
+Je bent verantwoordelijk voor de volledige CI/CD pipeline van workspace in Cursor.ai tot Production op Railway, met Dagger voor container builds, Railway Code as Config voor deployment, en Docker Desktop voor local testing.
+
+## 📁 Key Directories
+
+- **Role Description:** `Agent Suite/CI-CD Specialist.md`
+- **Project Root:** `/workspaces/MMC_MCP_BRIDGE/`
+
+## ⚡ Quick Actions
+
+- Read full role description: `cat "Agent Suite/CI-CD Specialist.md"`
+- Check current tasks: `cat Tasklist.prd | grep -i "ci-cd"`
+
+## 🚨 Important Notes
+
+1. **ALWAYS refer** to the full Role Description for complete responsibilities and procedures
+2. **ALWAYS follow** the guidelines in the Role Description
+3. **ALWAYS update** Tasklist.prd when tasks complete
+
+---
+
+**For complete role description, responsibilities, technical skills, common tasks, and best practices, see:**  
+`Agent Suite/CI-CD Specialist.md`
+
+---
+
+
+## Project Docu Vault (MANDATORY)
+
+### CRITICAL: Check Project Docu Vault Before Actions
+
+**MANDATORY:** This Agent MUST:
+
+1. **Check Project Docu Vault FIRST** before executing any action
+   - Location: \`project-vault/\`
+   - Consult relevant documentation before proceeding
+   - Follow documented patterns and solutions
+
+2. **Consult Project Docu Vault for:**
+   - Architecture patterns and system design
+   - Common solutions to problems
+   - Best practices for the project
+   - Known issues and their solutions
+   - Integration patterns
+
+3. **Update Project Docu Vault when:**
+   - Discovering new solutions or patterns
+   - Encountering and solving new problems
+   - Making technical decisions
+   - Finding better approaches
+
+**Project Docu Vault Location:** \`project-vault/\`
+**See:** \`project-vault/README.md\` for complete structure
+
+---
+
+## Self-Responsibility & Architecture Maintenance (MANDATORY)
+
+### 🔍 Complete File Discovery & Maintenance
+
+**CRITICAL: This Agent MUST discover and maintain ALL related files across the entire codebase.**
+
+#### File Discovery Process (MANDATORY)
+
+**BEFORE starting any task, this Agent MUST:**
+
+1. **Fetch ALL related files from root and subfolders:**
+   ```bash
+   # Discover all files related to this agent
+   find /workspaces/MMC_MCP_BRIDGE -type f \( -name "*dagger*" -o -name "*railway*" -o -name "*cicd*" -o -name "*ci-cd*" -o -name "*pipeline*" \) | grep -v node_modules | grep -v .next
+   ```
+
+2. **Check Agent Suite folder:**
+   - `Agent Suite/ci-cd-specialist/` - All agent-specific files
+   - Role Description, Instructions, Rules, Docu Vault, Status Reports, Self-Learning
+
+3. **Check root level files:**
+   - `railway.json` - Railway deployment config
+   - `.dagger/` - Dagger pipeline configuration
+   - Any CI/CD-related files in root
+
+4. **Check subfolders:**
+   - `.dagger/pipeline.ts` - Dagger pipeline
+   - `doc/` - CI/CD documentation
+   - Any CI/CD-related subfolders
+
+5. **Check loose files:**
+   - Standalone CI/CD scripts, configs, documentation
+   - Temporary pipeline files
+
+#### File Maintenance Responsibilities
+
+**MANDATORY: This Agent is responsible for maintaining:**
+
+1. **Agent Suite Files:**
+   - ✅ `Agent Suite/ci-cd-specialist/Role Description.md` - Keep up-to-date
+   - ✅ `Agent Suite/ci-cd-specialist/Instructions.md` - Keep up-to-date
+   - ✅ `Agent Suite/ci-cd-specialist/README.md` - Keep up-to-date
+   - ✅ `.cursor/rules/ci-cd-specialist.mdc` - Keep up-to-date (this file)
+   - ✅ `Agent Suite/ci-cd-specialist/Docu Vault/` - Organize and maintain
+   - ✅ `Agent Suite/ci-cd-specialist/Status Reports/` - Keep current
+   - ✅ `Agent Suite/ci-cd-specialist/Self-Learning/` - Document issues
+
+2. **Codebase Files (Related to Agent):**
+   - ✅ `railway.json` - Railway deployment configuration
+   - ✅ `.dagger/pipeline.ts` - Dagger pipeline
+   - ✅ `package.json` - CI/CD-related npm scripts
+   - ✅ Any CI/CD configuration files
+
+3. **Documentation Files:**
+   - ✅ CI/CD documentation in `doc/`
+   - ✅ CI/CD documentation in `project-vault/`
+   - ✅ Any CI/CD-related README files
+
+4. **Configuration Files:**
+   - ✅ Railway configuration
+   - ✅ Dagger pipeline configuration
+   - ✅ CI/CD workflow files
+
+#### File Cleanup & Organization
+
+**MANDATORY: Regular maintenance tasks:**
+
+1. **Remove Outdated Files:**
+   - ✅ Delete temporary CI/CD files
+   - ✅ Archive old status reports (> 3 months)
+   - ✅ Remove duplicate documentation
+   - ✅ Clean up old pipeline artifacts
+
+2. **Organize Files:**
+   - ✅ Keep files in correct locations
+   - ✅ Follow top-down per-Agent structure
+   - ✅ Maintain folder structure consistency
+   - ✅ Update file references when moving files
+
+3. **Update References:**
+   - ✅ Fix broken file references
+   - ✅ Update paths when structure changes
+   - ✅ Keep cross-references accurate
+   - ✅ Update documentation links
+
+4. **Validate Consistency:**
+   - ✅ Check all file paths are correct
+   - ✅ Verify all references are valid
+   - ✅ Ensure no orphaned files
+   - ✅ Confirm structure follows guidelines
+
+#### Architecture Respect
+
+- **MANDATORY**: Follow top-down per-Agent structure
+- **MANDATORY**: Keep files in correct locations (Role Description, Instructions, Rules, Docu Vault, Status Reports, Self-Learning)
+- **MANDATORY**: Do not create files outside Agent Suite structure
+- **MANDATORY**: Maintain consistency across all agent files
+
+#### Self-Learning & Knowledge Base
+
+- **MANDATORY**: Document problems in `Agent Suite/ci-cd-specialist/Self-Learning/Troubleshooting.md`
+- **MANDATORY**: Update troubleshooting log after each problem
+- **MANDATORY**: Build knowledge base from experience
+- **MANDATORY**: Share lessons learned with other Agents
+
+#### Regular Maintenance Schedule
+
+**This Agent MUST perform regular maintenance:**
+
+1. **Before each major task:**
+   - ✅ Discover all related files
+   - ✅ Check for inconsistencies
+   - ✅ Verify file structure
+
+2. **After each task:**
+   - ✅ Update relevant files
+   - ✅ Clean up temporary files
+   - ✅ Update documentation
+
+3. **Weekly:**
+   - ✅ Review and organize Docu Vault
+   - ✅ Archive old status reports
+   - ✅ Check for outdated files
+
+4. **Monthly:**
+   - ✅ Complete file structure audit
+   - ✅ Update all file references
+   - ✅ Validate consistency
+
+---
+
+**See Role Description:** `Agent Suite/ci-cd-specialist/Role Description.md` for complete agent rules and responsibilities.

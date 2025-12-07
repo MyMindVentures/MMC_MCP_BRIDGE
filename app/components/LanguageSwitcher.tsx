@@ -79,8 +79,8 @@ export default function LanguageSwitcher() {
                   loc === locales[0]
                     ? "0.5rem 0.5rem 0 0"
                     : loc === locales[locales.length - 1]
-                    ? "0 0 0.5rem 0.5rem"
-                    : "0",
+                      ? "0 0 0.5rem 0.5rem"
+                      : "0",
               }}
               onMouseEnter={(e) => {
                 if (locale !== loc) {

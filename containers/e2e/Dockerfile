@@ -55,21 +55,23 @@ RUN cd /tmp && \
     mv ./bin/dagger /usr/local/bin/dagger && \
     chmod +x /usr/local/bin/dagger
 
-# Install CodeQL CLI for security scanning
+# Install CodeQL CLI for security scanning (optional - skip if download fails)
 RUN cd /tmp && \
-    wget -q https://github.com/github/codeql-cli-binaries/releases/latest/download/codeql-bundle-linux64.tar.gz && \
-    tar -xzf codeql-bundle-linux64.tar.gz && \
+    wget -q --timeout=10 --tries=1 https://github.com/github/codeql-cli-binaries/releases/latest/download/codeql-bundle-linux64.tar.gz 2>/dev/null && \
+    (tar -xzf codeql-bundle-linux64.tar.gz && \
     mv codeql /usr/local/bin/codeql && \
     chmod +x /usr/local/bin/codeql && \
-    rm -f codeql-bundle-linux64.tar.gz
+    rm -f codeql-bundle-linux64.tar.gz && \
+    echo "CodeQL CLI installed successfully") || echo "CodeQL CLI installation skipped - optional tool"
 
-# Install SonarQube Scanner for code analysis
+# Install SonarQube Scanner for code analysis (optional - skip if download fails)
 RUN cd /tmp && \
-    wget -q https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip && \
+    (wget -q --timeout=10 --tries=1 https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip && \
     unzip -q sonar-scanner-cli-5.0.1.3006-linux.zip && \
     mv sonar-scanner-5.0.1.3006-linux /opt/sonar-scanner && \
     ln -s /opt/sonar-scanner/bin/sonar-scanner /usr/local/bin/sonar-scanner && \
-    rm -f sonar-scanner-cli-5.0.1.3006-linux.zip
+    rm -f sonar-scanner-cli-5.0.1.3006-linux.zip && \
+    echo "SonarQube Scanner installed successfully") || (echo "SonarQube Scanner installation skipped - optional tool" && true)
 
 # Install GitHub CLI for PR labeling (Alpine)
 RUN apk add --no-cache github-cli || echo "GitHub CLI not available in Alpine repos"
@@ -89,14 +91,39 @@ COPY package*.json ./
 # Install dependencies
 RUN npm ci --only=production=false
 
-# Copy source code
+# Install PowerShell Core for Alpine Linux
+# Note: PowerShell installation is optional - scripts can fallback to bash
+RUN apk add --no-cache \
+    ca-certificates \
+    less \
+    ncurses-terminfo-base \
+    krb5-libs \
+    libgcc \
+    libintl \
+    libssl3 \
+    libstdc++ \
+    tzdata \
+    userspace-rcu \
+    zlib \
+    icu-libs \
+    curl && \
+    (curl -L https://github.com/PowerShell/PowerShell/releases/download/v7.4.0/powershell-7.4.0-linux-alpine-x64.tar.gz -o /tmp/powershell.tar.gz && \
+    mkdir -p /opt/microsoft/powershell/7 && \
+    tar zxf /tmp/powershell.tar.gz -C /opt/microsoft/powershell/7 && \
+    chmod +x /opt/microsoft/powershell/7/pwsh && \
+    ln -s /opt/microsoft/powershell/7/pwsh /usr/bin/pwsh && \
+    ln -s /opt/microsoft/powershell/7/pwsh /usr/bin/powershell && \
+    rm -f /tmp/powershell.tar.gz) || echo "PowerShell installation failed, will use bash fallback"
+
+# Copy source code (exclude node_modules via .dockerignore)
 COPY --chown=node:node . .
 
-# Copy workflow scripts and make executable
-COPY --chown=node:node containers/e2e/workflows/ /workspaces/MMC_MCP_BRIDGE/containers/e2e/workflows/
-RUN chmod +x /workspaces/MMC_MCP_BRIDGE/containers/e2e/workflows/*.sh
+# Copy workflow scripts (both .sh and .ps1) - only copy what we need
+COPY --chown=node:node containers/e2e/workflows/*.ps1 /workspaces/MMC_MCP_BRIDGE/containers/e2e/workflows/ 2>/dev/null || true
+COPY --chown=node:node containers/e2e/workflows/*.sh /workspaces/MMC_MCP_BRIDGE/containers/e2e/workflows/ 2>/dev/null || true
+RUN chmod +x /workspaces/MMC_MCP_BRIDGE/containers/e2e/workflows/*.ps1 /workspaces/MMC_MCP_BRIDGE/containers/e2e/workflows/*.sh 2>/dev/null || true
 
 USER node
 
-# Default command runs all workflows
-CMD ["/workspaces/MMC_MCP_BRIDGE/containers/e2e/workflows/run-all.sh"]
+# Default command runs all workflows (PowerShell)
+CMD ["pwsh", "-File", "/workspaces/MMC_MCP_BRIDGE/containers/e2e/workflows/run-all.ps1"]
