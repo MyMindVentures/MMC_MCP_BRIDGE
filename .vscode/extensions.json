@@ -1,6 +1,5 @@
 {
   "recommendations": [
-    "Anthropic.claude-code",
     "streetsidesoftware.code-spell-checker",
     "ms-azuretools.vscode-containers",
     "ms-azuretools.vscode-docker",
@@ -32,4 +31,3 @@
     "shaharkazaz.git-merger"
   ]
 }
-

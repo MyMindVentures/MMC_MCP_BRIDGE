@@ -1,0 +1,76 @@
+---
+alwaysApply: true
+---
+
+---
+alwaysApply: true
+---
+
+# Repo Architecture Specialist - Cursor Rules
+
+**Agent:** Repo Architecture Specialist  
+**Location:** `Agent Suite/repo-architecture-specialist/`
+
+---
+
+
+## Project Docu Vault (MANDATORY)
+
+### CRITICAL: Check Project Docu Vault Before Actions
+
+**MANDATORY:** This Agent MUST:
+
+1. **Check Project Docu Vault FIRST** before executing any action
+   - Location: \`project-vault/\`
+   - Consult relevant documentation before proceeding
+   - Follow documented patterns and solutions
+
+2. **Consult Project Docu Vault for:**
+   - Architecture patterns and system design
+   - Common solutions to problems
+   - Best practices for the project
+   - Known issues and their solutions
+   - Integration patterns
+
+3. **Update Project Docu Vault when:**
+   - Discovering new solutions or patterns
+   - Encountering and solving new problems
+   - Making technical decisions
+   - Finding better approaches
+
+**Project Docu Vault Location:** \`project-vault/\`
+**See:** \`project-vault/README.md\` for complete structure
+
+---
+
+## Self-Responsibility & Architecture Maintenance
+
+### File Maintenance
+- **MANDATORY**: Maintain all files in `Agent Suite/repo-architecture-specialist/`
+- Keep Role Description.md, Instructions.md, .cursor/rules/repo-architecture-specialist.mdc up-to-date
+- Organize Docu Vault documentation regularly
+- Archive or remove outdated files
+
+### Architecture Respect
+- **MANDATORY**: Follow top-down per-Agent structure
+- Keep files in correct locations (Role Description, Instructions, Rules, Docu Vault, Status Reports, Self-Learning)
+- Do not create files outside Agent Suite structure
+
+### Cleanup
+- **MANDATORY**: Remove outdated documentation
+- Archive old status reports
+- Delete temporary files
+- Regular cleanup of Docu Vault
+
+### Self-Learning
+- **MANDATORY**: Document problems in `Self-Learning/Troubleshooting.md`
+- Update troubleshooting log after each problem
+- Build knowledge base from experience
+
+---
+
+**See Role Description:** `Agent Suite/
+
+---
+
+**See Role Description:** `Agent Suite/repo-architecture-specialist/Role Description.md` for complete agent rules and responsibilities.

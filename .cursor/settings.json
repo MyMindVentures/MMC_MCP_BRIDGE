@@ -1,50 +1,32 @@
 {
-  // Doppler Integration
-  "doppler.autocomplete.enable": true,
-  "doppler.hover.enable": true,
-
-  // MCP Configuration - Local App Container (Primary) + Railway Production (Fallback)
-  "mcp": {
-    "mcpServers": {
-      "MMC-MCP-Bridge-Local": {
-        "type": "sse",
-        "url": "http://localhost:3000/api/sse",
-        "description": "Local MCP Bridge on Dev Container - ALL 26 MCP servers (Hot Reload). Start dev container: docker compose up -d dev"
-      },
-      "MMC-MCP-Bridge-Railway": {
-        "type": "sse",
-        "url": "https://mmcmcphttpbridge-production.up.railway.app/api/sse",
-        "description": "Production MCP Bridge on Railway - ALL 26 MCP servers (Fallback)"
-      }
-    }
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
   },
-
-  // TypeScript Configuration
+  "editor.rulers": [80, 120],
+  "editor.wordWrap": "on",
+  "editor.minimap.enabled": true,
   "typescript.tsdk": "node_modules/typescript/lib",
   "typescript.enablePromptUseWorkspaceTsdk": true,
-  "typescript.preferences.importModuleSpecifier": "relative",
-
-  // Terminal Configuration
-  // Windows (Primary - Current OS)
+  "files.watcherExclude": {
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true,
+    "**/node_modules/**": true,
+    "**/.next/**": true
+  },
   "terminal.integrated.defaultProfile.windows": "PowerShell",
   "terminal.integrated.profiles.windows": {
     "PowerShell": {
-      "source": "PowerShell",
-      "icon": "terminal-powershell",
-      "args": ["-NoExit", "-Command", "[Console]::OutputEncoding = [System.Text.Encoding]::UTF8"]
+      "source": "PowerShell"
     },
     "Command Prompt": {
-      "path": [
-        "${env:windir}\\System32\\cmd.exe"
-      ],
-      "icon": "terminal-cmd"
+      "path": ["${env:windir}\\System32\\cmd.exe"]
     },
     "Git Bash": {
-      "source": "Git Bash",
-      "icon": "terminal-bash"
+      "source": "Git Bash"
     }
   },
-  // Linux (DevContainer)
   "terminal.integrated.defaultProfile.linux": "bash",
   "terminal.integrated.profiles.linux": {
     "bash": {
@@ -56,69 +38,28 @@
       "icon": "terminal-powershell"
     }
   },
-  // Terminal Output Configuration - Force Output Visibility
-  "terminal.integrated.showExitAlert": false,
-  "terminal.integrated.enablePersistentSessions": true,
-  "terminal.integrated.persistentSessionReviveProcess": "onExit",
   "terminal.integrated.scrollback": 10000,
   "terminal.integrated.copyOnSelection": true,
-  "terminal.integrated.rightClickBehavior": "copyPaste",
-  // PowerShell Output Encoding
-  "terminal.integrated.automationProfile.windows": {
-    "path": "powershell.exe",
-    "args": [
-      "-NoLogo",
-      "-NoProfile",
-      "-ExecutionPolicy", "Bypass",
-      "-Command", "[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; $PSDefaultParameterValues['Out-File:Encoding'] = 'utf8'"
-    ]
-  },
-
-  // Editor Configuration
-  "editor.formatOnSave": true,
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit"
-  },
-  "editor.rulers": [80, 120],
-  "editor.wordWrap": "on",
-  "editor.minimap.enabled": true,
-  "editor.tabSize": 2,
-  "editor.insertSpaces": true,
-
-  // File Exclusions
-  "files.exclude": {
-    "**/.next": true,
-    "**/node_modules": true,
-    "**/.DS_Store": true
-  },
-
-  "files.watcherExclude": {
-    "**/.git/objects/**": true,
-    "**/.git/subtree-cache/**": true,
-    "**/node_modules/**": true,
-    "**/.next/**": true
-  },
-
-  // Next.js Specific
-  "eslint.workingDirectories": [{ "mode": "auto" }],
-
-  // Git Configuration
   "git.enableSmartCommit": true,
-  "git.confirmSync": false,
   "git.autofetch": true,
-
-  // GitHub Extension Configuration
-  // Valid settings for GitHub Pull Requests and Issues extension:
   "githubPullRequests.remotes": ["origin", "upstream"],
   "githubPullRequests.defaultMergeMethod": "merge",
   "githubPullRequests.fileListLayout": "tree",
   "githubIssues.useBranchForIssues": true,
-  // Note: If you get "insufficient funds" error, check GitHub Copilot subscription
-  // Use GitLens or GitHub CLI as alternatives if needed
-
-  // Cursor Cloud Agents Configuration
-  // DISABLED: Cloud Agents cause MCP SSE connection errors (NGHTTP2_REFUSED_STREAM)
-  // Use local MCP Bridge instead (configured above)
-  "cursor.general.enableCloudAgents": false
+  "doppler.enable": true,
+  "cursor.general.enableCloudAgents": false,
+  "mcp": {
+    "mcpServers": {
+      "MMC-MCP-Bridge-Local": {
+        "type": "sse",
+        "url": "http://localhost:3000/api/sse",
+        "description": "Full Stack Integrated App - 26+ MCP Servers, n8n Integration, Agentic AI, Agent Suite. Start: npm run dev:host of docker compose watch"
+      },
+      "MMC-MCP-Bridge-Railway": {
+        "type": "sse",
+        "url": "https://mmcmcphttpbridge-production.up.railway.app/api/sse",
+        "description": "Production Full Stack App on Railway - 26+ MCP Servers (Fallback)"
+      }
+    }
+  }
 }

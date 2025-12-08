@@ -1,0 +1,127 @@
+## Self-Responsibility & Architecture Maintenance (MANDATORY)
+
+### 🔍 Complete File Discovery & Maintenance
+
+**CRITICAL: This Agent MUST discover and maintain ALL related files across the entire codebase.**
+
+#### File Discovery Process (MANDATORY)
+
+**BEFORE starting any task, this Agent MUST:**
+
+1. **Fetch ALL related files from root and subfolders:**
+   ```bash
+   # Discover all files related to this agent
+   # Replace {agent-keywords} with relevant search terms for this agent
+   find /workspaces/MMC_MCP_BRIDGE -type f \( -name "*{keyword1}*" -o -name "*{keyword2}*" \) | grep -v node_modules | grep -v .next
+   ```
+
+2. **Check Agent Suite folder:**
+   - `Agent Suite/{agent-folder-name}/` - All agent-specific files
+   - Role Description, Instructions, Rules, Docu Vault, Status Reports, Self-Learning
+
+3. **Check root level files:**
+   - Any files in root that relate to this agent's responsibilities
+   - Configuration files, scripts, documentation
+
+4. **Check subfolders:**
+   - `app/api/` - API routes related to this agent
+   - `doc/` - Documentation related to this agent
+   - `.cursor/rules/` - Rule files
+   - Any other relevant subfolders
+
+5. **Check loose files:**
+   - Standalone files in root or subfolders
+   - Temporary files, scripts, configs
+
+#### File Maintenance Responsibilities
+
+**MANDATORY: This Agent is responsible for maintaining:**
+
+1. **Agent Suite Files:**
+   - ✅ `Agent Suite/{agent-folder-name}/Role Description.md` - Keep up-to-date
+   - ✅ `Agent Suite/{agent-folder-name}/Instructions.md` - Keep up-to-date
+   - ✅ `Agent Suite/{agent-folder-name}/README.md` - Keep up-to-date
+   - ✅ `.cursor/rules/{agent-name}.mdc` - Keep up-to-date (this file)
+   - ✅ `Agent Suite/{agent-folder-name}/Docu Vault/` - Organize and maintain
+   - ✅ `Agent Suite/{agent-folder-name}/Status Reports/` - Keep current
+   - ✅ `Agent Suite/{agent-folder-name}/Self-Learning/` - Document issues
+
+2. **Codebase Files (Related to Agent):**
+   - ✅ All files in root and subfolders related to this agent's responsibilities
+   - ✅ Configuration files, scripts, documentation
+   - ✅ Any files that fall under this agent's domain
+
+3. **Documentation Files:**
+   - ✅ Documentation in `doc/` related to this agent
+   - ✅ Documentation in `project-vault/` related to this agent
+   - ✅ Any README files related to this agent
+
+4. **Configuration Files:**
+   - ✅ Any config files related to this agent's responsibilities
+   - ✅ Scripts, workflows, pipelines
+
+#### File Cleanup & Organization
+
+**MANDATORY: Regular maintenance tasks:**
+
+1. **Remove Outdated Files:**
+   - ✅ Delete temporary files
+   - ✅ Archive old status reports (> 3 months)
+   - ✅ Remove duplicate documentation
+   - ✅ Clean up test files
+
+2. **Organize Files:**
+   - ✅ Keep files in correct locations
+   - ✅ Follow top-down per-Agent structure
+   - ✅ Maintain folder structure consistency
+   - ✅ Update file references when moving files
+
+3. **Update References:**
+   - ✅ Fix broken file references
+   - ✅ Update paths when structure changes
+   - ✅ Keep cross-references accurate
+   - ✅ Update documentation links
+
+4. **Validate Consistency:**
+   - ✅ Check all file paths are correct
+   - ✅ Verify all references are valid
+   - ✅ Ensure no orphaned files
+   - ✅ Confirm structure follows guidelines
+
+#### Architecture Respect
+
+- **MANDATORY**: Follow top-down per-Agent structure
+- **MANDATORY**: Keep files in correct locations (Role Description, Instructions, Rules, Docu Vault, Status Reports, Self-Learning)
+- **MANDATORY**: Do not create files outside Agent Suite structure
+- **MANDATORY**: Maintain consistency across all agent files
+
+#### Self-Learning & Knowledge Base
+
+- **MANDATORY**: Document problems in `Agent Suite/{agent-folder-name}/Self-Learning/Troubleshooting.md`
+- **MANDATORY**: Update troubleshooting log after each problem
+- **MANDATORY**: Build knowledge base from experience
+- **MANDATORY**: Share lessons learned with other Agents
+
+#### Regular Maintenance Schedule
+
+**This Agent MUST perform regular maintenance:**
+
+1. **Before each major task:**
+   - ✅ Discover all related files
+   - ✅ Check for inconsistencies
+   - ✅ Verify file structure
+
+2. **After each task:**
+   - ✅ Update relevant files
+   - ✅ Clean up temporary files
+   - ✅ Update documentation
+
+3. **Weekly:**
+   - ✅ Review and organize Docu Vault
+   - ✅ Archive old status reports
+   - ✅ Check for outdated files
+
+4. **Monthly:**
+   - ✅ Complete file structure audit
+   - ✅ Update all file references
+   - ✅ Validate consistency

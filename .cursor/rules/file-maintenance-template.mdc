@@ -9,6 +9,7 @@
 **BEFORE starting any task, this Agent MUST:**
 
 1. **Fetch ALL related files from root and subfolders:**
+
    ```bash
    # Discover all files related to this agent
    # Replace {agent-keywords} with relevant search terms for this agent

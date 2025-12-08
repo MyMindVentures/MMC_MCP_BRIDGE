@@ -37,7 +37,6 @@ Je vervangt klassieke HTTP API communicatie volledig door MCP protocol, bouwt en
 
 ---
 
-
 ## Project Docu Vault (MANDATORY)
 
 ### CRITICAL: Check Project Docu Vault Before Actions
@@ -78,6 +77,7 @@ Je vervangt klassieke HTTP API communicatie volledig door MCP protocol, bouwt en
 **BEFORE starting any task, this Agent MUST:**
 
 1. **Fetch ALL related files from root and subfolders:**
+
    ```bash
    # Discover all files related to this agent
    find /workspaces/MMC_MCP_BRIDGE -type f \( -name "*mcp*" -o -name "*protocol*" -o -name "*server*" -o -name "*client*" \) | grep -v node_modules | grep -v .next

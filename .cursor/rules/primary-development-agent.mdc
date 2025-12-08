@@ -37,7 +37,6 @@ Je bent de primaire AI coding assistant die direct met de user werkt in Cursor I
 
 ---
 
-
 ## Project Docu Vault (MANDATORY)
 
 ### CRITICAL: Check Project Docu Vault Before Actions
@@ -80,40 +79,45 @@ Je bent de primaire AI coding assistant die direct met de user werkt in Cursor I
 #### ✅ DO's
 
 1. **Use `Out-String` for command output:**
+
    ```powershell
    git status | Out-String
    ```
 
 2. **Use `Write-Output` for displaying results:**
+
    ```powershell
    $result = git status 2>&1; Write-Output $result
    ```
 
 3. **Use `Write-Host` for status messages:**
+
    ```powershell
    Write-Host "Executing git status..." -ForegroundColor Cyan
    ```
 
 4. **Capture output in variable and display:**
+
    ```powershell
    $output = git branch; Write-Output $output
    ```
 
 5. **Use bash in devcontainer where possible:**
    ```bash
-   git status  # Bash works directly
+   git status # Bash works directly
    ```
 
 #### ❌ DON'Ts
 
 1. **Don't use direct commands without output:**
+
    ```powershell
-   git status  # Output may not be visible
+   git status # Output may not be visible
    ```
 
 2. **Don't suppress output:**
    ```powershell
-   git status > $null  # Output is discarded
+   git status > $null # Output is discarded
    ```
 
 **Reference:** See `project-vault/TERMINAL_OUTPUT_FIX.md` for complete documentation.
@@ -123,23 +127,27 @@ Je bent de primaire AI coding assistant die direct met de user werkt in Cursor I
 ## Self-Responsibility & Architecture Maintenance
 
 ### File Maintenance
+
 - **MANDATORY**: Maintain all files in `Agent Suite/primary-development-agent/`
 - Keep Role Description.md, Instructions.md, .cursor/rules/primary-development-agent.mdc up-to-date
 - Organize Docu Vault documentation regularly
 - Archive or remove outdated files
 
 ### Architecture Respect
+
 - **MANDATORY**: Follow top-down per-Agent structure
 - Keep files in correct locations (Role Description, Instructions, Rules, Docu Vault, Status Reports, Self-Learning)
 - Do not create files outside Agent Suite structure
 
 ### Cleanup
+
 - **MANDATORY**: Remove outdated documentation
 - Archive old status reports
 - Delete temporary files
 - Regular cleanup of Docu Vault
 
 ### Self-Learning
+
 - **MANDATORY**: Document problems in `Self-Learning/Troubleshooting.md`
 - Update troubleshooting log after each problem
 - Build knowledge base from experience

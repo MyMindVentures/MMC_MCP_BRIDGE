@@ -53,3 +53,4 @@ Test-Tool "winget" "winget"
 Write-Host "`n=== PATH Refresh Complete ===" -ForegroundColor Green
 Write-Host "`nIf tools are still not found, restart PowerShell." -ForegroundColor Yellow
 
+

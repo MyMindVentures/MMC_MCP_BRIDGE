@@ -73,7 +73,6 @@ docker compose up -d --build app
 **Docker Compose Watch** zorgt voor automatische hot reload:
 
 - **Sync Actions**: Code wijzigingen worden direct gesynchroniseerd (geen rebuild)
-
   - `./app` → `/workspaces/MMC_MCP_BRIDGE/app`
   - `./public` → `/workspaces/MMC_MCP_BRIDGE/public`
   - `./messages` → `/workspaces/MMC_MCP_BRIDGE/messages`

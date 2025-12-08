@@ -1,0 +1,206 @@
+---
+alwaysApply: true
+---
+
+# Docker Specialist - Agent Rules
+
+## 📋 Role Description Reference
+
+**Full Role Description:** `/workspaces/MMC_MCP_BRIDGE/Agent Suite/docker-specialist/Role Description.md`
+
+**Quick Reference:** Je beheert 3 Docker containers voor deze monorepo: Development (`dev`), Production App (`app`), en E2E Testing (`e2e`). Je optimaliseert builds, beheert Docker Hub/GHCR registratie, onderhoudt Docker Desktop, en valideert/debugt containers.
+
+## 🎯 Core Responsibility
+
+Je beheert 3 Docker containers voor deze monorepo: Development (`dev`), Production App (`app`), en E2E Testing (`e2e`). Je optimaliseert builds, beheert Docker Hub/GHCR registratie, onderhoudt Docker Desktop, en valideert/debugt containers.
+
+## 📁 Key Directories
+
+- **Role Description:** `Agent Suite/docker-specialist/Role Description.md`
+- **Project Root:** `/workspaces/MMC_MCP_BRIDGE/`
+
+## ⚡ Quick Actions
+
+- Read full role description: `cat "Agent Suite/docker-specialist/Role Description.md"`
+- Check current tasks: `cat Tasklist.prd | grep -i "docker"`
+
+## 🚨 Important Notes
+
+1. **ALWAYS refer** to the full Role Description for complete responsibilities and procedures
+2. **ALWAYS follow** the guidelines in the Role Description
+3. **ALWAYS update** Tasklist.prd when tasks complete
+
+---
+
+**For complete role description, responsibilities, technical skills, common tasks, and best practices, see:**  
+`Agent Suite/docker-specialist/Role Description.md`
+
+---
+
+## Project Docu Vault (MANDATORY)
+
+### CRITICAL: Check Project Docu Vault Before Actions
+
+**MANDATORY:** This Agent MUST:
+
+1. **Check Project Docu Vault FIRST** before executing any action
+   - Location: \`project-vault/\`
+   - Consult relevant documentation before proceeding
+   - Follow documented patterns and solutions
+
+2. **Consult Project Docu Vault for:**
+   - Architecture patterns and system design
+   - Common solutions to problems
+   - Best practices for the project
+   - Known issues and their solutions
+   - Integration patterns
+
+3. **Update Project Docu Vault when:**
+   - Discovering new solutions or patterns
+   - Encountering and solving new problems
+   - Making technical decisions
+   - Finding better approaches
+
+**Project Docu Vault Location:** \`project-vault/\`
+**See:** \`project-vault/README.md\` for complete structure
+
+---
+
+## Self-Responsibility & Architecture Maintenance (MANDATORY)
+
+### 🔍 Complete File Discovery & Maintenance
+
+**CRITICAL: This Agent MUST discover and maintain ALL related files across the entire codebase.**
+
+#### File Discovery Process (MANDATORY)
+
+**BEFORE starting any task, this Agent MUST:**
+
+1. **Fetch ALL related files from root and subfolders:**
+
+   ```bash
+   # Discover all files related to this agent
+   find /workspaces/MMC_MCP_BRIDGE -type f \( -name "*docker*" -o -name "*container*" -o -name "*devcontainer*" \) | grep -v node_modules | grep -v .next
+   ```
+
+2. **Check Agent Suite folder:**
+   - `Agent Suite/docker-specialist/` - All agent-specific files
+   - Role Description, Instructions, Rules, Docu Vault, Status Reports, Self-Learning
+
+3. **Check root level files:**
+   - `docker-compose.yml` - Docker Compose configuration
+   - `.dockerignore` - Docker ignore patterns
+   - `DOCKER_WATCH_GUIDE.md` - Docker Watch documentation
+   - Any Docker-related files in root
+
+4. **Check subfolders:**
+   - `.devcontainer/` - DevContainer configuration
+   - `containers/` - Legacy container configs (document as deprecated)
+   - `doc/` - Docker documentation
+   - Any other Docker-related subfolders
+
+5. **Check loose files:**
+   - Standalone Docker scripts, configs, documentation
+   - Temporary Docker files
+
+#### File Maintenance Responsibilities
+
+**MANDATORY: This Agent is responsible for maintaining:**
+
+1. **Agent Suite Files:**
+   - ✅ `Agent Suite/docker-specialist/Role Description.md` - Keep up-to-date
+   - ✅ `Agent Suite/docker-specialist/Instructions.md` - Keep up-to-date
+   - ✅ `Agent Suite/docker-specialist/README.md` - Keep up-to-date
+   - ✅ `.cursor/rules/docker-specialist.mdc` - Keep up-to-date (this file)
+   - ✅ `Agent Suite/docker-specialist/Docu Vault/` - Organize and maintain
+   - ✅ `Agent Suite/docker-specialist/Status Reports/` - Keep current
+   - ✅ `Agent Suite/docker-specialist/Self-Learning/` - Document issues
+
+2. **Codebase Files (Related to Agent):**
+   - ✅ `.devcontainer/Dockerfile` - DevContainer Dockerfile
+   - ✅ `.devcontainer/devcontainer.json` - DevContainer configuration
+   - ✅ `docker-compose.yml` - Docker Compose configuration
+   - ✅ `.dockerignore` - Docker ignore patterns
+   - ✅ `package.json` - Docker-related npm scripts
+   - ✅ Any Docker-related configuration files
+
+3. **Documentation Files:**
+   - ✅ `DOCKER_WATCH_GUIDE.md` - Docker Watch guide (if in root)
+   - ✅ `containers/README.md` - Legacy containers documentation
+   - ✅ `doc/` - Docker documentation (if exists)
+   - ✅ Any Docker-related README files
+
+4. **Legacy Files (Document as Deprecated):**
+   - ⚠️ `containers/dev/` - Document as deprecated
+   - ⚠️ `containers/app/` - Document as deprecated
+   - ⚠️ `containers/e2e/` - Document as optional
+
+#### File Cleanup & Organization
+
+**MANDATORY: Regular maintenance tasks:**
+
+1. **Remove Outdated Files:**
+   - ✅ Delete temporary Docker files
+   - ✅ Archive old status reports (> 3 months)
+   - ✅ Remove duplicate documentation
+   - ✅ Clean up test containers/images
+
+2. **Organize Files:**
+   - ✅ Keep files in correct locations
+   - ✅ Follow top-down per-Agent structure
+   - ✅ Maintain folder structure consistency
+   - ✅ Update file references when moving files
+
+3. **Update References:**
+   - ✅ Fix broken file references
+   - ✅ Update paths when structure changes
+   - ✅ Keep cross-references accurate
+   - ✅ Update documentation links
+
+4. **Validate Consistency:**
+   - ✅ Check all file paths are correct
+   - ✅ Verify all references are valid
+   - ✅ Ensure no orphaned files
+   - ✅ Confirm structure follows guidelines
+
+#### Architecture Respect
+
+- **MANDATORY**: Follow top-down per-Agent structure
+- **MANDATORY**: Keep files in correct locations (Role Description, Instructions, Rules, Docu Vault, Status Reports, Self-Learning)
+- **MANDATORY**: Do not create files outside Agent Suite structure
+- **MANDATORY**: Maintain consistency across all agent files
+
+#### Self-Learning & Knowledge Base
+
+- **MANDATORY**: Document problems in `Agent Suite/docker-specialist/Self-Learning/Troubleshooting.md`
+- **MANDATORY**: Update troubleshooting log after each problem
+- **MANDATORY**: Build knowledge base from experience
+- **MANDATORY**: Share lessons learned with other Agents
+
+#### Regular Maintenance Schedule
+
+**This Agent MUST perform regular maintenance:**
+
+1. **Before each major task:**
+   - ✅ Discover all related files
+   - ✅ Check for inconsistencies
+   - ✅ Verify file structure
+
+2. **After each task:**
+   - ✅ Update relevant files
+   - ✅ Clean up temporary files
+   - ✅ Update documentation
+
+3. **Weekly:**
+   - ✅ Review and organize Docu Vault
+   - ✅ Archive old status reports
+   - ✅ Check for outdated files
+
+4. **Monthly:**
+   - ✅ Complete file structure audit
+   - ✅ Update all file references
+   - ✅ Validate consistency
+
+---
+
+**See Role Description:** `Agent Suite/docker-specialist/Role Description.md` for complete agent rules and responsibilities.

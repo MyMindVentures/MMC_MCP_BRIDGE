@@ -1,0 +1,53 @@
+---
+alwaysApply: true
+---
+
+# Tasklist.prd Auto-Tracking (MANDATORY)
+
+## CRITICAL: Always Reference and Update Tasklist.prd
+
+**The agent MUST:**
+
+1. **Check Tasklist.prd FIRST** at the start of every coding session
+2. **Read Tasklist.prd** before making any changes to understand current todos
+3. **Update Tasklist.prd** whenever:
+   - A task is completed (change ⏳ to ✅)
+   - A new task is started (change ⏳ to 🔄)
+   - A new todo is identified (add new line with ⏳ prefix)
+   - Task status changes (pending → in_progress → completed)
+
+4. **Format for Tasklist.prd:**
+   - Single line per todo: `[STATUS] feat-id: Description`
+   - Status indicators: ✅ (completed), 🔄 (in_progress), ⏳ (pending)
+   - Always maintain chronological order
+   - Group related features together
+
+5. **Before committing:**
+   - Verify Tasklist.prd is updated with current progress
+   - Ensure all completed tasks are marked ✅
+   - Add any new todos discovered during work
+
+### Tasklist.prd Location
+- Path: `/workspaces/MMC_MCP_BRIDGE/Tasklist.prd`
+- Format: Single-line todos with status prefixes
+- Auto-sync: Updated automatically via `.devcontainer/sync-todos.sh`
+
+### Example Tasklist.prd Entry:
+```
+✅ feat-01-agent-orchestration: Agentic Orchestration volledig afronden
+🔄 feat-02-sse-bridge-audit: SSE MCP bridge volledig auditen
+⏳ feat-03-http-bridge-openai: HTTP MCP bridge OpenAI server testen
+```
+
+## Workflow Integration
+
+1. **Start of session:** Read Tasklist.prd → Identify current todos
+2. **During work:** Update Tasklist.prd as tasks progress
+3. **Before commit:** Final Tasklist.prd update → Commit Tasklist.prd with code changes
+4. **After commit:** Tasklist.prd auto-synced via devcontainer scripts
+
+## Git Workflow with Tasklist.prd
+
+- Always stage Tasklist.prd with code changes: `git add Tasklist.prd`
+- Include Tasklist.prd updates in commit messages when relevant
+- Tasklist.prd is tracked in git and synced automatically

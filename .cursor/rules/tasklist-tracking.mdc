@@ -28,11 +28,13 @@ alwaysApply: true
    - Add any new todos discovered during work
 
 ### Tasklist.prd Location
+
 - Path: `/workspaces/MMC_MCP_BRIDGE/Tasklist.prd`
 - Format: Single-line todos with status prefixes
 - Auto-sync: Updated automatically via `.devcontainer/sync-todos.sh`
 
 ### Example Tasklist.prd Entry:
+
 ```
 ✅ feat-01-agent-orchestration: Agentic Orchestration volledig afronden
 🔄 feat-02-sse-bridge-audit: SSE MCP bridge volledig auditen

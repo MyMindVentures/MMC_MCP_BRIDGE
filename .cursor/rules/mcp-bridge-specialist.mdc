@@ -44,13 +44,11 @@ Je beheert de MCP Bridge core orchestration platform die 26+ MCP servers naadloo
 **MANDATORY:** This Agent MUST:
 
 1. **Check Project Docu Vault FIRST** before executing any action
-
    - Location: `doc/project-vault/`
    - Consult relevant documentation before proceeding
    - Follow documented patterns and solutions
 
 2. **Consult Project Docu Vault for:**
-
    - Architecture patterns and system design
    - Common solutions to problems
    - Best practices for the project
@@ -86,17 +84,14 @@ Je beheert de MCP Bridge core orchestration platform die 26+ MCP servers naadloo
    ```
 
 2. **Check Agent Suite folder:**
-
    - `Agent Suite/mcp-bridge-specialist/` - All agent-specific files
    - Role Description, Instructions, Rules, Docu Vault, Status Reports, Self-Learning
 
 3. **Check root level files:**
-
    - Any files in root that relate to this agent's responsibilities
    - Configuration files, scripts, documentation
 
 4. **Check subfolders:**
-
    - `app/api/` - API routes related to this agent
    - `doc/` - Documentation related to this agent
    - `.cursor/rules/` - Rule files
@@ -111,7 +106,6 @@ Je beheert de MCP Bridge core orchestration platform die 26+ MCP servers naadloo
 **MANDATORY: This Agent is responsible for maintaining:**
 
 1. **Agent Suite Files:**
-
    - ✅ `Agent Suite/mcp-bridge-specialist/Role Description.md` - Keep up-to-date
    - ✅ `Agent Suite/mcp-bridge-specialist/Instructions.md` - Keep up-to-date
    - ✅ `Agent Suite/mcp-bridge-specialist/README.md` - Keep up-to-date
@@ -121,7 +115,6 @@ Je beheert de MCP Bridge core orchestration platform die 26+ MCP servers naadloo
    - ✅ `Agent Suite/mcp-bridge-specialist/Self-Learning/` - Document issues
 
 2. **Codebase Files (Related to Agent):**
-
    - ✅ `app/api/sse/` - SSE MCP Bridge endpoints
    - ✅ `app/api/mcp/` - HTTP MCP Bridge endpoints
    - ✅ `app/api/agent/` - Agent orchestration endpoints
@@ -130,7 +123,6 @@ Je beheert de MCP Bridge core orchestration platform die 26+ MCP servers naadloo
    - ✅ Any other files related to MCP Bridge functionality
 
 3. **Documentation Files:**
-
    - ✅ `doc/` - General documentation (if related)
    - ✅ `project-vault/` - Project documentation (if related)
    - ✅ Any README files related to this agent
@@ -144,21 +136,18 @@ Je beheert de MCP Bridge core orchestration platform die 26+ MCP servers naadloo
 **MANDATORY: Regular maintenance tasks:**
 
 1. **Remove Outdated Files:**
-
    - ✅ Delete temporary files
    - ✅ Archive old status reports (> 3 months)
    - ✅ Remove duplicate documentation
    - ✅ Clean up test files
 
 2. **Organize Files:**
-
    - ✅ Keep files in correct locations
    - ✅ Follow top-down per-Agent structure
    - ✅ Maintain folder structure consistency
    - ✅ Update file references when moving files
 
 3. **Update References:**
-
    - ✅ Fix broken file references
    - ✅ Update paths when structure changes
    - ✅ Keep cross-references accurate
@@ -189,19 +178,16 @@ Je beheert de MCP Bridge core orchestration platform die 26+ MCP servers naadloo
 **This Agent MUST perform regular maintenance:**
 
 1. **Before each major task:**
-
    - ✅ Discover all related files
    - ✅ Check for inconsistencies
    - ✅ Verify file structure
 
 2. **After each task:**
-
    - ✅ Update relevant files
    - ✅ Clean up temporary files
    - ✅ Update documentation
 
 3. **Weekly:**
-
    - ✅ Review and organize Docu Vault
    - ✅ Archive old status reports
    - ✅ Check for outdated files

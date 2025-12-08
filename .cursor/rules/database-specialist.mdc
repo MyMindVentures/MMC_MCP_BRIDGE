@@ -37,7 +37,6 @@ Je beheert 3 database systemen: PostgreSQL (relational), MongoDB (document), en 
 
 ---
 
-
 ## Project Docu Vault (MANDATORY)
 
 ### CRITICAL: Check Project Docu Vault Before Actions
@@ -78,6 +77,7 @@ Je beheert 3 database systemen: PostgreSQL (relational), MongoDB (document), en 
 **BEFORE starting any task, this Agent MUST:**
 
 1. **Fetch ALL related files from root and subfolders:**
+
    ```bash
    # Discover all files related to this agent
    find /workspaces/MMC_MCP_BRIDGE -type f \( -name "*database*" -o -name "*postgres*" -o -name "*mongodb*" -o -name "*sqlite*" -o -name "*db*" \) | grep -v node_modules | grep -v .next

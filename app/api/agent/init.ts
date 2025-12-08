@@ -6,4 +6,4 @@ import { agentWorker } from "./queue";
 // Worker starts automatically when imported
 export { agentWorker };
 
-console.log("[MMC Bridge] Agentic Worker initialized");
+// console.log("[MMC Bridge] Agentic Worker initialized");

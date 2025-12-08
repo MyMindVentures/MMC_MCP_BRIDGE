@@ -355,7 +355,7 @@ export async function executeAirtableTool(
 
       try {
         // Try to find existing record
-        const existing = await table.find(params.recordId);
+        await table.find(params.recordId);
         const updated = await table.update(params.recordId, params.fields);
         return {
           id: updated.id,

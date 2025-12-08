@@ -37,7 +37,6 @@ Je beheert de bidirectional integratie tussen backend services en n8n workflows.
 
 ---
 
-
 ## Project Docu Vault (MANDATORY)
 
 ### CRITICAL: Check Project Docu Vault Before Actions
@@ -78,6 +77,7 @@ Je beheert de bidirectional integratie tussen backend services en n8n workflows.
 **BEFORE starting any task, this Agent MUST:**
 
 1. **Fetch ALL related files from root and subfolders:**
+
    ```bash
    # Discover all files related to this agent
    find /workspaces/MMC_MCP_BRIDGE -type f \( -name "*n8n*" -o -name "*workflow*" -o -name "*schema*" \) | grep -v node_modules | grep -v .next

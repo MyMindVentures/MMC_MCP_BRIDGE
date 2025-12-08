@@ -1,5 +1,47 @@
 {
-  "doppler.autocomplete.enable": true,
-  "doppler.hover.enable": true,
-  "todo-tree.tree.showBadges": false
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  "editor.rulers": [80, 120],
+  "editor.wordWrap": "on",
+  "editor.minimap.enabled": true,
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "files.watcherExclude": {
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true,
+    "**/node_modules/**": true,
+    "**/.next/**": true
+  },
+  "terminal.integrated.defaultProfile.windows": "PowerShell",
+  "terminal.integrated.profiles.windows": {
+    "PowerShell": {
+      "source": "PowerShell"
+    },
+    "Command Prompt": {
+      "path": ["${env:windir}\\System32\\cmd.exe"]
+    },
+    "Git Bash": {
+      "source": "Git Bash"
+    }
+  },
+  "terminal.integrated.defaultProfile.linux": "bash",
+  "terminal.integrated.profiles.linux": {
+    "bash": {
+      "path": "/bin/bash",
+      "icon": "terminal-bash"
+    },
+    "powershell": {
+      "path": "/usr/bin/pwsh",
+      "icon": "terminal-powershell"
+    }
+  },
+  "git.enableSmartCommit": true,
+  "git.autofetch": true,
+  "githubPullRequests.remotes": ["origin", "upstream"],
+  "githubPullRequests.defaultMergeMethod": "merge",
+  "githubPullRequests.fileListLayout": "tree",
+  "githubIssues.useBranchForIssues": true
 }

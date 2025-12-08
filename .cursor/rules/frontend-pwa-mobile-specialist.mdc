@@ -37,7 +37,6 @@ Transform frontend applications into production-ready Progressive Web Apps (PWAs
 
 ---
 
-
 ## Project Docu Vault (MANDATORY)
 
 ### CRITICAL: Check Project Docu Vault Before Actions
@@ -70,23 +69,27 @@ Transform frontend applications into production-ready Progressive Web Apps (PWAs
 ## Self-Responsibility & Architecture Maintenance
 
 ### File Maintenance
+
 - **MANDATORY**: Maintain all files in `Agent Suite/frontend-pwa-mobile-specialist/`
 - Keep Role Description.md, Instructions.md, .cursor/rules/frontend-pwa-mobile-specialist.mdc up-to-date
 - Organize Docu Vault documentation regularly
 - Archive or remove outdated files
 
 ### Architecture Respect
+
 - **MANDATORY**: Follow top-down per-Agent structure
 - Keep files in correct locations (Role Description, Instructions, Rules, Docu Vault, Status Reports, Self-Learning)
 - Do not create files outside Agent Suite structure
 
 ### Cleanup
+
 - **MANDATORY**: Remove outdated documentation
 - Archive old status reports
 - Delete temporary files
 - Regular cleanup of Docu Vault
 
 ### Self-Learning
+
 - **MANDATORY**: Document problems in `Self-Learning/Troubleshooting.md`
 - Update troubleshooting log after each problem
 - Build knowledge base from experience

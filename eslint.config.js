@@ -132,6 +132,7 @@ export default [
       "no-unused-vars": "off",
       "@typescript-eslint/no-unused-vars": "off",
       "@typescript-eslint/explicit-function-return-type": "off",
+      "no-console": "off", // Disable no-console for Dagger pipeline
     },
   },
   // Override for declaration files

@@ -1,0 +1,158 @@
+---
+alwaysApply: true
+---
+
+# MMC MCP Bridge - Monorepo Structuur
+
+## Overzicht
+
+Deze monorepo gebruikt **één enkele Full Stack container** via de devcontainer met Docker Compose Watch voor automatische hot reload.
+
+**Single Container Architecture:**
+
+- **DevContainer** (`.devcontainer/Dockerfile`) - Full Stack development container met alle tools
+- **Docker Compose Watch** - Automatische hot reload zonder rebuilds
+- **Production** - Railway deployment (zie `railway.json`)
+
+## Directory Structuur
+
+```
+/workspaces/MMC_MCP_BRIDGE/
+├── .devcontainer/
+│   ├── Dockerfile              # Full Stack development container
+│   └── devcontainer.json      # VS Code/Cursor devcontainer config
+├── app/                        # Next.js applicatie code
+│   ├── api/                    # API routes
+│   ├── layout.tsx
+│   └── page.tsx
+├── docker-compose.yml          # Single service met Docker Compose Watch
+├── .dockerignore              # Build optimization
+├── package.json               # Docker management scripts (npm run docker:*)
+└── containers/                # ⚠️ Legacy/Deprecated (zie containers/README.md)
+    ├── dev/                   # ❌ Verouderd - vervangen door devcontainer
+    ├── app/                   # ❌ Verouderd - vervangen door devcontainer
+    └── e2e/                   # ⚠️ Optioneel - workflows kunnen nog gebruikt worden
+```
+
+## Single Container Setup
+
+### DevContainer (`.devcontainer/Dockerfile`)
+
+**Doel**: Full Stack development container met alle tools
+
+**Features**:
+
+- Next.js development server met hot reload
+- Docker CLI + Docker-in-Docker feature
+- Dagger CLI voor CI/CD
+- Doppler CLI voor secrets management
+- 1Password CLI voor credentials
+- PowerShell Core
+- Python + build tools voor native modules
+- Playwright dependencies voor E2E testing
+- Alle VS Code extensions
+
+**Port**: 3000
+
+**Start**:
+
+```bash
+# Met Docker Watch (aanbevolen - hot reload)
+npm run docker:up:watch
+# of
+docker compose watch
+
+# Zonder watch (traditioneel)
+npm run docker:up
+# of
+docker compose up -d --build app
+```
+
+## Docker Compose Watch
+
+**Docker Compose Watch** zorgt voor automatische hot reload:
+
+- **Sync Actions**: Code wijzigingen worden direct gesynchroniseerd (geen rebuild)
+
+  - `./app` → `/workspaces/MMC_MCP_BRIDGE/app`
+  - `./public` → `/workspaces/MMC_MCP_BRIDGE/public`
+  - `./messages` → `/workspaces/MMC_MCP_BRIDGE/messages`
+  - Config files (`tsconfig.json`, `turbo.json`)
+
+- **Rebuild Actions**: Container rebuild alleen bij dependency changes
+  - `package.json` wijzigingen
+  - `package-lock.json` wijzigingen
+  - `.devcontainer/Dockerfile` wijzigingen
+
+## NPM Scripts
+
+```bash
+# Development
+npm run docker:up:watch       # Start met Docker Watch (hot reload)
+npm run docker:up             # Start zonder watch
+npm run docker:down           # Stop container
+npm run docker:logs           # View logs
+npm run docker:restart        # Restart container
+
+# Build & Deploy
+npm run docker:build          # Build container
+npm run docker:tag            # Tag voor registries
+npm run docker:push:hub       # Push naar Docker Hub
+npm run docker:push:ghcr      # Push naar GHCR
+
+# Cleanup
+npm run docker:clean:all      # Clean alle resources
+npm run docker:clean:images   # Clean images only
+npm run docker:clean:containers # Clean containers only
+npm run docker:clean:volumes  # Clean volumes only
+
+# Validation
+npm run docker:validate       # Validate docker-compose.yml
+npm run docker:test           # Test container health
+npm run docker:inspect        # Inspect image labels
+```
+
+## Volume Mounts
+
+### Bind Mounts (Hot Reload)
+
+- `.:/workspaces/MMC_MCP_BRIDGE` - Volledige codebase (live sync)
+
+### Named Volumes (Geen Sync)
+
+- `mmc-node-modules` - `node_modules` (niet overschrijven)
+- `mmc-next-build` - `.next` build cache (niet overschrijven)
+
+## MCP Client Configuratie
+
+De MCP client in Cursor is geconfigureerd om te verbinden met:
+
+- **Local Dev Container**: `http://localhost:3000/api/sse` (poort 3000)
+- **Railway Production**: `https://mmcmcphttpbridge-production.up.railway.app/api/sse` (fallback)
+
+**Belangrijk**: Start de container eerst voordat je de MCP client gebruikt:
+
+```bash
+npm run docker:up:watch
+```
+
+## Legacy Containers
+
+**⚠️ De `containers/` directory bevat verouderde configuraties:**
+
+- `containers/dev/` - ❌ Verouderd (vervangen door `.devcontainer/Dockerfile`)
+- `containers/app/` - ❌ Verouderd (vervangen door `.devcontainer/Dockerfile`)
+- `containers/e2e/` - ⚠️ Optioneel (workflows kunnen nog gebruikt worden voor CI/CD)
+
+## Best Practices
+
+1. **Gebruik Docker Watch** voor development (hot reload zonder rebuilds)
+2. **Start container** voordat je MCP client gebruikt
+3. **Production builds** via Railway (zie `railway.json`)
+4. **Cleanup regelmatig** met `npm run docker:clean:all`
+5. **Valideer configuratie** met `npm run docker:validate`
+
+---
+
+**Last Updated:** December 2024  
+**Status:** Single Container Architecture - DevContainer + Docker Watch

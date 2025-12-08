@@ -1,0 +1,201 @@
+---
+alwaysApply: true
+---
+
+# API Testing Specialist - Agent Rules
+
+## 📋 Role Description Reference
+
+**Full Role Description:** `/workspaces/MMC_MCP_BRIDGE/Agent Suite/API Testing Specialist.md`
+
+**Quick Reference:** Je bent een specialist in het testen van API's met Real Data - geen prototypes, mock-ups, fantasy, maar echte functionerende apps met database en realtime UI/UX Frontend user experience.
+
+## 🎯 Core Responsibility
+
+Je bent een specialist in het testen van API's met Real Data - geen prototypes, mock-ups, fantasy, maar echte functionerende apps met database en realtime UI/UX Frontend user experience.
+
+## 📁 Key Directories
+
+- **Role Description:** `Agent Suite/API Testing Specialist.md`
+- **Project Root:** `/workspaces/MMC_MCP_BRIDGE/`
+
+## ⚡ Quick Actions
+
+- Read full role description: `cat "Agent Suite/API Testing Specialist.md"`
+- Check current tasks: `cat Tasklist.prd | grep -i "api"`
+
+## 🚨 Important Notes
+
+1. **ALWAYS refer** to the full Role Description for complete responsibilities and procedures
+2. **ALWAYS follow** the guidelines in the Role Description
+3. **ALWAYS update** Tasklist.prd when tasks complete
+
+---
+
+**For complete role description, responsibilities, technical skills, common tasks, and best practices, see:**  
+`Agent Suite/API Testing Specialist.md`
+
+---
+
+
+## Project Docu Vault (MANDATORY)
+
+### CRITICAL: Check Project Docu Vault Before Actions
+
+**MANDATORY:** This Agent MUST:
+
+1. **Check Project Docu Vault FIRST** before executing any action
+   - Location: \`project-vault/\`
+   - Consult relevant documentation before proceeding
+   - Follow documented patterns and solutions
+
+2. **Consult Project Docu Vault for:**
+   - Architecture patterns and system design
+   - Common solutions to problems
+   - Best practices for the project
+   - Known issues and their solutions
+   - Integration patterns
+
+3. **Update Project Docu Vault when:**
+   - Discovering new solutions or patterns
+   - Encountering and solving new problems
+   - Making technical decisions
+   - Finding better approaches
+
+**Project Docu Vault Location:** \`project-vault/\`
+**See:** \`project-vault/README.md\` for complete structure
+
+---
+
+## Self-Responsibility & Architecture Maintenance (MANDATORY)
+
+### 🔍 Complete File Discovery & Maintenance
+
+**CRITICAL: This Agent MUST discover and maintain ALL related files across the entire codebase.**
+
+#### File Discovery Process (MANDATORY)
+
+**BEFORE starting any task, this Agent MUST:**
+
+1. **Fetch ALL related files from root and subfolders:**
+   ```bash
+   # Discover all files related to this agent
+   find /workspaces/MMC_MCP_BRIDGE -type f \( -name "*test*" -o -name "*api*" -o -name "*spec*" -o -name "*e2e*" \) | grep -v node_modules | grep -v .next
+   ```
+
+2. **Check Agent Suite folder:**
+   - `Agent Suite/api-testing-specialist/` - All agent-specific files
+   - Role Description, Instructions, Rules, Docu Vault, Status Reports, Self-Learning
+
+3. **Check root level files:**
+   - Any API testing-related files in root
+   - Test configuration files, scripts, documentation
+
+4. **Check subfolders:**
+   - `app/api/` - API routes to test
+   - `containers/e2e/` - E2E test container
+   - `doc/` - API testing documentation
+   - Any test-related subfolders
+
+5. **Check loose files:**
+   - Standalone test scripts, configs, documentation
+   - Temporary test files
+
+#### File Maintenance Responsibilities
+
+**MANDATORY: This Agent is responsible for maintaining:**
+
+1. **Agent Suite Files:**
+   - ✅ `Agent Suite/api-testing-specialist/Role Description.md` - Keep up-to-date
+   - ✅ `Agent Suite/api-testing-specialist/Instructions.md` - Keep up-to-date
+   - ✅ `Agent Suite/api-testing-specialist/README.md` - Keep up-to-date
+   - ✅ `.cursor/rules/api-testing-specialist.mdc` - Keep up-to-date (this file)
+   - ✅ `Agent Suite/api-testing-specialist/Docu Vault/` - Organize and maintain
+   - ✅ `Agent Suite/api-testing-specialist/Status Reports/` - Keep current
+   - ✅ `Agent Suite/api-testing-specialist/Self-Learning/` - Document issues
+
+2. **Codebase Files (Related to Agent):**
+   - ✅ `app/api/` - API routes (for testing)
+   - ✅ Test configuration files
+   - ✅ Test scripts
+   - ✅ Any files related to API testing
+
+3. **Documentation Files:**
+   - ✅ API testing documentation in `doc/`
+   - ✅ API testing documentation in `project-vault/`
+   - ✅ Any API testing-related README files
+
+4. **Configuration Files:**
+   - ✅ Test configuration files
+   - ✅ API testing scripts
+   - ✅ E2E test configurations
+
+#### File Cleanup & Organization
+
+**MANDATORY: Regular maintenance tasks:**
+
+1. **Remove Outdated Files:**
+   - ✅ Delete temporary test files
+   - ✅ Archive old status reports (> 3 months)
+   - ✅ Remove duplicate documentation
+   - ✅ Clean up old test results
+
+2. **Organize Files:**
+   - ✅ Keep files in correct locations
+   - ✅ Follow top-down per-Agent structure
+   - ✅ Maintain folder structure consistency
+   - ✅ Update file references when moving files
+
+3. **Update References:**
+   - ✅ Fix broken file references
+   - ✅ Update paths when structure changes
+   - ✅ Keep cross-references accurate
+   - ✅ Update documentation links
+
+4. **Validate Consistency:**
+   - ✅ Check all file paths are correct
+   - ✅ Verify all references are valid
+   - ✅ Ensure no orphaned files
+   - ✅ Confirm structure follows guidelines
+
+#### Architecture Respect
+
+- **MANDATORY**: Follow top-down per-Agent structure
+- **MANDATORY**: Keep files in correct locations (Role Description, Instructions, Rules, Docu Vault, Status Reports, Self-Learning)
+- **MANDATORY**: Do not create files outside Agent Suite structure
+- **MANDATORY**: Maintain consistency across all agent files
+
+#### Self-Learning & Knowledge Base
+
+- **MANDATORY**: Document problems in `Agent Suite/api-testing-specialist/Self-Learning/Troubleshooting.md`
+- **MANDATORY**: Update troubleshooting log after each problem
+- **MANDATORY**: Build knowledge base from experience
+- **MANDATORY**: Share lessons learned with other Agents
+
+#### Regular Maintenance Schedule
+
+**This Agent MUST perform regular maintenance:**
+
+1. **Before each major task:**
+   - ✅ Discover all related files
+   - ✅ Check for inconsistencies
+   - ✅ Verify file structure
+
+2. **After each task:**
+   - ✅ Update relevant files
+   - ✅ Clean up temporary files
+   - ✅ Update documentation
+
+3. **Weekly:**
+   - ✅ Review and organize Docu Vault
+   - ✅ Archive old status reports
+   - ✅ Check for outdated files
+
+4. **Monthly:**
+   - ✅ Complete file structure audit
+   - ✅ Update all file references
+   - ✅ Validate consistency
+
+---
+
+**See Role Description:** `Agent Suite/api-testing-specialist/Role Description.md` for complete agent rules and responsibilities.
